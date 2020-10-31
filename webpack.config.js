@@ -3,10 +3,14 @@ const path = require('path');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'development',
+  entry: {
+    main: path.join(path.resolve(), 'src', 'index.js'),
+  },
+  output: {
+    path: path.join(path.resolve(), 'dist'),
+  },
   devServer: {
     contentBase: path.join(path.resolve(), 'dist'),
-    compress: true,
-    port: 3000
   },
   module: {
     rules: [

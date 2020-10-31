@@ -16,12 +16,22 @@
     "url": "https://github.com/sol-un/frontend-project-lvl3/issues"
   },
   "homepage": "https://github.com/sol-un/frontend-project-lvl3#readme",
-  "dependencies": {},
+  "dependencies": {
+    "bootstrap": "^4.5.3",
+    "jquery": "^3.5.1",
+    "popper.js": "^1.16.1"
+  },
   "devDependencies": {
     "@babel/core": "^7.12.3",
+    "autoprefixer": "^10.0.1",
     "babel-loader": "^8.1.0",
+    "css-loader": "^5.0.0",
     "html-webpack-plugin": "^4.5.0",
+    "postcss-loader": "^4.0.4",
+    "precss": "^4.0.0",
+    "style-loader": "^2.0.0",
     "webpack": "^5.3.2",
-    "webpack-cli": "^4.1.0"
+    "webpack-cli": "^4.1.0",
+    "webpack-dev-server": "^3.11.0"
   }
 }

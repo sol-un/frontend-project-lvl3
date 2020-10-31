@@ -1,2 +1,1 @@
-### Hexlet tests and linter status:
-![Actions Status](/workflows/hexlet-check/badge.svg)
+https://frontend-project-lvl3-rss-reader.vercel.app/

@@ -1,0 +1,27 @@
+{
+  "name": "frontend-project-lvl3",
+  "version": "1.0.0",
+  "description": "![Actions Status](/workflows/hexlet-check/badge.svg)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sol-un/frontend-project-lvl3.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sol-un/frontend-project-lvl3/issues"
+  },
+  "homepage": "https://github.com/sol-un/frontend-project-lvl3#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "babel-loader": "^8.1.0",
+    "html-webpack-plugin": "^4.5.0",
+    "webpack": "^5.3.2",
+    "webpack-cli": "^4.1.0"
+  }
+}

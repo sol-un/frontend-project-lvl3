@@ -17,9 +17,11 @@
   },
   "homepage": "https://github.com/sol-un/frontend-project-lvl3#readme",
   "dependencies": {
+    "axios": "^0.21.0",
     "babel-eslint": "^10.1.0",
     "bootstrap": "^4.5.3",
     "jquery": "^3.5.1",
+    "lodash": "^4.17.20",
     "popper.js": "^1.16.1"
   },
   "devDependencies": {

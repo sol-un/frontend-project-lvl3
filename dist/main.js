@@ -9,25 +9,10 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./bin/reader.js":
-/*!***********************!*\
-  !*** ./bin/reader.js ***!
-  \***********************/
-/*! namespace exports */
-/*! export default [provided] [no usage info] [missing usage info prevents renaming] */
-/*! other exports [not provided] [no usage info] */
-/*! runtime requirements: __webpack_exports__, __webpack_require__.r, __webpack_require__.d, __webpack_require__.* */
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => __WEBPACK_DEFAULT_EXPORT__\n/* harmony export */ });\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (() => {\n  const inputField = document.querySelector('#inputField');\n  const addChannelButton = document.querySelector('#addChannelButton');\n  addChannelButton.addEventListener('click', () => {\n    console.log(inputField.value);\n  });\n});\n\n//# sourceURL=webpack://frontend-project-lvl3/./bin/reader.js?");
-
-/***/ }),
-
-/***/ "./index.js":
-/*!******************!*\
-  !*** ./index.js ***!
-  \******************/
+/***/ "./bin/application.js":
+/*!****************************!*\
+  !*** ./bin/application.js ***!
+  \****************************/
 /*! namespace exports */
 /*! export default [provided] [no usage info] [missing usage info prevents renaming] */
 /*! other exports [not provided] [no usage info] */
@@ -35,7 +20,22 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => __WEBPACK_DEFAULT_EXPORT__\n/* harmony export */ });\n/* harmony import */ var _bin_reader_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bin/reader.js */ \"./bin/reader.js\");\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_bin_reader_js__WEBPACK_IMPORTED_MODULE_0__.default);\n\n//# sourceURL=webpack://frontend-project-lvl3/./index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => __WEBPACK_DEFAULT_EXPORT__\n/* harmony export */ });\n/* harmony import */ var _rss_parser_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./rss-parser.js */ \"./bin/rss-parser.js\");\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (() => {\n  const form = document.querySelector('#channelLinkForm');\n  form.addEventListener('submit', e => {\n    e.preventDefault();\n    const formData = new FormData(e.target);\n    (0,_rss_parser_js__WEBPACK_IMPORTED_MODULE_0__.default)(formData.get('link'));\n  });\n});\n\n//# sourceURL=webpack://frontend-project-lvl3/./bin/application.js?");
+
+/***/ }),
+
+/***/ "./bin/rss-parser.js":
+/*!***************************!*\
+  !*** ./bin/rss-parser.js ***!
+  \***************************/
+/*! namespace exports */
+/*! export default [provided] [no usage info] [missing usage info prevents renaming] */
+/*! other exports [not provided] [no usage info] */
+/*! runtime requirements: __webpack_exports__, __webpack_require__.r, __webpack_require__.d, __webpack_require__.* */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => __WEBPACK_DEFAULT_EXPORT__\n/* harmony export */ });\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (data => {\n  console.log(data);\n});\n\n//# sourceURL=webpack://frontend-project-lvl3/./bin/rss-parser.js?");
 
 /***/ }),
 
@@ -49,7 +49,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var bootstrap_dist_js_bootstrap_min_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bootstrap/dist/js/bootstrap.min.js */ \"./node_modules/bootstrap/dist/js/bootstrap.min.js\");\n/* harmony import */ var bootstrap_dist_js_bootstrap_min_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(bootstrap_dist_js_bootstrap_min_js__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ \"./node_modules/bootstrap/dist/css/bootstrap.min.css\");\n/* harmony import */ var _cover_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./cover.css */ \"./src/cover.css\");\n/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../index.js */ \"./index.js\");\n\n\n\n\n(0,_index_js__WEBPACK_IMPORTED_MODULE_3__.default)();\n\n//# sourceURL=webpack://frontend-project-lvl3/./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var bootstrap_dist_js_bootstrap_min_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bootstrap/dist/js/bootstrap.min.js */ \"./node_modules/bootstrap/dist/js/bootstrap.min.js\");\n/* harmony import */ var bootstrap_dist_js_bootstrap_min_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(bootstrap_dist_js_bootstrap_min_js__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ \"./node_modules/bootstrap/dist/css/bootstrap.min.css\");\n/* harmony import */ var _cover_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./cover.css */ \"./src/cover.css\");\n/* harmony import */ var _bin_application_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../bin/application.js */ \"./bin/application.js\");\n\n\n\n\n(0,_bin_application_js__WEBPACK_IMPORTED_MODULE_3__.default)();\n\n//# sourceURL=webpack://frontend-project-lvl3/./src/index.js?");
 
 /***/ }),
 

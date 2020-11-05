@@ -1,3 +1,3 @@
-import rssReader from './bin/reader.js';
+import app from './bin/application.js';
 
-export default rssReader;
+export default app;

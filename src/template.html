@@ -54,14 +54,18 @@
   
   <main role="main" class="inner cover">
     <h1 class="cover-heading text-center">Have you ever tried RSS?</h1>
-    <p>If you haven't, why not try it now? It's free! To follow the latest and greatest from your favorite influencers, find an RSS feed you're interested in, paste the link below, and push <i>Add channel</i>:</p>
-    <p>
-      <input type="text" class="form-control" id="inputField" />
-    </p>
-    <p>
-      <a href="#" class="btn btn-lg btn-secondary" id="addChannelButton">Add channel</a>
-    </p>
-    <p>
+    <div>If you haven't, why not try it now? It's free! To follow the latest and greatest from your favorite influencers, find an RSS feed you're interested in, paste the link below, and push <i>Add channel</i>:</div>
+    <div>
+      <form id="channelLinkForm">
+        <div>
+          <input type="text" class="form-control" name="link" />
+        </div>
+        <div>
+          <button type="submit" class="btn btn-lg btn-secondary">Add channel</button>
+        </div>
+      </form>
+    </div>
+    <div>
       <ul class="nav nav-tabs justify-content-center">
         <li class="nav-item">
           <a class="nav-link active" href="#">Active</a>
@@ -70,7 +74,7 @@
           <a class="nav-link" href="#">Link</a>
         </li>
       </ul>
-    </p>
+    </div>
   </main>
 
   <footer class="mastfoot mt-auto">

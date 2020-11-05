@@ -1,5 +1,7 @@
-import rssParser from './bin/rss-parser.js';
+import rssParser from '../bin/rss-parser.js';
 
 describe('RSS Parser', () => {
-  it()
-})
+  it('tests should run', () => {
+    expect(rssParser()).toBe(undefined);
+  });
+});

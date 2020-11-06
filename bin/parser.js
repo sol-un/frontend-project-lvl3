@@ -5,15 +5,15 @@ const parse = (xml) => {
   const id = _.uniqueId();
   const parser = new DOMParser();
   const document = parser.parseFromString(xml, 'application/xml');
-  const channelData = document.querySelector('channel');
-  const [channelTitle, channelDescription, channelLink] = Array.from(channelData.childNodes);
+  const channel = document.querySelector('channel');
+  const [channelTitle, channelDescription, channelLink] = Array.from(channel.childNodes);
   const data = {
     id,
     title: channelTitle.textContent,
     description: channelDescription.textContent,
     link: channelLink.textContent,
   };
-  const items = Array.from(channelData.querySelectorAll('item'));
+  const items = Array.from(channel.querySelectorAll('item'));
   const contents = items.map((item) => {
     const [title, description, link, , creator, pubDate] = Array.from(item.childNodes);
     return {

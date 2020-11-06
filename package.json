@@ -4,7 +4,9 @@
   "description": "![Actions Status](/workflows/hexlet-check/badge.svg)",
   "main": "index.js",
   "scripts": {
-    "test": "jest --colors"
+    "test": "jest --colors",
+    "build": "webpack",
+    "start:dev": "webpack serve"
   },
   "repository": {
     "type": "git",
@@ -42,8 +44,8 @@
     "postcss-loader": "^4.0.4",
     "precss": "^4.0.0",
     "style-loader": "^2.0.0",
-    "webpack": "^5.3.2",
-    "webpack-cli": "^4.1.0",
+    "webpack": "^4.27.0",
+    "webpack-cli": "^4.2.0",
     "webpack-dev-server": "^3.11.0"
   }
 }

@@ -1,0 +1,53 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
+    meta(name='description' content='')
+    meta(name='author' content='Mark Otto, Jacob Thornton, and Bootstrap contributors')
+    meta(name='generator' content='Jekyll v4.1.1')
+    title frontend-project-lvl3 &middot; Hexlet
+    link(rel='canonical' href='https://getbootstrap.com/docs/4.5/examples/cover/')
+    meta(name='msapplication-config' content='/docs/4.5/assets/img/favicons/browserconfig.xml')
+    meta(name='theme-color' content='#563d7c')
+    style.
+      .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      }
+      @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+      font-size: 3.5rem;
+      }
+      }
+  body
+    header.masthead
+      .container
+        h3 RSS Reader
+    main.inner.cover(role='main')
+      h1.cover-heading.text-center Have you ever tried RSS?
+      div
+        | If you haven&apos;t, why not try it now? It&apos;s free! To follow the latest and greatest from your favorite influencers, find an RSS feed you&apos;re interested in, paste the link below, and push 
+        i Add channel
+        | :
+      div
+        form#channelLinkForm
+          div
+            input.form-control(type='text' name='link')
+          div
+            button.btn.btn-lg.btn-secondary(type='submit') Add channel
+      div
+        ul.nav.nav-tabs.justify-content-center
+          li.nav-item
+            a.nav-link.active(href='#') Active
+          li.nav-item
+            a.nav-link(href='#') Link
+    footer.mastfoot.mt-auto
+      .inner
+        p
+          | Inspired by 
+          a(href='https://ru.hexlet.io/') Hexlet

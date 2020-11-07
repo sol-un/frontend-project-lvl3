@@ -1,53 +1,57 @@
 doctype html
-html
-  head
-    meta(charset='utf-8')
-    meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
-    meta(name='description' content='')
-    meta(name='author' content='Mark Otto, Jacob Thornton, and Bootstrap contributors')
-    meta(name='generator' content='Jekyll v4.1.1')
-    title frontend-project-lvl3 &middot; Hexlet
-    link(rel='canonical' href='https://getbootstrap.com/docs/4.5/examples/cover/')
-    meta(name='msapplication-config' content='/docs/4.5/assets/img/favicons/browserconfig.xml')
-    meta(name='theme-color' content='#563d7c')
-    style.
-      .bd-placeholder-img {
-      font-size: 1.125rem;
-      text-anchor: middle;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      }
-      @media (min-width: 768px) {
-      .bd-placeholder-img-lg {
-      font-size: 3.5rem;
-      }
-      }
-  body
-    header.masthead
-      .container
-        h3 RSS Reader
-    main.inner.cover(role='main')
-      h1.cover-heading.text-center Have you ever tried RSS?
-      div
-        | If you haven&apos;t, why not try it now? It&apos;s free! To follow the latest and greatest from your favorite influencers, find an RSS feed you&apos;re interested in, paste the link below, and push 
-        i Add channel
-        | :
-      div
-        form#channelLinkForm
-          div
-            input.form-control(type='text' name='link')
-          div
-            button.btn.btn-lg.btn-secondary(type='submit') Add channel
-      div
-        ul.nav.nav-tabs.justify-content-center
-          li.nav-item
-            a.nav-link.active(href='#') Active
-          li.nav-item
-            a.nav-link(href='#') Link
-    footer.mastfoot.mt-auto
-      .inner
-        p
-          | Inspired by 
-          a(href='https://ru.hexlet.io/') Hexlet
+head
+  meta(charset='utf-8')
+  meta(name='author' content='Mark Otto, Jacob Thornton, and Bootstrap contributors')
+  title frontend-project-lvl3 &middot; Hexlet
+  style.
+    .bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    }
+    @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+    font-size: 3.5rem;
+    }
+    }
+nav.navbar.navbar-expand-md.navbar-dark.fixed-top.bg-dark
+  .navbar-brand
+    .container
+      .row.align-items-center
+        .col.pl-0.pr-2
+          img(src="https://cdn2.iconfinder.com/data/icons/social-icon-3/512/social_style_3_rss-512.png" width="32" height="32")
+        .col.pl-0 The RSS Reader Project
+main(role='main')
+  .jumbotron
+    .container
+      .row
+        .col.text-center
+            h1.lead.display-4 Ever tried RSS?
+            .lead
+              | If you haven't, why not try it now? It's free! To follow the latest and greatest from your favorite influencers and, find an #[a(href="https://www.lifewire.com/what-is-an-rss-feed-4684568") RSS feed] you're interested in, paste the link below, and push #[i Add channel]:
+    .container
+      .row
+        .col.text-center
+          form#channelLinkForm
+            input(type="text" name="link").form-control.my-3
+            button(type="submit").btn.btn-lg.btn-primary.my-2 Add channel
+    .container#channelNav
+      .row
+        .col
+      //-     ul#myTab.nav.nav-tabs(role='tablist')
+      //-       li.nav-item(role='presentation')
+      //-         a#home-tab.nav-link.active(data-toggle='tab' href='#home' role='tab' aria-controls='home' aria-selected='true') Home
+      //-       li.nav-item(role='presentation')
+      //-         a#profile-tab.nav-link(data-toggle='tab' href='#profile' role='tab' aria-controls='profile' aria-selected='false') Profile
+      //-       li.nav-item(role='presentation')
+      //-         a#messages-tab.nav-link(data-toggle='tab' href='#messages' role='tab' aria-controls='messages' aria-selected='false') Messages
+      //-       li.nav-item(role='presentation')
+      //-         a#settings-tab.nav-link(data-toggle='tab' href='#settings' role='tab' aria-controls='settings' aria-selected='false') Settings
+      //-     .tab-content
+      //-       #home.tab-pane(role='tabpanel' aria-labelledby='home-tab') Home
+      //-       #profile.tab-pane(role='tabpanel' aria-labelledby='profile-tab') Profile
+      //-       #messages.tab-pane(role='tabpanel' aria-labelledby='messages-tab') Messages
+      //-       #settings.tab-pane(role='tabpanel' aria-labelledby='settings-tab') Settings

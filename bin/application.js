@@ -1,19 +1,30 @@
-import parser from './parser.js';
+import onChange from 'on-change';
+import $ from 'jquery';
+import parse from './parser.js';
+import render from './renderer.js';
 
 export default () => {
   const state = {
+    activeChannelId: null,
     channels: [],
     articles: [],
   };
-  const form = document.querySelector('#channelLinkForm');
-  form.addEventListener('submit', (e) => {
+
+  const watchedState = onChange(state, () => {
+    render(watchedState);
+  });
+
+  $('#channelLinkForm').on('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    parser(formData.get('link'))
+    parse(formData.get('link'))
       .then(([data, contents]) => {
-        state.channels.push(data);
-        state.articles = [...state.articles, ...contents];
-        console.log(state);
-      });
+        watchedState.activeChannelId = data.id;
+        watchedState.channels.push(data);
+        watchedState.articles = [...state.articles, ...contents];
+      })
+      .catch((error) => console.log(error));
   });
+
+  render(state);
 };

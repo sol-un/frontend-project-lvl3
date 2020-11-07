@@ -2,9 +2,9 @@ import $ from 'jquery';
 
 const renderActiveChannel = (id) => {
   $('.nav-link').each((_i, el) => $(el).removeClass('active'));
-  $(`a#${id}.nav-link`).addClass('active');
+  $(`a[data-id="${id}"]`).addClass('active');
   $('.tab-pane').each((_i, el) => $(el).removeClass('active'));
-  $(`div#${id}.tab-pane`).addClass('active');
+  $(`div[data-id="${id}"]`).addClass('active');
 };
 
 const renderCard = ({
@@ -38,10 +38,12 @@ const renderCard = ({
     .text(description)
     .appendTo(cardBody);
 
-  const cardDate = document.createElement('p');
-  $(cardDate)
-    .append(`<i>Published on ${new Date(pubDate).toLocaleDateString()}</i>`)
-    .appendTo(cardBody);
+  if (pubDate) {
+    const cardDate = document.createElement('p');
+    $(cardDate)
+      .append(`<i>Published on ${new Date(pubDate).toLocaleDateString()}</i>`)
+      .appendTo(cardBody);
+  }
 
   const cardLink = document.createElement('a');
   $(cardLink)
@@ -56,7 +58,7 @@ const renderContents = (item, articles) => {
   const filteredArticles = articles.filter(({ id }) => id === item.id);
   const div = document.createElement('div');
   $(div)
-    .attr('id', item.id)
+    .attr('data-id', item.id)
     .addClass('tab-pane')
     .appendTo($('.tab-content'));
 
@@ -77,13 +79,13 @@ const renderTab = (acc, { id, title }, state) => {
 
   const a = document.createElement('a');
   $(a).addClass('nav-link')
-    .data('toggle', 'tab')
-    .attr('href', `#${title}`)
-    .attr('id', id)
+    .attr('data-toggle', 'tab')
+    .attr('data-id', id)
+    .attr('href', '#')
     .text(title)
     .on('click', (e) => {
       e.preventDefault();
-      const activeChannelId = $(e.target).attr('id');
+      const activeChannelId = $(e.target).attr('data-id');
       Object.assign(state, { activeChannelId });
     })
     .appendTo(li);
@@ -93,12 +95,43 @@ const renderTab = (acc, { id, title }, state) => {
 
 export default (state) => {
   const $mount = $('#channelNav');
-  const { activeChannelId, channels, articles } = state;
+  const {
+    activeChannelId,
+    link,
+    linkStatus,
+    channels,
+    articles,
+    error,
+  } = state;
 
-  $('input').val('');
+  $('input').val(link);
+
+  if (error) {
+    $('.feedback')
+      .html(`<div class="alert alert-danger" role="alert">${error}</div>`);
+  } else {
+    $('.feedback').empty();
+  }
+
+  switch (linkStatus) {
+    case 'valid':
+      $('input')
+        .removeClass('is-invalid');
+      $('button')
+        .removeAttr('disabled');
+      break;
+    case 'invalid':
+      $('input')
+        .addClass('is-invalid');
+      $('button')
+        .attr('disabled', 'disabled');
+      break;
+    default:
+      // nothing
+  }
 
   if (channels.length === 0) {
-    return $mount.append('<div class="mt-4 text-center"><i>No channels have been added yet...</i></div>');
+    return $mount.html('<div class="mt-4 text-center"><i>No channels have been added yet...</i></div>');
   }
 
   $mount.empty();

@@ -35,19 +35,15 @@ export default () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     process(formData.get('link'))
-      .then(([data, contents, error]) => {
-        if (error) {
-          return Object.assign(watchedState, { error });
-        }
-        return updateState(data, contents, watchedState);
-      });
+      .then(([data, contents]) => updateState(data, contents, watchedState))
+      .catch(({ message }) => _.set(watchedState, 'error', message));
   });
 
   $('input').on('keyup', (e) => {
     const link = $(e.target).val();
     const { blacklist } = state;
     let linkStatus;
-    let error;
+    let message;
 
     const errorMessageDispatcher = {
       url: 'The link is wrong or unsupported format!',
@@ -58,10 +54,10 @@ export default () => {
       .then(({ type }) => {
         if (!type) {
           linkStatus = 'valid';
-          error = null;
+          message = null;
         } else {
-          error = errorMessageDispatcher[type];
           linkStatus = 'invalid';
+          message = errorMessageDispatcher[type];
         }
 
         _.set(watchedState, 'link', link);

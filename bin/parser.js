@@ -29,13 +29,13 @@ const parse = (xml) => {
       pubDate: retrieveFromItem('pubDate'),
     };
   });
-  return [data, contents, null];
+  return [data, contents];
 };
 
 export default (link) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
   .then(({ data }) => {
-    if (data.status.http_code === 404) {
-      return [null, null, 'Network error!'];
+    if (data.status.http_code !== 200) {
+      throw new Error('Network error!');
     }
     return parse(data.contents);
   });

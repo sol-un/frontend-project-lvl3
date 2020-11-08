@@ -25,7 +25,7 @@ const parse = (xml) => {
       title: retrieveFromItem('title'),
       description: retrieveFromItem('description'),
       link: retrieveFromItem('link'),
-      creator: item.querySelector('creator') ? item.querySelector('creator').textContent : null,
+      creator: item.querySelector('creator') && item.querySelector('creator').textContent,
       pubDate: retrieveFromItem('pubDate'),
     };
   }).toArray();

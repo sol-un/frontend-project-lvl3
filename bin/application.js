@@ -9,6 +9,8 @@ import process from './parser.js';
 import render from './renderer.js';
 import validate from './validator.js';
 
+const savedState = JSON.parse(localStorage.getItem('SJRssPageState'));
+
 const updateState = (data, contents, watchedState) => {
   _.set(watchedState, 'blacklist', [...watchedState.blacklist, watchedState.link]);
   _.set(watchedState, 'link', '');
@@ -21,7 +23,7 @@ export default () => i18next.init({
   lng: 'en',
   resources: { en, ru, es },
 }).then((t) => {
-  const state = JSON.parse(localStorage.getItem('state')) || {
+  const state = savedState || {
     activeChannelId: null,
     link: '',
     linkStatus: null,
@@ -33,7 +35,7 @@ export default () => i18next.init({
   };
 
   const watchedState = onChange(state, (path) => {
-    localStorage.setItem('state', JSON.stringify(state));
+    localStorage.setItem('SJRssPageState', JSON.stringify(state));
     if (path === 'locale') {
       i18next.changeLanguage(state.locale);
       render(watchedState, t);
@@ -79,7 +81,7 @@ export default () => i18next.init({
   });
 
   $('#deleteAllButton').on('click', () => {
-    localStorage.clear();
+    localStorage.setItem('SJRssPageState', null);
     window.location.reload();
   });
 

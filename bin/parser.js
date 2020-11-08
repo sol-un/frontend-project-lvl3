@@ -33,10 +33,10 @@ const parse = (xml) => {
   return [data, contents];
 };
 
-export default (link) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
+export default (link, t) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
   .then(({ data }) => {
     if (data.status.http_code !== 200) {
-      throw new Error('Network error!');
+      throw new Error('network');
     }
     return parse(data.contents);
   });

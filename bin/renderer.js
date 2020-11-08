@@ -116,15 +116,16 @@ export default (state, t) => {
   } = state;
 
   if (channels.length === 0) {
-    return $mount.html('<div class="mt-4 text-center"><i>No channels have been added yet...</i></div>');
+    return $mount.html(`<div class="mt-4 text-center"><i>${t('noChannels')}</i></div>`);
   }
 
   $('input').val(link);
 
   if (error) {
     $('.feedback')
-      .html(`<div class="alert alert-danger" role="alert">${error}</div>`)
+      .html(`<div class="alert alert-danger" role="alert">${t(`errors.${error}`)} (${t('removeError')})</div>`)
       .fadeIn(100);
+    $('.feedback').on('click', (e) => $(e.target).remove());
   } else {
     $('.feedback').empty()
       .fadeOut(100);

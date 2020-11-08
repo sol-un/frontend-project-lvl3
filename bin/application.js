@@ -49,7 +49,7 @@ export default () => i18next.init({
   $('#channelLinkForm').on('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    process(formData.get('link'))
+    process(formData.get('link'), t)
       .then(([data, contents]) => updateState(data, contents, watchedState))
       .catch(({ message }) => _.set(watchedState, 'error', message));
   });
@@ -61,8 +61,8 @@ export default () => i18next.init({
     let message;
 
     const errorMessageDispatcher = {
-      url: 'The link is wrong or unsupported format!',
-      notOneOf: 'You\'ve already added this channel!',
+      url: 'url',
+      notOneOf: 'notOneOf',
     };
 
     validate(link, blacklist)

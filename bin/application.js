@@ -14,7 +14,7 @@ const updateState = (data, contents, watchedState) => {
 };
 
 export default () => {
-  const state = {
+  const state = JSON.parse(localStorage.getItem('state')) || {
     activeChannelId: null,
     link: '',
     linkStatus: null,
@@ -25,6 +25,7 @@ export default () => {
   };
 
   const watchedState = onChange(state, (path) => {
+    localStorage.setItem('state', JSON.stringify(state));
     if (path !== 'link') {
       render(watchedState);
     }
@@ -67,6 +68,11 @@ export default () => {
         _.set(watchedState, 'linkStatus', linkStatus);
         _.set(watchedState, 'error', message);
       });
+  });
+
+  $('#deleteButton').on('click', () => {
+    localStorage.clear();
+    window.location.reload();
   });
 
   render(state);

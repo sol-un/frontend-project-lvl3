@@ -1,15 +1,16 @@
 import onChange from 'on-change';
 import $ from 'jquery';
+import _ from 'lodash';
 import process from './parser.js';
 import render from './renderer.js';
 import validate from './validator.js';
 
 const updateState = (data, contents, watchedState) => {
-  Object.assign(watchedState, { blacklist: [...watchedState.blacklist, watchedState.link] });
-  Object.assign(watchedState, { link: '' });
-  Object.assign(watchedState, { activeChannelId: data.id });
-  Object.assign(watchedState, { channels: [...watchedState.channels, data] });
-  Object.assign(watchedState, { articles: [...watchedState.articles, ...contents] });
+  _.set(watchedState, 'blacklist', [...watchedState.blacklist, watchedState.link]);
+  _.set(watchedState, 'link', '');
+  _.set(watchedState, 'activeChannelId', data.id);
+  _.set(watchedState, 'channels', [...watchedState.channels, data]);
+  _.set(watchedState, 'articles', [...watchedState.articles, ...contents]);
 };
 
 export default () => {
@@ -62,9 +63,9 @@ export default () => {
           linkStatus = 'invalid';
         }
 
-        Object.assign(watchedState, { link });
-        Object.assign(watchedState, { linkStatus });
-        Object.assign(watchedState, { error });
+        _.set(watchedState, 'link', link);
+        _.set(watchedState, 'linkStatus', linkStatus);
+        _.set(watchedState, 'error', message);
       });
   });
 

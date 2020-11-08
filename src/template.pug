@@ -29,21 +29,27 @@ nav.navbar.navbar-expand-md.navbar-dark.fixed-top.bg-dark
   #navbarsExampleDefault.collapse.navbar-collapse
     .mr-auto
     ul.navbar-nav
+        li.nav-item.dropdown
+          a(href="http://example.com" id="languageDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false").nav-link.dropdown-toggle &#127758;
+          div(aria-labelledby="languageDropdown").dropdown-menu
+            a(href='#').dropdown-item EN
+            a(href='#').dropdown-item RU
+            a(href='#').dropdown-item ES
+    ul.navbar-nav
       li
-        #deleteButton.btn.btn-outline-primary Delete all
+        #deleteAllButton.btn.btn-outline-primary
 main(role='main')
   .jumbotron
     .container
       .row
         .col.text-center
-            h1.lead.display-4 Ever tried RSS?
-            .lead
-              | If you haven't, why not try it now? It's free! To follow the latest and greatest from your favorite influencers and websites, find an #[a(href="https://www.lifewire.com/what-is-an-rss-feed-4684568") RSS feed] you're interested in, paste the link below, and push #[i Add channel]:
+            h1#header.lead.display-4
+            #pitch.lead
     .container
       .row
         .col.text-center
           .feedback.mt-3.mb-0
           form#channelLinkForm
             input(type="text" name="link").form-control.my-3
-            button(type="submit").btn.btn-lg.btn-primary.mt-0.mb-3 Add channel
+            button(type="submit")#addButton.btn.btn-lg.btn-primary.mt-0.mb-3
     .container#channelNav

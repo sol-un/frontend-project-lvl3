@@ -1,5 +1,12 @@
 import $ from 'jquery';
 
+const renderStrings = (t) => {
+  $('#deleteAllButton').text(t('deleteAllButton'));
+  $('#header').text(t('header'));
+  $('#pitch').html(t('pitch'));
+  $('#addButton').text(t('addButton'));
+};
+
 const renderActiveChannel = (id) => {
   $('.nav-link').each((_i, el) => $(el).removeClass('active'));
   $(`a[data-id="${id}"]`).addClass('active');
@@ -9,7 +16,7 @@ const renderActiveChannel = (id) => {
 
 const renderCard = ({
   title, description, link, creator, pubDate,
-}) => {
+}, t) => {
   const card = document.createElement('div');
   $(card).addClass('card');
 
@@ -29,7 +36,7 @@ const renderCard = ({
     $(cardSubtitle).addClass('card-subtitle')
       .addClass('mb-3')
       .addClass('text-muted')
-      .text(`by ${creator}`)
+      .text(`${t('creator')} ${creator}`)
       .appendTo(cardBody);
   }
 
@@ -44,12 +51,12 @@ const renderCard = ({
 
   if (pubDate) {
     $(cardData)
-      .append(`<div><i>Published on ${new Date(pubDate).toLocaleDateString()}</i></div>`);
+      .append(`<div><i>${t('pubDate')} ${new Date(pubDate).toLocaleDateString()}</i></div>`);
   }
 
   if (link) {
     $(cardData)
-      .append('<b>Source: </b>')
+      .append(`<b>${t('link')} </b>`)
       .append(`<a href="${link}" target="_blank">${link}</a>`)
       .appendTo(cardBody);
   }
@@ -57,7 +64,7 @@ const renderCard = ({
   return card;
 };
 
-const renderContents = (item, articles) => {
+const renderContents = (item, articles, t) => {
   const filteredArticles = articles.filter(({ id }) => id === item.id);
   const div = document.createElement('div');
   $(div)
@@ -66,7 +73,7 @@ const renderContents = (item, articles) => {
     .appendTo($('.tab-content'));
 
   filteredArticles.reduce((acc, article) => {
-    const card = renderCard(article);
+    const card = renderCard(article, t);
     acc.append(card);
     return acc;
   }, $(div));
@@ -96,7 +103,8 @@ const renderTab = (acc, { id, title }, state) => {
   return li;
 };
 
-export default (state) => {
+export default (state, t) => {
+  renderStrings(t);
   const $mount = $('#channelNav');
   const {
     activeChannelId,
@@ -154,7 +162,7 @@ export default (state) => {
 
   channels.reduce((acc, item) => {
     const tab = renderTab(acc, item, state);
-    renderContents(item, articles);
+    renderContents(item, articles, t);
 
     acc.append(tab);
     return acc;

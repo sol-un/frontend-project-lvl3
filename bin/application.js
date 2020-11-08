@@ -1,6 +1,10 @@
 import onChange from 'on-change';
 import $ from 'jquery';
 import _ from 'lodash';
+import i18next from 'i18next';
+import en from '../locales/en.js';
+import ru from '../locales/ru.js';
+import es from '../locales/es.js';
 import process from './parser.js';
 import render from './renderer.js';
 import validate from './validator.js';
@@ -13,7 +17,10 @@ const updateState = (data, contents, watchedState) => {
   _.set(watchedState, 'articles', [...watchedState.articles, ...contents]);
 };
 
-export default () => {
+export default () => i18next.init({
+  lng: 'en',
+  resources: { en, ru, es },
+}).then((t) => {
   const state = JSON.parse(localStorage.getItem('state')) || {
     activeChannelId: null,
     link: '',
@@ -22,12 +29,17 @@ export default () => {
     channels: [],
     articles: [],
     error: null,
+    locale: null,
   };
 
   const watchedState = onChange(state, (path) => {
     localStorage.setItem('state', JSON.stringify(state));
+    if (path === 'locale') {
+      i18next.changeLanguage(state.locale);
+      render(watchedState, t);
+    }
     if (path !== 'link') {
-      render(watchedState);
+      render(watchedState, t);
     }
   });
 
@@ -66,10 +78,19 @@ export default () => {
       });
   });
 
-  $('#deleteButton').on('click', () => {
+  $('#deleteAllButton').on('click', () => {
     localStorage.clear();
     window.location.reload();
   });
 
-  render(state);
-};
+  const links = $('#languageDropdown')
+    .next()
+    .find('a');
+  $(links).each((_i, item) => $(item).on('click', (e) => {
+    e.preventDefault();
+    const locale = e.target.innerText.toLowerCase();
+    _.set(watchedState, 'locale', locale);
+  }));
+
+  render(state, t);
+});

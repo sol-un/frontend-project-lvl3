@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import _ from 'lodash';
 
 const renderStrings = (t) => {
   $('#deleteAllButton').text(t('deleteAllButton'));
@@ -96,7 +97,7 @@ const renderTab = (acc, { id, title }, state) => {
     .on('click', (e) => {
       e.preventDefault();
       const activeChannelId = $(e.target).attr('data-id');
-      Object.assign(state, { activeChannelId });
+      _.set(state, 'activeChannelId', activeChannelId);
     })
     .appendTo(li);
 

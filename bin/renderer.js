@@ -124,11 +124,31 @@ export default (state, t) => {
 
   if (error) {
     $('.feedback')
-      .html(`<div class="alert alert-danger" role="alert">${t(`errors.${error}`)} (${t('removeError')})</div>`)
+      .empty();
+
+    const alert = document.createElement('div');
+    $(alert)
+      .addClass('alert alert-danger alert-dismissible fade show')
+      .text(t(`errors.${error}`))
+      .appendTo($('.feedback'));
+
+    const button = document.createElement('button');
+    $(button)
+      .addClass('close')
+      .attr('type', 'button')
+      .attr('data-dismiss', 'alert')
+      .appendTo($(alert));
+
+    const span = document.createElement('span');
+    $(span)
+      .html('&times;')
+      .appendTo($(button));
+    $('.feedback')
       .fadeIn(100);
-    $('.feedback').on('click', (e) => $(e.target).remove());
+
+    $(span).on('click', () => _.set(state, 'error', null));
   } else {
-    $('.feedback').empty()
+    $('.feedback')
       .fadeOut(100);
   }
 

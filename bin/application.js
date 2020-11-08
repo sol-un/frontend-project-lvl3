@@ -20,7 +20,8 @@ const updateState = (data, contents, watchedState) => {
 };
 
 export default () => i18next.init({
-  lng: 'en',
+  lng: savedState && savedState.locale,
+  fallbackLng: 'en',
   resources: { en, ru, es },
 }).then((t) => {
   const state = savedState || {
@@ -37,7 +38,7 @@ export default () => i18next.init({
   const watchedState = onChange(state, (path) => {
     localStorage.setItem('SJRssPageState', JSON.stringify(state));
     if (path === 'locale') {
-      i18next.changeLanguage(state.locale);
+      i18next.changeLanguage(watchedState.locale);
       render(watchedState, t);
     }
     if (path !== 'link') {

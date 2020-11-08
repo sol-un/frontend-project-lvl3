@@ -35,21 +35,24 @@ const renderCard = ({
 
   const cardDescription = document.createElement('p');
   $(cardDescription)
-    .text(description)
+    .html(description)
+    .appendTo(cardBody);
+
+  const cardData = document.createElement('div');
+  $(cardData)
     .appendTo(cardBody);
 
   if (pubDate) {
-    const cardDate = document.createElement('p');
-    $(cardDate)
-      .append(`<i>Published on ${new Date(pubDate).toLocaleDateString()}</i>`)
-      .appendTo(cardBody);
+    $(cardData)
+      .append(`<div><i>Published on ${new Date(pubDate).toLocaleDateString()}</i></div>`);
   }
 
-  const cardLink = document.createElement('a');
-  $(cardLink)
-    .attr('href', link)
-    .text('View full article...')
-    .appendTo(cardBody);
+  if (link) {
+    $(cardData)
+      .append('<b>Source: </b>')
+      .append(`<a href="${link}">${link}</a>`)
+      .appendTo(cardBody);
+  }
 
   return card;
 };
@@ -104,13 +107,19 @@ export default (state) => {
     error,
   } = state;
 
+  if (channels.length === 0) {
+    return $mount.html('<div class="mt-4 text-center"><i>No channels have been added yet...</i></div>');
+  }
+
   $('input').val(link);
 
   if (error) {
     $('.feedback')
-      .html(`<div class="alert alert-danger" role="alert">${error}</div>`);
+      .html(`<div class="alert alert-danger" role="alert">${error}</div>`)
+      .fadeIn(100);
   } else {
-    $('.feedback').empty();
+    $('.feedback').empty()
+      .fadeOut(100);
   }
 
   switch (linkStatus) {
@@ -130,16 +139,12 @@ export default (state) => {
       // nothing
   }
 
-  if (channels.length === 0) {
-    return $mount.html('<div class="mt-4 text-center"><i>No channels have been added yet...</i></div>');
-  }
-
   $mount.empty();
 
   const ul = document.createElement('ul');
   $(ul)
     .attr('id', 'myTab')
-    .addClass('nav nav-tabs')
+    .addClass('nav nav-pills')
     .appendTo($mount);
 
   const div = document.createElement('div');

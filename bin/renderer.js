@@ -50,7 +50,7 @@ const renderCard = ({
   if (link) {
     $(cardData)
       .append('<b>Source: </b>')
-      .append(`<a href="${link}">${link}</a>`)
+      .append(`<a href="${link}" target="_blank">${link}</a>`)
       .appendTo(cardBody);
   }
 

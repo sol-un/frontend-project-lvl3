@@ -1,24 +1,24 @@
 import axios from 'axios';
 import _ from 'lodash';
+import $ from 'jquery';
 
-const retrieveText = (element) => (tagName) => (element.querySelector(tagName)
-  ? element.querySelector(tagName).textContent
-  : null);
+const retrieveText = (node) => (selector) => $(node).find(selector).text();
 
 const parse = (xml) => {
   const id = _.uniqueId();
-  const parser = new DOMParser();
-  const document = parser.parseFromString(xml, 'application/xml');
-  const channel = document.querySelector('channel');
-  const retrieveFromChannel = retrieveText(channel);
+  const document = $.parseXML(xml);
+  const xmlDoc = $(document);
+  const retrieveFromDoc = retrieveText(xmlDoc);
+
   const data = {
     id,
-    title: retrieveFromChannel('title'),
-    description: retrieveFromChannel('description'),
-    link: retrieveFromChannel('link'),
+    title: retrieveFromDoc('channel > title'),
+    description: retrieveFromDoc('channel > description'),
+    link: retrieveFromDoc('channel > link'),
   };
-  const items = Array.from(channel.querySelectorAll('item'));
-  const contents = items.map((item) => {
+
+  const items = xmlDoc.find('item');
+  const contents = $(items).map((_i, item) => {
     const retrieveFromItem = retrieveText(item);
     return {
       id,
@@ -28,7 +28,8 @@ const parse = (xml) => {
       creator: retrieveFromItem('creator'),
       pubDate: retrieveFromItem('pubDate'),
     };
-  });
+  }).toArray();
+
   return [data, contents];
 };
 

@@ -8,11 +8,11 @@ const renderStrings = (t) => {
   $('#addButton').text(t('addButton'));
 };
 
-const renderActiveChannel = (id) => {
+const renderActiveChannel = (url) => {
   $('.nav-link').each((_i, el) => $(el).removeClass('active'));
-  $(`a[data-id="${id}"]`).addClass('active');
+  $(`a[data-url="${url}"]`).addClass('active');
   $('.tab-pane').each((_i, el) => $(el).removeClass('active'));
-  $(`div[data-id="${id}"]`).addClass('active');
+  $(`div[data-url="${url}"]`).addClass('active');
 };
 
 const renderCard = ({
@@ -66,10 +66,10 @@ const renderCard = ({
 };
 
 const renderContents = (item, articles, t) => {
-  const filteredArticles = articles.filter(({ id }) => id === item.id);
+  const filteredArticles = articles.filter(({ url }) => url === item.url);
   const div = document.createElement('div');
   $(div)
-    .attr('data-id', item.id)
+    .attr('data-url', item.url)
     .addClass('tab-pane')
     .appendTo($('.tab-content'));
 
@@ -82,7 +82,7 @@ const renderContents = (item, articles, t) => {
   return div;
 };
 
-const renderTab = (acc, { id, title }, state) => {
+const renderTab = (acc, { url, title }, state) => {
   const li = document.createElement('li');
   $(li)
     .addClass('nav-item')
@@ -91,13 +91,13 @@ const renderTab = (acc, { id, title }, state) => {
   const a = document.createElement('a');
   $(a).addClass('nav-link')
     .attr('data-toggle', 'tab')
-    .attr('data-id', id)
+    .attr('data-url', url)
     .attr('href', '#')
     .text(title)
     .on('click', (e) => {
       e.preventDefault();
-      const activeChannelId = $(e.target).attr('data-id');
-      _.set(state, 'activeChannelId', activeChannelId);
+      const activeChannelUrl = $(e.target).attr('data-url');
+      _.set(state, 'activeChannelUrl', activeChannelUrl);
     })
     .appendTo(li);
 
@@ -108,7 +108,7 @@ export default (state, t) => {
   renderStrings(t);
 
   const {
-    activeChannelId,
+    activeChannelUrl,
     link,
     linkStatus,
     channels,
@@ -191,5 +191,5 @@ export default (state, t) => {
     return acc;
   }, $(ul));
 
-  return renderActiveChannel(activeChannelId);
+  return renderActiveChannel(activeChannelUrl);
 };

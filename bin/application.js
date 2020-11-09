@@ -13,7 +13,8 @@ const savedState = JSON.parse(localStorage.getItem('SJRssPageState'));
 
 const inputValueHandle = (e, watchedState) => {
   const link = $(e.target).val();
-  const { blacklist } = watchedState;
+  const { channels } = watchedState;
+  const blacklist = channels.map(({ url }) => url);
   let linkStatus;
   let message;
 
@@ -39,9 +40,8 @@ const inputValueHandle = (e, watchedState) => {
 };
 
 const updateState = (data, contents, watchedState) => {
-  _.set(watchedState, 'blacklist', [...watchedState.blacklist, watchedState.link]);
   _.set(watchedState, 'link', '');
-  _.set(watchedState, 'activeChannelId', data.id);
+  _.set(watchedState, 'activeChannelUrl', data.url);
   _.set(watchedState, 'channels', [...watchedState.channels, data]);
   _.set(watchedState, 'articles', [...watchedState.articles, ...contents]);
 };
@@ -52,10 +52,9 @@ export default () => i18next.init({
   resources: { en, ru, es },
 }).then((t) => {
   const state = savedState || {
-    activeChannelId: null,
+    activeChannelUrl: null,
     link: '',
     linkStatus: null,
-    blacklist: [],
     channels: [],
     articles: [],
     error: null,
@@ -76,7 +75,7 @@ export default () => i18next.init({
   $('#addChannelForm').on('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    process(formData.get('link'), t)
+    process(formData.get('link'))
       .then(([data, contents]) => updateState(data, contents, watchedState))
       .catch(({ message }) => _.set(watchedState, 'error', message));
   });

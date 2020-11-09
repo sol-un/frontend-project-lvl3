@@ -1,27 +1,24 @@
 import axios from 'axios';
-import _ from 'lodash';
 import $ from 'jquery';
 
 const retrieveText = (node) => (selector) => $(node).find(selector).text();
 
-const parse = (xml) => {
-  const id = _.uniqueId();
+const parse = (xml, url) => {
   const document = $.parseXML(xml);
   const xmlDoc = $(document);
   const retrieveFromDoc = retrieveText(xmlDoc);
 
   const data = {
-    id,
     title: retrieveFromDoc('channel > title'),
     description: retrieveFromDoc('channel > description'),
-    link: retrieveFromDoc('channel > link'),
+    url,
   };
 
   const items = xmlDoc.find('item');
   const contents = $(items).map((_i, item) => {
     const retrieveFromItem = retrieveText(item);
     return {
-      id,
+      url,
       title: retrieveFromItem('title'),
       description: retrieveFromItem('description'),
       link: retrieveFromItem('link'),
@@ -33,10 +30,10 @@ const parse = (xml) => {
   return [data, contents];
 };
 
-export default (link, t) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
+export default (link) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
   .then(({ data }) => {
     if (data.status.http_code !== 200) {
       throw new Error('network');
     }
-    return parse(data.contents);
+    return parse(data.contents, link);
   });

@@ -10,7 +10,7 @@ export default {
     errors: {
       network: '¡Error de conexión!',
       url: '¡El link es erróneo o de formato no soportado!',
-      notOneOf: '¡Ya tiene añadido este fuente!',
+      notOneOf: '¡Ya tiene añadida esta fuente!',
     },
     noChannels: 'No hay fuentes añadidas...',
     removeError: 'click para cerrar',

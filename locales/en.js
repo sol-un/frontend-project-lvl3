@@ -8,7 +8,7 @@ export default {
     pubDate: 'Published on',
     link: 'Source:',
     errors: {
-      network: 'Network error!',
+      network: 'Connection error!',
       url: 'The link is wrong or unsupported format!',
       notOneOf: 'You\'ve already added this channel!',
     },

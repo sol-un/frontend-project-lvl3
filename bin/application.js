@@ -11,6 +11,33 @@ import validate from './validator.js';
 
 const savedState = JSON.parse(localStorage.getItem('SJRssPageState'));
 
+const inputValueHandle = (e, watchedState) => {
+  const link = $(e.target).val();
+  const { blacklist } = watchedState;
+  let linkStatus;
+  let message;
+
+  const errorMessageDispatcher = {
+    url: 'url',
+    notOneOf: 'notOneOf',
+  };
+
+  validate(link, blacklist)
+    .then(({ type }) => {
+      if (!type) {
+        linkStatus = 'valid';
+        message = null;
+      } else {
+        linkStatus = 'invalid';
+        message = errorMessageDispatcher[type];
+      }
+
+      _.set(watchedState, 'link', link);
+      _.set(watchedState, 'linkStatus', linkStatus);
+      _.set(watchedState, 'error', message);
+    });
+};
+
 const updateState = (data, contents, watchedState) => {
   _.set(watchedState, 'blacklist', [...watchedState.blacklist, watchedState.link]);
   _.set(watchedState, 'link', '');
@@ -54,32 +81,8 @@ export default () => i18next.init({
       .catch(({ message }) => _.set(watchedState, 'error', message));
   });
 
-  $('input').on('keyup', (e) => {
-    const link = $(e.target).val();
-    const { blacklist } = state;
-    let linkStatus;
-    let message;
-
-    const errorMessageDispatcher = {
-      url: 'url',
-      notOneOf: 'notOneOf',
-    };
-
-    validate(link, blacklist)
-      .then(({ type }) => {
-        if (!type) {
-          linkStatus = 'valid';
-          message = null;
-        } else {
-          linkStatus = 'invalid';
-          message = errorMessageDispatcher[type];
-        }
-
-        _.set(watchedState, 'link', link);
-        _.set(watchedState, 'linkStatus', linkStatus);
-        _.set(watchedState, 'error', message);
-      });
-  });
+  $('input').on('keyup', (e) => inputValueHandle(e, watchedState));
+  $('input').on('focus', (e) => inputValueHandle(e, watchedState));
 
   $('#deleteAllButton').on('click', () => {
     localStorage.setItem('SJRssPageState', null);
@@ -95,5 +98,5 @@ export default () => i18next.init({
     _.set(watchedState, 'locale', locale);
   }));
 
-  render(state, t);
+  render(watchedState, t);
 });

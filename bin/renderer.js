@@ -106,7 +106,7 @@ const renderTab = (acc, { id, title }, state) => {
 
 export default (state, t) => {
   renderStrings(t);
-  const $mount = $('#channelNav');
+
   const {
     activeChannelId,
     link,
@@ -115,10 +115,6 @@ export default (state, t) => {
     articles,
     error,
   } = state;
-
-  if (channels.length === 0) {
-    return $mount.html(`<div class="mt-4 text-center"><i>${t('noChannels')}</i></div>`);
-  }
 
   $('input').val(link);
 
@@ -166,10 +162,15 @@ export default (state, t) => {
         .attr('disabled', 'disabled');
       break;
     default:
-      // nothing
+          // nothing
   }
 
+  const $mount = $('#channelNav');
   $mount.empty();
+
+  if (channels.length === 0) {
+    return $mount.html(`<div class="mt-4 text-center"><i>${t('noChannels')}</i></div>`);
+  }
 
   const ul = document.createElement('ul');
   $(ul)

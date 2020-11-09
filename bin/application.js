@@ -46,7 +46,7 @@ export default () => i18next.init({
     }
   });
 
-  $('#channelLinkForm').on('submit', (e) => {
+  $('#addChannelForm').on('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     process(formData.get('link'), t)

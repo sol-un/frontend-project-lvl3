@@ -1,55 +1,57 @@
-doctype html
-head
-  meta(charset='utf-8')
-  meta(name='author' content='Mark Otto, Jacob Thornton, and Bootstrap contributors')
-  title frontend-project-lvl3 &middot; Hexlet
-  style.
-    .bd-placeholder-img {
-    font-size: 1.125rem;
-    text-anchor: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    }
-    @media (min-width: 768px) {
-    .bd-placeholder-img-lg {
-    font-size: 3.5rem;
-    }
-    }
-nav.navbar.navbar-expand-md.navbar-dark.fixed-top.bg-dark
-  .navbar-brand
-    .container
-      .row.align-items-center.justify-content-left
-        .col-2.pl-0.pr-2
-          img(src="https://cdn2.iconfinder.com/data/icons/social-icon-3/512/social_style_3_rss-512.png" width="32" height="32")
-        .col-10.pl-0 The RSS Reader Project
-  button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarsExampleDefault' aria-controls='navbarsExampleDefault' aria-expanded='false' aria-label='Toggle navigation')
-    span.navbar-toggler-icon
-  #navbarsExampleDefault.collapse.navbar-collapse
-    .mr-auto
-    ul.navbar-nav
-        li.nav-item.dropdown
-          a(href="http://example.com" id="languageDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false").nav-link.dropdown-toggle &#127758;
-          div(aria-labelledby="languageDropdown").dropdown-menu
-            a(href='#').dropdown-item EN
-            a(href='#').dropdown-item RU
-            a(href='#').dropdown-item ES
-    ul.navbar-nav
-      li
-        #deleteAllButton.btn.btn-outline-primary
-main(role='main')
-  .jumbotron
-    .container
-      .row
-        .col.text-center
-            h1#header.lead.display-4
-            #pitch.lead
-    .container
-      .row
-        .col.text-center
-          .feedback.mt-3.mb-0
-          form#channelLinkForm
-            input(type="text" name="link").form-control.my-3
-            button(type="submit")#addButton.btn.btn-lg.btn-primary.mt-0.mb-3
-    .container#channelNav
+<!DOCTYPE html>
+html
+  head
+    meta(charset='utf-8')
+    meta(name='author' content='Mark Otto, Jacob Thornton, and Bootstrap contributors')
+    title frontend-project-lvl3 &middot; Hexlet
+    style.
+      .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      }
+      @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+      font-size: 3.5rem;
+      }
+      }
+  body
+    nav.navbar.navbar-expand-md.navbar-dark.fixed-top.bg-dark
+      .navbar-brand
+        .container
+          .row.align-items-center.justify-content-left
+            .col-2.pl-0.pr-2
+              img(src="https://cdn2.iconfinder.com/data/icons/social-icon-3/512/social_style_3_rss-512.png" width="32" height="32")
+            .col-10.pl-0 The RSS Reader Project
+      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#myRssNavbar' aria-controls='myRssNavbar' aria-expanded='false' aria-label='Toggle navigation')
+        span.navbar-toggler-icon
+      #myRssNavbar.collapse.navbar-collapse
+        .mr-auto
+        ul.navbar-nav
+            li.nav-item.dropdown
+              a(href="#" id="languageDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false").nav-link.dropdown-toggle &#127758;
+              div(aria-labelledby="languageDropdown").dropdown-menu
+                a(href='#').dropdown-item EN
+                a(href='#').dropdown-item RU
+                a(href='#').dropdown-item ES
+        ul.navbar-nav
+          li
+            #deleteAllButton.btn.btn-outline-primary
+    main(role='main')
+      .jumbotron
+        .container
+          .row
+            .col.text-center
+                h1#header.lead.display-4
+                #pitch.lead
+        .container
+          .row
+            .col.text-center
+              .feedback.mt-3.mb-0
+              form#addChannelForm
+                input(type="text" name="link").form-control.my-3
+                button(type="submit")#addButton.btn.btn-lg.btn-primary.mt-0.mb-3
+        .container#channelNav

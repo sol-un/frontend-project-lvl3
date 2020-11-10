@@ -178,6 +178,10 @@ export default (state, t) => {
       $('button')
         .attr('disabled', 'disabled');
       break;
+    case 'loading':
+      $('button')
+        .attr('disabled', 'disabled');
+      break;
     default:
           // nothing
   }

@@ -54,6 +54,7 @@ const inputValueHandle = (e, watchedState) => {
 
 const updateState = (data, contents, watchedState) => {
   _.set(watchedState, 'link', '');
+  _.set(watchedState, 'linkStatus', 'valid');
   _.set(watchedState, 'activeChannelUrl', data.url);
   _.set(watchedState, 'channels', [...watchedState.channels, data]);
   _.set(watchedState, 'articles', [...watchedState.articles, ...contents]);
@@ -88,16 +89,20 @@ export default () => i18next.init({
     }
   });
 
-  setTimeout((prevState = watchedState) => articlesUpdater(prevState, t), 5 * 1000);
+  setTimeout((prevState = watchedState) => articlesUpdater(prevState, t), 10 * 1000);
 
   $('#addChannelForm').on('submit', (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    process(formData.get('link'))
+    const link = new FormData(e.target).get('link');
+    if (link.length === 0) {
+      return;
+    }
+    process(link)
       .then(([data, contents]) => updateState(data, contents, watchedState))
       .catch(({
         message,
-      }) => _.set(watchedState, 'error', message));
+        _.set(watchedState, 'linkStatus', 'valid');
+    _.set(watchedState, 'linkStatus', 'loading');
   });
 
   $('input').on('keyup', (e) => inputValueHandle(e, watchedState));

@@ -71,7 +71,7 @@ export default () => i18next.init({
     channels: [],
     articles: [],
     error: null,
-    locale: null,
+    locale: i18next.language,
   };
 
   const watchedState = onChange(state, (path) => {

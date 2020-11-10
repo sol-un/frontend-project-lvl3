@@ -1,12 +1,26 @@
 export default {
+  months: {
+    0: 'enero',
+    1: 'febrero',
+    2: 'marzo',
+    3: 'abril',
+    4: 'mayo',
+    5: 'junio',
+    6: 'julio',
+    7: 'agosto',
+    8: 'septiembre',
+    9: 'octubre',
+    10: 'noviembre',
+    11: 'diciembre',
+  },
   translation: {
     deleteAllButton: 'Anular todo',
     header: '¿Ya ha probado RSS?',
     pitch: 'Y si no, ¿porqué no probarlo ahora mismo? ¡Es gratis! Para enterarse sobre las novedades más recientes y destacadas en la web, búsque un <a href="https://metricool.com/es/que-es-feed-rss/" target="_blank">feed RSS</a> que lo interese, pegue el link abajo y oprima <i>Añadir fuente</i>:',
     addButton: 'Añadir fuente',
     creator: 'por',
-    pubDate: 'Publicado el ',
-    link: 'Fuente:',
+    pubDate: 'Publicado a las {{time}} el {{day}} de $t(months:{{month}}) de {{year}}.',
+    link: 'Fuente',
     errors: {
       network: '¡Error de conexión!',
       url: '¡El link es erróneo o de formato no soportado!',

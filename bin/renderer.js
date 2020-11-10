@@ -26,16 +26,15 @@ const renderCard = ({
     .addClass('card-body')
     .appendTo(card);
 
-  const cardTitle = document.createElement('h5');
+  const cardTitle = document.createElement('h4');
   $(cardTitle)
-    .addClass('mb-2')
+    .addClass('card-title')
     .text(title)
     .appendTo(cardBody);
 
   if (creator) {
     const cardSubtitle = document.createElement('h6');
     $(cardSubtitle).addClass('card-subtitle')
-      .addClass('mb-3')
       .addClass('text-muted')
       .text(`${t('creator')} ${creator}`)
       .appendTo(cardBody);
@@ -43,23 +42,30 @@ const renderCard = ({
 
   const cardDescription = document.createElement('p');
   $(cardDescription)
+    .addClass('card-text mt-4')
     .html(description)
     .appendTo(cardBody);
 
-  const cardData = document.createElement('div');
-  $(cardData)
+  const cardFooter = document.createElement('p');
+  $(cardFooter)
+    .addClass('card-text')
     .appendTo(cardBody);
 
   if (pubDate) {
-    $(cardData)
-      .append(`<div><i>${t('pubDate')} ${new Date(pubDate).toLocaleDateString()}</i></div>`);
+    const normalizedDate = new Date(pubDate);
+    const day = normalizedDate.getDate();
+    const month = normalizedDate.getMonth();
+    const year = normalizedDate.getFullYear();
+    const time = `${normalizedDate.getHours()}:${normalizedDate.getMinutes()}`;
+    $(cardFooter)
+      .append(`<div><i class="card-text">${t('pubDate', {
+        time, day, month, year,
+      })}</i></div>`);
   }
 
   if (link) {
-    $(cardData)
-      .append(`<b>${t('link')} </b>`)
-      .append(`<a href="${link}" target="_blank">${link}</a>`)
-      .appendTo(cardBody);
+    $(cardFooter)
+      .append(`<div><b class="card-text">${t('link')}</b>: <a class="card-link" href="${link}" target="_blank">${link}</a></div>`);
   }
 
   return card;
@@ -103,7 +109,7 @@ const renderTab = (acc, { url, title }, state) => {
 
   const span = document.createElement('span');
   $(span)
-    .html(' <b>&times;</b>')
+    .html('<b>&ensp;&times;</b>')
     .appendTo(a);
 
   $(span).on('click', (e) => {

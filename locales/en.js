@@ -1,12 +1,26 @@
 export default {
+  months: {
+    0: 'January',
+    1: 'February',
+    2: 'March',
+    3: 'April',
+    4: 'May',
+    5: 'June',
+    6: 'July',
+    7: 'August',
+    8: 'September',
+    9: 'October',
+    10: 'November',
+    11: 'December',
+  },
   translation: {
     deleteAllButton: 'Reset all',
     header: 'Have you tried RSS?',
     pitch: 'If you haven\'t, why not try it now? It\'s free! To follow the latest and greatest from your favorite influencers and websites, find an <a href="https://www.lifewire.com/what-is-an-rss-feed-4684568" target="_blank">RSS feed</a> you\'re interested in, paste the link below, and push <i>Add channel</i>:',
     addButton: 'Add channel',
     creator: 'by',
-    pubDate: 'Published on',
-    link: 'Source:',
+    pubDate: 'Published at {{time}} on $t(months:{{month}}) {{day}}, {{year}}.',
+    link: 'Source',
     errors: {
       network: 'Connection error!',
       url: 'The link is wrong or unsupported format!',

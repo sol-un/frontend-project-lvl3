@@ -1,3 +1,5 @@
+install:
+	npm ci
 build:
 	@ NODE_ENV=production npm run build
 lint:

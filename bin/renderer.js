@@ -19,7 +19,7 @@ const renderCard = ({
   title, description, link, creator, pubDate,
 }, t) => {
   const card = document.createElement('div');
-  $(card).addClass('card');
+  $(card).addClass('card border-primary');
 
   const cardBody = document.createElement('div');
   $(cardBody)
@@ -91,13 +91,14 @@ const renderContents = (item, articles, t) => {
 };
 
 const renderTab = (acc, { url, title }, state) => {
-  const li = document.createElement('li');
-  $(li)
+  const navItem = document.createElement('div');
+  $(navItem)
     .addClass('nav-item')
     .appendTo(acc);
 
   const a = document.createElement('a');
-  $(a).addClass('nav-link')
+  $(a)
+    .addClass('nav-link')
     .attr('data-toggle', 'tab')
     .attr('data-url', url)
     .attr('href', '#')
@@ -107,11 +108,12 @@ const renderTab = (acc, { url, title }, state) => {
       const activeChannelUrl = $(e.target).attr('data-url');
       _.set(state, 'activeChannelUrl', activeChannelUrl);
     })
-    .appendTo(li);
+    .appendTo(navItem);
 
   const span = document.createElement('span');
   $(span)
-    .html('<b>&ensp;&times;</b>')
+    .addClass('nav-delete')
+    .html('<b>&emsp;&times;</b>')
     .appendTo(a);
 
   $(span).on('click', (e) => {
@@ -126,7 +128,7 @@ const renderTab = (acc, { url, title }, state) => {
     }
   });
 
-  return li;
+  return navItem;
 };
 
 export default (state, t) => {
@@ -204,7 +206,7 @@ export default (state, t) => {
   const ul = document.createElement('ul');
   $(ul)
     .attr('id', 'myTab')
-    .addClass('nav nav-pills')
+    .addClass('nav nav-pills flex-column flex-sm-row')
     .appendTo($mount);
 
   const div = document.createElement('div');

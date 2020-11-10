@@ -56,7 +56,9 @@ const renderCard = ({
     const day = normalizedDate.getDate();
     const month = normalizedDate.getMonth();
     const year = normalizedDate.getFullYear();
-    const time = `${normalizedDate.getHours()}:${normalizedDate.getMinutes()}`;
+    const [digit1, digit2] = normalizedDate.getMinutes().toString();
+    const minutes = digit2 ? `${digit1}${digit2}` : `0${digit1}`;
+    const time = `${normalizedDate.getHours()}:${minutes}`;
     $(cardFooter)
       .append(`<div><i class="card-text">${t('pubDate', {
         time, day, month, year,

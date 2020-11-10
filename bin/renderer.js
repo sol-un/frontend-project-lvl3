@@ -1,6 +1,5 @@
 import $ from 'jquery';
 import _ from 'lodash';
-import onChange from 'on-change';
 
 const renderStrings = (t) => {
   $('#deleteAllButton').text(t('deleteAllButton'));

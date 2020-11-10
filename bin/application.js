@@ -11,6 +11,19 @@ import validate from './validator.js';
 
 const savedState = JSON.parse(localStorage.getItem('SJRssPageState'));
 
+const articlesUpdater = (state, t) => {
+  const {
+    channels,
+  } = onChange.target(state);
+  channels.map(({
+    url,
+  }) => process(url)
+    .then(([, contents]) => _.set(onChange.target(state), 'articles', _.concat(contents, _.filter(onChange.target(state).articles, (o) => o.url !== url))))
+    .catch(() => _.noop()));
+  setTimeout(() => articlesUpdater(state, t), 5 * 1000);
+  render(state, t);
+};
+
 const inputValueHandle = (e, watchedState) => {
   const link = $(e.target).val();
   const { channels } = watchedState;
@@ -72,6 +85,7 @@ export default () => i18next.init({
     }
   });
 
+  setTimeout((prevState = watchedState) => articlesUpdater(prevState, t), 5 * 1000);
   $('#addChannelForm').on('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);

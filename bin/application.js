@@ -89,7 +89,7 @@ export default () => i18next.init({
     }
   });
 
-  setTimeout((prevState = watchedState) => articlesUpdater(prevState, t), 10 * 1000);
+  setTimeout((prevState = watchedState) => articlesUpdater(prevState, t), 5 * 1000);
 
   $('#addChannelForm').on('submit', (e) => {
     e.preventDefault();
@@ -101,7 +101,10 @@ export default () => i18next.init({
       .then(([data, contents]) => updateState(data, contents, watchedState))
       .catch(({
         message,
+      }) => {
+        _.set(watchedState, 'error', message);
         _.set(watchedState, 'linkStatus', 'valid');
+      });
     _.set(watchedState, 'linkStatus', 'loading');
   });
 

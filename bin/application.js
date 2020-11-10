@@ -83,6 +83,9 @@ export default () => i18next.init({
     if (path !== 'link') {
       render(watchedState, t);
     }
+    if (watchedState.channels.length > 0 && !watchedState.activeChannelUrl) {
+      watchedState.activeChannelUrl = watchedState.channels[0].url;
+    }
   });
 
   setTimeout((prevState = watchedState) => articlesUpdater(prevState, t), 5 * 1000);

@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import _ from 'lodash';
+import onChange from 'on-change';
 
 const renderStrings = (t) => {
   $('#deleteAllButton').text(t('deleteAllButton'));
@@ -100,6 +101,23 @@ const renderTab = (acc, { url, title }, state) => {
       _.set(state, 'activeChannelUrl', activeChannelUrl);
     })
     .appendTo(li);
+
+  const span = document.createElement('span');
+  $(span)
+    .html(' <b>&times;</b>')
+    .appendTo(a);
+
+  $(span).on('click', (e) => {
+    e.stopPropagation();
+    const { activeChannelUrl, channels, articles } = state;
+    const urlToDelete = $(e.target).closest('a').attr('data-url');
+
+    _.set(state, 'channels', _.filter(channels, (o) => o.url !== urlToDelete));
+    _.set(state, 'articles', _.filter(articles, (o) => o.url !== urlToDelete));
+    if (urlToDelete === activeChannelUrl) {
+      _.set(state, 'activeChannelUrl', null);
+    }
+  });
 
   return li;
 };

@@ -86,12 +86,15 @@ export default () => i18next.init({
   });
 
   setTimeout((prevState = watchedState) => articlesUpdater(prevState, t), 5 * 1000);
+
   $('#addChannelForm').on('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     process(formData.get('link'))
       .then(([data, contents]) => updateState(data, contents, watchedState))
-      .catch(({ message }) => _.set(watchedState, 'error', message));
+      .catch(({
+        message,
+      }) => _.set(watchedState, 'error', message));
   });
 
   $('input').on('keyup', (e) => inputValueHandle(e, watchedState));

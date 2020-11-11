@@ -15,9 +15,10 @@ export default {
   },
   translation: {
     deleteAllButton: 'Anular todo',
-    header: '¿Ya ha probado RSS?',
-    pitch: 'Y si no, ¿porqué no probarlo ahora mismo? ¡Es gratis! Para enterarse sobre las novedades más recientes y destacadas en la web, búsque un <a href="https://metricool.com/es/que-es-feed-rss/" target="_blank">feed RSS</a> que lo interese, pegue el link abajo y oprima <i>Añadir fuente</i>:',
+    header: '¿Ya has probado RSS?',
+    pitch: 'Y si no, ¿porqué no probarlo ahora mismo? ¡Es gratis! Para enterarse sobre las novedades más recientes y destacadas en la web, búsca un <a data-toggle="collapse" href="#collapseLinks" role="button" aria-expanded="false" aria-controls="collapseExample">feed RSS</a> que te interese, pega el link abajo y oprime <i>Añadir fuente</i>:',
     addButton: 'Añadir fuente',
+    suggestedLink: 'Aquí tienes uno: <u class="user-select-all">http://feeds.bbci.co.uk/mundo/rss.xml</u>',
     creator: 'por',
     pubDate: 'Publicado a las {{time}} el {{day}} de $t(months:{{month}}) de {{year}}.',
     link: 'Fuente',

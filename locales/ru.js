@@ -16,7 +16,8 @@ export default {
   translation: {
     deleteAllButton: 'Сбросить',
     header: 'А вы пользуетесь RSS?',
-    pitch: 'Если еще нет, то попробуйте прямо сейчас! Это бесплатно. Вот как можно оставаться в курсе всех последних новостей, используя RSS: найдите интересующую вас <a href="https://www.calltouch.ru/glossary/rss-sayta/" target="_blank">RSS-ленту</a>, вставьте ссылку на нее в поле ниже и нажмите кнопку <i>Добавить</i>:',
+    pitch: 'Если еще нет, то попробуйте прямо сейчас! Это бесплатно. Вот как можно оставаться в курсе всех последних новостей, используя RSS: найдите интересующую вас <a data-toggle="collapse" href="#collapseLinks" role="button" aria-expanded="false" aria-controls="collapseExample">RSS-ленту</a>, вставьте ссылку на нее в поле ниже и нажмите кнопку <i>Добавить</i>:',
+    suggestedLink: 'Например: <u class="user-select-all">https://ru.hexlet.io/blog.rss</u>',
     addButton: 'Добавить',
     creator: 'Автор: ',
     pubDate: 'Опубликовано в {{time}}, {{day}} $t(months:{{month}}) {{year}} г.',

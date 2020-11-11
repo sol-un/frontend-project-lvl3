@@ -50,10 +50,13 @@ html
         .container
           .row
             .col.text-center
-              .feedback.mt-3.mb-0
+              .feedback.mt-3.mb-3
               form#addChannelForm
                 input(type="text" name="link").form-control.my-3
-                button(type="submit")#addButton.btn.btn-lg.btn-primary.mt-0.mb-3
+                #collapseLinks.collapse
+                  .card.card-body.
+                .button-container
+                  button(type="submit")#addButton.btn.btn-lg.btn-primary.mt-3.mb-3
         .container#channelNav
       footer
         #badge

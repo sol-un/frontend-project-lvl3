@@ -6,6 +6,7 @@ const renderStrings = (t) => {
   $('#header').text(t('header'));
   $('#pitch').html(t('pitch'));
   $('#addButton').text(t('addButton'));
+  $('#collapseLinks > .card').html(t('suggestedLink'));
 };
 
 const renderActiveChannel = (url) => {

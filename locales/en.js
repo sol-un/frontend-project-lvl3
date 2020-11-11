@@ -17,7 +17,7 @@ export default {
     deleteAllButton: 'Reset all',
     header: 'Have you tried RSS?',
     pitch: 'If you haven\'t, why not try it now? It\'s free! To follow the latest and greatest from your favorite influencers and websites, find an <a data-toggle="collapse" href="#collapseLinks" role="button" aria-expanded="false" aria-controls="collapseExample">RSS feed</a> you\'re interested in, paste the link below, and push <i>Add channel</i>:',
-    suggestedLink: 'Try this one: <u class="user-select-all">http://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml#</u>',
+    suggestedLink: 'Try these: <u class="user-select-all">http://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml#</u><u class="user-select-all">https://lifehacker.com/rss</u>',
     addButton: 'Add channel',
     creator: 'by',
     pubDate: 'Published at {{time}} on $t(months:{{month}}) {{day}}, {{year}}.',

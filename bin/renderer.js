@@ -142,7 +142,6 @@ export default (state, t) => {
     articles,
     error,
   } = state;
-
   $('input').val(link);
 
   if (error) {

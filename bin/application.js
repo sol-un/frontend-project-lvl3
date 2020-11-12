@@ -1,5 +1,6 @@
 import onChange from 'on-change';
 import $ from 'jquery';
+import _ from 'lodash';
 import i18next from 'i18next';
 import en from '../locales/en.js';
 import ru from '../locales/ru.js';
@@ -17,20 +18,15 @@ const articlesUpdater = (state, t) => {
   channels.map(({
     url,
   }) => process(url)
-    .then(([, contents]) => {
-      onChange
-        .target(state)
-        .articles = onChange.target(state).articles.filter((o) => o.url !== url).concat(contents);
-    })
-    .catch(() => {}));
+    .then(([, contents]) => _.set(onChange.target(state), 'articles', _.concat(contents, _.filter(onChange.target(state).articles, (o) => o.url !== url))))
+    .catch(() => _.noop()));
   setTimeout(() => articlesUpdater(state, t), 5 * 1000);
   render(state, t);
 };
 
-const inputValueHandle = (e, state) => {
+const inputValueHandle = (e, watchedState) => {
   const link = $(e.target).val();
-  const { channels } = state;
-  const newState = onChange.target(state);
+  const { channels } = watchedState;
   const blacklist = channels.map(({ url }) => url);
   let linkStatus;
   let message;
@@ -50,19 +46,18 @@ const inputValueHandle = (e, state) => {
         message = errorMessageDispatcher[type];
       }
 
-      newState.link = link;
-      newState.linkStatus = linkStatus;
-      newState.error = message;
+      _.set(watchedState, 'link', link);
+      _.set(watchedState, 'linkStatus', linkStatus);
+      _.set(watchedState, 'error', message);
     });
 };
 
-const updateState = (data, contents, state) => {
-  const newState = onChange.target(state);
-  newState.link = '';
-  newState.linkStatus = 'valid';
-  newState.activeChannelUrl = data.url;
-  newState.channels = [...newState.channels, data];
-  newState.articles = [...newState.articles, ...contents];
+const updateState = (data, contents, watchedState) => {
+  _.set(watchedState, 'link', '');
+  _.set(watchedState, 'linkStatus', 'valid');
+  _.set(watchedState, 'activeChannelUrl', data.url);
+  _.set(watchedState, 'channels', [...watchedState.channels, data]);
+  _.set(watchedState, 'articles', [...watchedState.articles, ...contents]);
 };
 
 export default () => i18next.init({
@@ -81,7 +76,6 @@ export default () => i18next.init({
   };
 
   const watchedState = onChange(state, (path) => {
-    console.log(watchedState);
     localStorage.setItem('SJRssPageState', JSON.stringify(state));
     if (path === 'locale') {
       i18next.changeLanguage(watchedState.locale);
@@ -108,10 +102,10 @@ export default () => i18next.init({
       .catch(({
         message,
       }) => {
-        watchedState.error = message;
-        watchedState.linkStatus = 'valid';
+        _.set(watchedState, 'error', message);
+        _.set(watchedState, 'linkStatus', 'valid');
       });
-    watchedState.linkStatus = 'loading';
+    _.set(watchedState, 'linkStatus', 'loading');
   });
 
   $('input').on('keyup', (e) => inputValueHandle(e, watchedState));
@@ -128,7 +122,7 @@ export default () => i18next.init({
   $(links).each((_i, item) => $(item).on('click', (e) => {
     e.preventDefault();
     const locale = e.target.innerText.toLowerCase();
-    watchedState.locale = locale;
+    _.set(watchedState, 'locale', locale);
   }));
 
   render(watchedState, t);

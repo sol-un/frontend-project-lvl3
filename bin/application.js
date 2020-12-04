@@ -71,6 +71,7 @@ export default () => i18next.init({
     linkStatus: null,
     channels: [],
     articles: [],
+    viewed: [],
     error: null,
     locale: i18next.language,
   };

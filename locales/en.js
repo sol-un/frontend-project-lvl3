@@ -20,6 +20,7 @@ export default {
     suggestedLink: 'Try these: <u class="user-select-all">http://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml#</u><u class="user-select-all">https://lifehacker.com/rss</u>',
     addButton: 'Add channel',
     creator: 'by',
+    synopsis: 'Synopsis',
     pubDate: 'Published at {{time}} on $t(months:{{month}}) {{day}}, {{year}}.',
     link: 'Source',
     errors: {

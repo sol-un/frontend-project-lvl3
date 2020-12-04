@@ -18,7 +18,7 @@ const renderActiveChannel = (url) => {
 
 const renderCard = ({
   title, description, link, creator, pubDate,
-}, t) => {
+}, state, t) => {
   const card = document.createElement('div');
   $(card).addClass('card border-primary');
 
@@ -29,7 +29,7 @@ const renderCard = ({
 
   const cardTitle = document.createElement('h4');
   $(cardTitle)
-    .addClass('card-title')
+    .addClass(`card-title font-weight-${state.viewed.includes(link) ? 'normal' : 'bold'}`)
     .text(title)
     .appendTo(cardBody);
 
@@ -41,10 +41,42 @@ const renderCard = ({
       .appendTo(cardBody);
   }
 
-  const cardDescription = document.createElement('p');
-  $(cardDescription)
-    .addClass('card-text mt-4')
-    .html(description)
+  const previewButton = document.createElement('button');
+  $(previewButton)
+    .addClass('btn btn-primary my-3')
+    .attr('type', 'button')
+    .attr('data-toggle', 'modal')
+    .attr('data-target', `#${link}`)
+    .text(t('synopsis'))
+    .on('click', (e) => {
+      e.preventDefault();
+      state.viewed.push(link);
+    })
+    .appendTo(cardBody);
+
+  const modal = document.createElement('div');
+  $(modal)
+    .addClass('modal fade')
+    .attr('id', link)
+    .attr('tabindex', '-1')
+    .attr('role', 'dialog')
+    .attr('aria-labelledby', 'synopsisModal')
+    .attr('aria-hidden', 'true')
+    .html(
+      `<div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="synopsisModal">${title}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            ${description}
+          </div>
+        </div>
+      </div>`,
+    )
     .appendTo(cardBody);
 
   const cardFooter = document.createElement('p');
@@ -74,7 +106,7 @@ const renderCard = ({
   return card;
 };
 
-const renderContents = (item, articles, t) => {
+const renderContents = (item, articles, state, t) => {
   const filteredArticles = articles.filter(({ url }) => url === item.url);
   const div = document.createElement('div');
   $(div)
@@ -83,7 +115,7 @@ const renderContents = (item, articles, t) => {
     .appendTo($('.tab-content'));
 
   filteredArticles.reduce((acc, article) => {
-    const card = renderCard(article, t);
+    const card = renderCard(article, state, t);
     acc.append(card);
     return acc;
   }, $(div));
@@ -92,7 +124,7 @@ const renderContents = (item, articles, t) => {
 };
 
 const renderTab = (acc, { url, title }, state) => {
-  const navItem = document.createElement('div');
+  const navItem = document.createElement('li');
   $(navItem)
     .addClass('nav-item')
     .appendTo(acc);
@@ -216,7 +248,7 @@ export default (state, t) => {
 
   channels.reduce((acc, item) => {
     const tab = renderTab(acc, item, state);
-    renderContents(item, articles, t);
+    renderContents(item, articles, state, t);
 
     acc.append(tab);
     return acc;

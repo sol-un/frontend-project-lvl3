@@ -20,6 +20,7 @@ export default {
     suggestedLink: 'Например: <u class="user-select-all">https://ru.hexlet.io/blog.rss</u><u class="user-select-all">https://www.liga.net/news/sport/rss.xml</u>',
     addButton: 'Добавить',
     creator: 'Автор: ',
+    synopsis: 'Описание',
     pubDate: 'Опубликовано в {{time}}, {{day}} $t(months:{{month}}) {{year}} г.',
     link: 'Источник',
     errors: {

@@ -32,7 +32,7 @@ const parse = (xml, url) => {
 
 export default (link) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
   .then(({ data }) => {
-    if (!data?.contents.includes('<?xml')) {
+    if (data && !data.contents.includes('<?xml')) {
       throw new Error('url');
     }
     if (data.status.http_code !== 200) {

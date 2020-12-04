@@ -61,11 +61,11 @@ const updateState = (data, contents, watchedState) => {
 };
 
 export default () => i18next.init({
-  lng: savedState?.locale,
+  lng: savedState && savedState.locale,
   fallbackLng: 'en',
   resources: { en, ru, es },
 }).then((t) => {
-  const state = savedState ?? {
+  const state = savedState || {
     activeChannelUrl: null,
     link: '',
     linkStatus: null,

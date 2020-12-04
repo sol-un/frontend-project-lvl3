@@ -1,4 +1,4 @@
-import parser from '../bin/parser.js';
+import parser from '../src/parser.js';
 
 describe('Parser: normal operation', () => {
   it('Should handle test feed', async () => {

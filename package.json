@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/sol-un/frontend-project-lvl3#readme",
   "engines": {
-    "node": "15.x"
+    "node": "12.x"
   },
   "dependencies": {
     "axios": "^0.21.0",

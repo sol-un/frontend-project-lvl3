@@ -18,6 +18,9 @@
     "url": "https://github.com/sol-un/frontend-project-lvl3/issues"
   },
   "homepage": "https://github.com/sol-un/frontend-project-lvl3#readme",
+  "engines": {
+    "node": "15.x"
+  },
   "dependencies": {
     "axios": "^0.21.0",
     "babel-eslint": "^10.1.0",

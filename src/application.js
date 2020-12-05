@@ -16,7 +16,6 @@ const articlesUpdater = (state, t) => {
     setTimeout(() => articlesUpdater(state, t), 5 * 1000);
     return;
   }
-  console.log('Updated!');
   const {
     channels,
   } = onChange.target(state);

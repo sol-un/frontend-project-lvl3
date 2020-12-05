@@ -20,7 +20,7 @@ export default {
     addButton: 'Añadir fuente',
     suggestedLink: 'Aquí tienes unos: <u class="user-select-all">http://feeds.bbci.co.uk/mundo/rss.xml</u><u class="user-select-all">https://josefacchin.com/feed/</u>',
     creator: 'por',
-    synopsis: 'Sinopsis',
+    synopsis: 'Vista previa',
     pubDate: 'Publicado a las {{time}} el {{day}} de $t(months:{{month}}) de {{year}}.',
     link: 'Fuente',
     errors: {

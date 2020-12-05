@@ -49,9 +49,6 @@ const renderCard = ({
     .attr('data-target', `#${id}`)
     .text(t('synopsis'))
     .on('click', () => {
-      // const modalWindow = document.getElementById(link);
-      // console.log(modalWindow);
-      // $(modalWindow).modal('show');
       state.viewed.push(link);
     })
     .appendTo(cardBody);

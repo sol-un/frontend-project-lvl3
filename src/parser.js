@@ -1,5 +1,6 @@
 import axios from 'axios';
 import $ from 'jquery';
+import _ from 'lodash';
 
 const retrieveText = (node) => (selector) => $(node).find(selector).text();
 
@@ -17,13 +18,16 @@ const parse = (xml, url) => {
   const items = xmlDoc.find('item');
   const contents = $(items).map((_i, item) => {
     const retrieveFromItem = retrieveText(item);
+    const title = retrieveFromItem('title');
+    const pubDate = retrieveFromItem('pubDate');
     return {
       url,
-      title: retrieveFromItem('title'),
+      id: `${_.kebabCase(title)}-${Date.parse(new Date(pubDate))}`,
+      title,
       description: retrieveFromItem('description'),
       link: retrieveFromItem('link'),
       creator: item.querySelector('creator')?.textContent,
-      pubDate: retrieveFromItem('pubDate'),
+      pubDate,
     };
   }).toArray();
 

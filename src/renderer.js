@@ -17,7 +17,7 @@ const renderActiveChannel = (url) => {
 };
 
 const renderCard = ({
-  title, description, link, creator, pubDate,
+  id, title, description, link, creator, pubDate,
 }, state, t) => {
   const card = document.createElement('div');
   $(card).addClass('card border-primary');
@@ -46,10 +46,12 @@ const renderCard = ({
     .addClass('btn btn-primary my-3')
     .attr('type', 'button')
     .attr('data-toggle', 'modal')
-    .attr('data-target', `#${link}`)
+    .attr('data-target', `#${id}`)
     .text(t('synopsis'))
-    .on('click', (e) => {
-      e.preventDefault();
+    .on('click', () => {
+      // const modalWindow = document.getElementById(link);
+      // console.log(modalWindow);
+      // $(modalWindow).modal('show');
       state.viewed.push(link);
     })
     .appendTo(cardBody);
@@ -57,7 +59,7 @@ const renderCard = ({
   const modal = document.createElement('div');
   $(modal)
     .addClass('modal fade')
-    .attr('id', link)
+    .attr('id', id)
     .attr('tabindex', '-1')
     .attr('role', 'dialog')
     .attr('aria-labelledby', 'synopsisModal')

@@ -12,6 +12,11 @@ import validate from './validator.js';
 const savedState = JSON.parse(localStorage.getItem('SJRssPageState'));
 
 const articlesUpdater = (state, t) => {
+  if ($(document.body).hasClass('modal-open')) {
+    setTimeout(() => articlesUpdater(state, t), 5 * 1000);
+    return;
+  }
+  console.log('Updated!');
   const {
     channels,
   } = onChange.target(state);

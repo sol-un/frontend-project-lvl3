@@ -9,9 +9,9 @@ import process from './parser.js';
 import render from './renderer.js';
 import validate from './validator.js';
 
-const articlesUpdater = (state, t) => {
+const articlesUpdater = (state) => {
   if ($(document.body).hasClass('modal-open')) {
-    setTimeout(() => articlesUpdater(state, t), 5 * 1000);
+    setTimeout(() => articlesUpdater(state), 5 * 1000);
     return;
   }
   const {
@@ -22,8 +22,7 @@ const articlesUpdater = (state, t) => {
   }) => process(url)
     .then(([, contents]) => _.set(onChange.target(state), 'articles', _.concat(contents, _.filter(onChange.target(state).articles, (o) => o.url !== url))))
     .catch(() => _.noop()));
-  setTimeout(() => articlesUpdater(state, t), 5 * 1000);
-  render(state, t);
+  setTimeout(() => articlesUpdater(state), 5 * 1000);
 };
 
 const inputValueHandle = (e, watchedState) => {
@@ -65,7 +64,7 @@ const updateState = (data, contents, watchedState) => {
 export default () => i18next.init({
   lng: 'en',
   resources: { en, ru, es },
-}).then((t) => {
+}).then(() => {
   const state = {
     activeChannelUrl: null,
     link: '',
@@ -80,17 +79,17 @@ export default () => i18next.init({
   const watchedState = onChange(state, (path) => {
     if (path === 'locale') {
       i18next.changeLanguage(watchedState.locale);
-      render(watchedState, t);
+      render(watchedState);
     }
     if (path !== 'link') {
-      render(watchedState, t);
+      render(watchedState);
     }
     if (watchedState.channels.length > 0 && !watchedState.activeChannelUrl) {
       watchedState.activeChannelUrl = watchedState.channels[0].url;
     }
   });
 
-  setTimeout((prevState = watchedState) => articlesUpdater(prevState, t), 5 * 1000);
+  setTimeout((prevState = watchedState) => articlesUpdater(prevState), 5 * 1000);
 
   $('#addChannelForm').on('submit', (e) => {
     e.preventDefault();
@@ -120,6 +119,5 @@ export default () => i18next.init({
     const locale = e.target.innerText.toLowerCase();
     _.set(watchedState, 'locale', locale);
   }));
-
-  render(watchedState, t);
+  render(watchedState);
 });

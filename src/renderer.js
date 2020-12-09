@@ -1,7 +1,10 @@
 import $ from 'jquery';
 import _ from 'lodash';
+import i18next from 'i18next';
 
-const renderStrings = (t) => {
+const t = (key, data) => i18next.t(key, data);
+
+const renderStrings = () => {
   $('#deleteAllButton').text(t('deleteAllButton'));
   $('#header').text(t('header'));
   $('#pitch').html(t('pitch'));
@@ -18,7 +21,7 @@ const renderActiveChannel = (url) => {
 
 const renderCard = ({
   id, title, description, link, creator, pubDate,
-}, state, t) => {
+}, state) => {
   const card = document.createElement('div');
   $(card).addClass('card border-primary');
 
@@ -105,7 +108,7 @@ const renderCard = ({
   return card;
 };
 
-const renderContents = (item, articles, state, t) => {
+const renderContents = (item, articles, state) => {
   const filteredArticles = articles.filter(({ url }) => url === item.url);
   const div = document.createElement('div');
   $(div)
@@ -114,7 +117,7 @@ const renderContents = (item, articles, state, t) => {
     .appendTo($('.tab-content'));
 
   filteredArticles.reduce((acc, article) => {
-    const card = renderCard(article, state, t);
+    const card = renderCard(article, state);
     acc.append(card);
     return acc;
   }, $(div));
@@ -163,8 +166,8 @@ const renderTab = (acc, { url, title }, state) => {
   return navItem;
 };
 
-export default (state, t) => {
-  renderStrings(t);
+export default (state) => {
+  renderStrings();
 
   const {
     activeChannelUrl,
@@ -247,7 +250,7 @@ export default (state, t) => {
 
   channels.reduce((acc, item) => {
     const tab = renderTab(acc, item, state);
-    renderContents(item, articles, state, t);
+    renderContents(item, articles, state);
 
     acc.append(tab);
     return acc;

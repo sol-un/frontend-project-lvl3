@@ -16,7 +16,7 @@ export default {
   translation: {
     deleteAllButton: 'Anular todo',
     header: '¿Ya has probado RSS?',
-    pitch: 'Y si no, ¿porqué no probarlo ahora mismo? ¡Es gratis! Para enterarse sobre las novedades más recientes y destacadas en la web, búsca un <a data-toggle="collapse" href="#collapseLinks" role="button" aria-expanded="false" aria-controls="collapseExample">feed RSS</a> que te interese, pega el link abajo y oprime <i>Añadir fuente</i>:',
+    pitch: 'Y si no, ¿porqué no probarlo ahora mismo? ¡Es gratis! Para enterarte sobre las novedades más recientes y destacadas en la web, búsca un <a data-toggle="collapse" href="#collapseLinks" role="button" aria-expanded="false" aria-controls="collapseExample">feed RSS</a> que te interese, pega el link abajo y oprime <i>Añadir fuente</i>:',
     addButton: 'Añadir fuente',
     suggestedLink: 'Aquí tienes unos: <u class="user-select-all">http://feeds.bbci.co.uk/mundo/rss.xml</u><u class="user-select-all">https://josefacchin.com/feed/</u>',
     creator: 'por',
@@ -26,7 +26,7 @@ export default {
     errors: {
       network: '¡Error de conexión!',
       url: '¡El link es erróneo o de formato no soportado!',
-      notOneOf: '¡Ya tiene añadida esta fuente!',
+      notOneOf: '¡Ya tienes añadida esta fuente!',
     },
     noChannels: 'No hay fuentes añadidas...',
     removeError: 'click para cerrar',

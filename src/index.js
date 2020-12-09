@@ -4,5 +4,4 @@ import './styles.css';
 import addWidget from './widget.js';
 import app from './application.js';
 
-app();
-addWidget();
+app().then(() => addWidget());

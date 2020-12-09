@@ -9,8 +9,6 @@ import process from './parser.js';
 import render from './renderer.js';
 import validate from './validator.js';
 
-const savedState = JSON.parse(localStorage.getItem('SJRssPageState'));
-
 const articlesUpdater = (state, t) => {
   if ($(document.body).hasClass('modal-open')) {
     setTimeout(() => articlesUpdater(state, t), 5 * 1000);
@@ -65,11 +63,10 @@ const updateState = (data, contents, watchedState) => {
 };
 
 export default () => i18next.init({
-  lng: savedState && savedState.locale,
-  fallbackLng: 'en',
+  lng: 'en',
   resources: { en, ru, es },
 }).then((t) => {
-  const state = savedState || {
+  const state = {
     activeChannelUrl: null,
     link: '',
     linkStatus: null,
@@ -81,7 +78,6 @@ export default () => i18next.init({
   };
 
   const watchedState = onChange(state, (path) => {
-    localStorage.setItem('SJRssPageState', JSON.stringify(state));
     if (path === 'locale') {
       i18next.changeLanguage(watchedState.locale);
       render(watchedState, t);
@@ -115,11 +111,6 @@ export default () => i18next.init({
 
   $('input').on('keyup', (e) => inputValueHandle(e, watchedState));
   $('input').on('focus', (e) => inputValueHandle(e, watchedState));
-
-  $('#deleteAllButton').on('click', () => {
-    localStorage.setItem('SJRssPageState', null);
-    window.location.reload();
-  });
 
   const links = $('#languageDropdown')
     .next()

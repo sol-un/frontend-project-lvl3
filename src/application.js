@@ -14,15 +14,13 @@ const articlesUpdater = (state) => {
     setTimeout(() => articlesUpdater(state), 5 * 1000);
     return;
   }
-  const {
-    channels,
-  } = onChange.target(state);
+  const { channels } = onChange.target(state);
   channels.map(({
     url,
   }) => process(url)
     .then(([, contents]) => _.set(onChange.target(state), 'articles', _.concat(contents, _.filter(onChange.target(state).articles, (o) => o.url !== url))))
-    .catch(() => _.noop()));
-  setTimeout(() => articlesUpdater(state), 5 * 1000);
+    .catch(() => _.noop())
+    .then(() => setTimeout(() => articlesUpdater(state), 5 * 1000)));
 };
 
 const inputValueHandle = (e, watchedState) => {
@@ -97,6 +95,7 @@ export default () => i18next.init({
     if (link.length === 0) {
       return;
     }
+    _.set(watchedState, 'linkStatus', 'loading');
     process(link)
       .then(([data, contents]) => updateState(data, contents, watchedState))
       .catch(({
@@ -105,7 +104,6 @@ export default () => i18next.init({
         _.set(watchedState, 'error', message);
         _.set(watchedState, 'linkStatus', 'valid');
       });
-    _.set(watchedState, 'linkStatus', 'loading');
   });
 
   $('input').on('keyup', (e) => inputValueHandle(e, watchedState));

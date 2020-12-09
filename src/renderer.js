@@ -116,20 +116,19 @@ const renderContents = (item, articles, state) => {
     .addClass('tab-pane')
     .appendTo($('.tab-content'));
 
-  filteredArticles.reduce((acc, article) => {
+  filteredArticles.forEach((article) => {
     const card = renderCard(article, state);
-    acc.append(card);
-    return acc;
-  }, $(div));
+    return $(div).append(card);
+  });
 
   return div;
 };
 
-const renderTab = (acc, { url, title }, state) => {
+const renderTab = (mount, { url, title }, state) => {
   const navItem = document.createElement('li');
   $(navItem)
     .addClass('nav-item')
-    .appendTo(acc);
+    .appendTo(mount);
 
   const a = document.createElement('a');
   $(a)
@@ -166,49 +165,64 @@ const renderTab = (acc, { url, title }, state) => {
   return navItem;
 };
 
-export default (state) => {
-  renderStrings();
+const renderFeedback = (state) => {
+  const { error } = state;
+  $('.feedback')
+    .empty();
 
-  const {
-    activeChannelUrl,
-    link,
-    linkStatus,
-    channels,
-    articles,
-    error,
-  } = state;
-  $('input').val(link);
+  const alert = document.createElement('div');
+  $(alert)
+    .addClass('alert alert-danger alert-dismissible fade show')
+    .text(t(`errors.${error}`))
+    .appendTo($('.feedback'));
 
-  if (error) {
-    $('.feedback')
-      .empty();
+  const button = document.createElement('button');
+  $(button)
+    .addClass('close')
+    .attr('type', 'button')
+    .attr('data-dismiss', 'alert')
+    .appendTo($(alert));
 
-    const alert = document.createElement('div');
-    $(alert)
-      .addClass('alert alert-danger alert-dismissible fade show')
-      .text(t(`errors.${error}`))
-      .appendTo($('.feedback'));
+  const span = document.createElement('span');
+  $(span)
+    .html('&times;')
+    .appendTo($(button));
+  $('.feedback')
+    .fadeIn(100);
 
-    const button = document.createElement('button');
-    $(button)
-      .addClass('close')
-      .attr('type', 'button')
-      .attr('data-dismiss', 'alert')
-      .appendTo($(alert));
+  $(span).on('click', () => _.set(state, 'error', null));
+};
 
-    const span = document.createElement('span');
-    $(span)
-      .html('&times;')
-      .appendTo($(button));
-    $('.feedback')
-      .fadeIn(100);
+const renderFeeds = (state) => {
+  const { channels, articles } = state;
 
-    $(span).on('click', () => _.set(state, 'error', null));
-  } else {
-    $('.feedback')
-      .fadeOut(100);
+  const $mount = $('#channelNav');
+  $mount.empty();
+
+  if (channels.length === 0) {
+    return $mount.html(`<div class="mt-4 text-center"><i>${t('noChannels')}</i></div>`);
   }
 
+  const ul = document.createElement('ul');
+  $(ul)
+    .attr('id', 'myTab')
+    .addClass('nav nav-pills flex-column flex-sm-row')
+    .appendTo($mount);
+
+  const div = document.createElement('div');
+  $(div)
+    .addClass('tab-content')
+    .appendTo($mount);
+
+  return channels.forEach((item) => {
+    const tab = renderTab($(ul), item, state);
+    renderContents(item, articles, state);
+
+    return $(ul).append(tab);
+  });
+};
+
+const renderInput = (linkStatus) => {
   switch (linkStatus) {
     case 'valid':
       $('input')
@@ -229,32 +243,29 @@ export default (state) => {
     default:
           // nothing
   }
+};
 
-  const $mount = $('#channelNav');
-  $mount.empty();
+export default (state) => {
+  renderStrings();
 
-  if (channels.length === 0) {
-    return $mount.html(`<div class="mt-4 text-center"><i>${t('noChannels')}</i></div>`);
+  const {
+    activeChannelUrl,
+    link,
+    linkStatus,
+    error,
+  } = state;
+
+  $('input').val(link);
+
+  if (error) {
+    renderFeedback(state);
+  } else {
+    $('.feedback')
+      .fadeOut(100);
   }
 
-  const ul = document.createElement('ul');
-  $(ul)
-    .attr('id', 'myTab')
-    .addClass('nav nav-pills flex-column flex-sm-row')
-    .appendTo($mount);
+  renderInput(linkStatus);
 
-  const div = document.createElement('div');
-  $(div)
-    .addClass('tab-content')
-    .appendTo($mount);
-
-  channels.reduce((acc, item) => {
-    const tab = renderTab(acc, item, state);
-    renderContents(item, articles, state);
-
-    acc.append(tab);
-    return acc;
-  }, $(ul));
-
+  renderFeeds(state);
   return renderActiveChannel(activeChannelUrl);
 };

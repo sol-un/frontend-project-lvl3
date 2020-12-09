@@ -5,67 +5,71 @@ import i18next from 'i18next';
 const t = (key, data) => i18next.t(key, data);
 
 const renderStrings = () => {
-  $('#deleteAllButton').text(t('deleteAllButton'));
-  $('#header').text(t('header'));
-  $('#pitch').html(t('pitch'));
-  $('#addButton').text(t('addButton'));
-  $('#collapseLinks > .card').html(t('suggestedLink'));
+  document.querySelector('#header').innerText = t('header');
+  document.querySelector('#pitch').innerHTML = t('pitch');
+  document.querySelector('#addButton').innerText = t('addButton');
+  document.querySelector('#collapseLinks > .card').innerHTML = t('suggestedLink');
 };
 
 const renderActiveChannel = (url) => {
-  $('.nav-link').each((_i, el) => $(el).removeClass('active'));
-  $(`a[data-url="${url}"]`).addClass('active');
-  $('.tab-pane').each((_i, el) => $(el).removeClass('active'));
-  $(`div[data-url="${url}"]`).addClass('active');
+  const navLinks = [...document.querySelectorAll('.nav-link')];
+  navLinks.forEach((el) => el.classList.remove('active'));
+  const activeLink = document.querySelector(`a[data-url="${url}"]`);
+  if (activeLink) {
+    activeLink.classList.add('active');
+  }
+
+  const navPanes = [...document.querySelectorAll('.tab-pane')];
+  navPanes.forEach((el) => el.classList.remove('active'));
+  const activePane = document.querySelector(`div[data-url="${url}"]`);
+  if (activePane) {
+    activePane.classList.add('active');
+  }
 };
 
 const renderCard = ({
   id, title, description, link, creator, pubDate,
 }, state) => {
   const card = document.createElement('div');
-  $(card).addClass('card border-primary');
+  card.classList.add('card', 'border-primary');
 
   const cardBody = document.createElement('div');
-  $(cardBody)
-    .addClass('card-body')
-    .appendTo(card);
+  cardBody.classList.add('card-body');
+  card.append(cardBody);
 
   const cardTitle = document.createElement('h4');
-  $(cardTitle)
-    .addClass(`card-title font-weight-${state.viewed.includes(link) ? 'normal' : 'bold'}`)
-    .text(title)
-    .appendTo(cardBody);
+  cardTitle.classList.add('card-title', `font-weight-${state.viewed.includes(link) ? 'normal' : 'bold'}`);
+  cardTitle.innerText = title;
+  cardBody.append(cardTitle);
 
   if (creator) {
     const cardSubtitle = document.createElement('h6');
-    $(cardSubtitle).addClass('card-subtitle')
-      .addClass('text-muted')
-      .text(`${t('creator')} ${creator}`)
-      .appendTo(cardBody);
+    cardSubtitle.classList.add('card-subtitle');
+    cardSubtitle.classList.add('text-muted');
+    cardSubtitle.innerText = `${t('creator')} ${creator}`;
+    cardBody.append(cardSubtitle);
   }
 
   const previewButton = document.createElement('button');
-  $(previewButton)
-    .addClass('btn btn-primary my-3')
-    .attr('type', 'button')
-    .attr('data-toggle', 'modal')
-    .attr('data-target', `#${id}`)
-    .text(t('synopsis'))
-    .on('click', () => {
-      state.viewed.push(link);
-    })
-    .appendTo(cardBody);
+  previewButton.classList.add('btn', 'btn-primary', 'my-3');
+  previewButton.setAttribute('type', 'button');
+  previewButton.setAttribute('data-toggle', 'modal');
+  previewButton.setAttribute('data-target', `#${id}`);
+  previewButton.innerText = t('synopsis');
+  previewButton.addEventListener('click', () => {
+    state.viewed.push(link);
+  });
+  cardBody.append(previewButton);
 
   const modal = document.createElement('div');
-  $(modal)
-    .addClass('modal fade')
-    .attr('id', id)
-    .attr('tabindex', '-1')
-    .attr('role', 'dialog')
-    .attr('aria-labelledby', 'synopsisModal')
-    .attr('aria-hidden', 'true')
-    .html(
-      `<div class="modal-dialog" role="document">
+  modal.classList.add('modal', 'fade');
+  modal.setAttribute('id', id);
+  modal.setAttribute('tabindex', '-1');
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-labelledby', 'synopsisModal');
+  modal.setAttribute('aria-hidden', 'true');
+  modal.innerHTML = `
+      <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="synopsisModal">${title}</h5>
@@ -77,14 +81,12 @@ const renderCard = ({
             ${description}
           </div>
         </div>
-      </div>`,
-    )
-    .appendTo(cardBody);
+      </div>`;
+  cardBody.append(modal);
 
   const cardFooter = document.createElement('p');
-  $(cardFooter)
-    .addClass('card-text')
-    .appendTo(cardBody);
+  cardFooter.classList.add('card-text');
+  cardBody.append(cardFooter);
 
   if (pubDate) {
     const normalizedDate = new Date(pubDate);
@@ -94,15 +96,17 @@ const renderCard = ({
     const [digit1, digit2] = normalizedDate.getMinutes().toString();
     const minutes = digit2 ? `${digit1}${digit2}` : `0${digit1}`;
     const time = `${normalizedDate.getHours()}:${minutes}`;
-    $(cardFooter)
-      .append(`<div><i class="card-text">${t('pubDate', {
-        time, day, month, year,
-      })}</i></div>`);
+    const pubDateContainer = document.createElement('div');
+    pubDateContainer.innerHTML = `<i class="card-text">${t('pubDate', {
+      time, day, month, year,
+    })}</i>`;
+    cardFooter.append(pubDateContainer);
   }
 
   if (link) {
-    $(cardFooter)
-      .append(`<div><b class="card-text">${t('link')}</b>: <a class="card-link" href="${link}" target="_blank">${link}</a></div>`);
+    const linkContainer = document.createElement('div');
+    linkContainer.innerHTML = `<b class="card-text">${t('link')}</b>: <a class="card-link" href="${link}" target="_blank">${link}</a>`;
+    cardFooter.append(linkContainer);
   }
 
   return card;
@@ -111,14 +115,13 @@ const renderCard = ({
 const renderContents = (item, articles, state) => {
   const filteredArticles = articles.filter(({ url }) => url === item.url);
   const div = document.createElement('div');
-  $(div)
-    .attr('data-url', item.url)
-    .addClass('tab-pane')
-    .appendTo($('.tab-content'));
+  div.setAttribute('data-url', item.url);
+  div.classList.add('tab-pane');
+  document.querySelector('.tab-content').append(div);
 
   filteredArticles.forEach((article) => {
     const card = renderCard(article, state);
-    return $(div).append(card);
+    return div.append(card);
   });
 
   return div;
@@ -126,34 +129,31 @@ const renderContents = (item, articles, state) => {
 
 const renderTab = (mount, { url, title }, state) => {
   const navItem = document.createElement('li');
-  $(navItem)
-    .addClass('nav-item')
-    .appendTo(mount);
+  navItem.classList.add('nav-item');
+  mount.append(navItem);
 
   const a = document.createElement('a');
-  $(a)
-    .addClass('nav-link')
-    .attr('data-toggle', 'tab')
-    .attr('data-url', url)
-    .attr('href', '#')
-    .text(title)
-    .on('click', (e) => {
-      e.preventDefault();
-      const activeChannelUrl = $(e.target).attr('data-url');
-      _.set(state, 'activeChannelUrl', activeChannelUrl);
-    })
-    .appendTo(navItem);
+  a.classList.add('nav-link');
+  a.setAttribute('data-toggle', 'tab');
+  a.setAttribute('data-url', url);
+  a.setAttribute('href', '#');
+  a.innerText = title;
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+    const activeChannelUrl = e.target.getAttribute('data-url');
+    _.set(state, 'activeChannelUrl', activeChannelUrl);
+  });
+  navItem.append(a);
 
   const span = document.createElement('span');
-  $(span)
-    .addClass('nav-delete')
-    .html('<b>&emsp;&times;</b>')
-    .appendTo(a);
+  span.classList.add('nav-delete');
+  span.innerHTML = '<b>&emsp;&times;</b>';
+  a.append(span);
 
-  $(span).on('click', (e) => {
+  span.addEventListener('click', (e) => {
     e.stopPropagation();
     const { activeChannelUrl, channels, articles } = state;
-    const urlToDelete = $(e.target).closest('a').attr('data-url');
+    const urlToDelete = e.target.closest('a').getAttribute('data-url');
 
     _.set(state, 'channels', _.filter(channels, (o) => o.url !== urlToDelete));
     _.set(state, 'articles', _.filter(articles, (o) => o.url !== urlToDelete));
@@ -167,78 +167,70 @@ const renderTab = (mount, { url, title }, state) => {
 
 const renderFeedback = (state) => {
   const { error } = state;
-  $('.feedback')
-    .empty();
+  const flashContainer = document.querySelector('.feedback');
+  flashContainer.innerHTML = '';
 
   const alert = document.createElement('div');
-  $(alert)
-    .addClass('alert alert-danger alert-dismissible fade show')
-    .text(t(`errors.${error}`))
-    .appendTo($('.feedback'));
+  alert.classList.add('alert', 'alert-danger', 'alert-dismissible', 'fade', 'show');
+  alert.innerText = t(`errors.${error}`);
+  flashContainer.append(alert);
 
   const button = document.createElement('button');
-  $(button)
-    .addClass('close')
-    .attr('type', 'button')
-    .attr('data-dismiss', 'alert')
-    .appendTo($(alert));
+  button.classList.add('close');
+  button.setAttribute('type', 'button');
+  button.setAttribute('data-dismiss', 'alert');
+  alert.append(button);
 
   const span = document.createElement('span');
-  $(span)
-    .html('&times;')
-    .appendTo($(button));
+  span.innerHTML = '&times;';
+  button.append(span);
+  span.addEventListener('click', () => _.set(state, 'error', null));
+
   $('.feedback')
     .fadeIn(100);
-
-  $(span).on('click', () => _.set(state, 'error', null));
 };
 
 const renderFeeds = (state) => {
   const { channels, articles } = state;
 
-  const $mount = $('#channelNav');
-  $mount.empty();
+  const mount = document.querySelector('#channelNav');
+  mount.innerHTML = '';
 
   if (channels.length === 0) {
-    return $mount.html(`<div class="mt-4 text-center"><i>${t('noChannels')}</i></div>`);
+    mount.innerHTML = `<div class="mt-4 text-center"><i>${t('noChannels')}</i></div>`;
   }
 
   const ul = document.createElement('ul');
-  $(ul)
-    .attr('id', 'myTab')
-    .addClass('nav nav-pills flex-column flex-sm-row')
-    .appendTo($mount);
+  ul.setAttribute('id', 'myTab');
+  ul.classList.add('nav', 'nav-pills', 'flex-column', 'flex-sm-row');
+  mount.append(ul);
 
   const div = document.createElement('div');
-  $(div)
-    .addClass('tab-content')
-    .appendTo($mount);
+  div.classList.add('tab-content');
+  mount.append(div);
 
   return channels.forEach((item) => {
-    const tab = renderTab($(ul), item, state);
+    const tab = renderTab(ul, item, state);
     renderContents(item, articles, state);
 
-    return $(ul).append(tab);
+    return ul.append(tab);
   });
 };
 
 const renderInput = (linkStatus) => {
+  const input = document.querySelector('input');
+  const button = document.querySelector('button');
   switch (linkStatus) {
     case 'valid':
-      $('input')
-        .removeClass('is-invalid');
-      $('button')
-        .removeAttr('disabled');
+      input.classList.remove('is-invalid');
+      button.removeAttribute('disabled');
       break;
     case 'invalid':
-      $('input')
-        .addClass('is-invalid');
-      $('button')
-        .attr('disabled', 'disabled');
+      input.classList.add('is-invalid');
+      button.setAttribute('disabled', 'disabled');
       break;
     case 'loading':
-      $('button')
-        .attr('disabled', 'disabled');
+      button.setAttribute('disabled', 'disabled');
       break;
     default:
           // nothing
@@ -255,7 +247,7 @@ export default (state) => {
     error,
   } = state;
 
-  $('input').val(link);
+  document.querySelector('input').value = link;
 
   if (error) {
     renderFeedback(state);

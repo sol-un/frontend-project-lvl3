@@ -1,35 +1,37 @@
 import axios from 'axios';
-import $ from 'jquery';
 import _ from 'lodash';
 
-const retrieveText = (node) => (selector) => $(node).find(selector).text();
+const retrieveText = (element) => (tagName) => (element.querySelector(tagName)
+  ? element.querySelector(tagName).textContent
+  : null);
 
-const parse = (xml, url) => {
-  const document = $.parseXML(xml);
-  const xmlDoc = $(document);
-  const retrieveFromDoc = retrieveText(xmlDoc);
-
+const parse = (xml) => {
+  const parser = new DOMParser();
+  const document = parser.parseFromString(xml, 'application/xml');
+  const channel = document.querySelector('channel');
+  const retrieveFromChannel = retrieveText(channel);
+  const url = retrieveFromChannel('link');
+  const title = retrieveFromChannel('title');
   const data = {
-    title: retrieveFromDoc('channel > title'),
-    description: retrieveFromDoc('channel > description'),
     url,
+    title,
+    description: retrieveFromChannel('description'),
   };
 
-  const items = xmlDoc.find('item');
-  const contents = $(items).map((_i, item) => {
+  const items = [...channel.querySelectorAll('item')];
+  const contents = items.map((item) => {
     const retrieveFromItem = retrieveText(item);
-    const title = retrieveFromItem('title');
     const pubDate = retrieveFromItem('pubDate');
     return {
       url,
       id: `${_.kebabCase(title)}-${Date.parse(new Date(pubDate))}`,
-      title,
+      title: retrieveFromItem('title'),
       description: retrieveFromItem('description'),
       link: retrieveFromItem('link'),
-      creator: item.querySelector('creator')?.textContent,
+      creator: retrieveFromItem('creator'),
       pubDate,
     };
-  }).toArray();
+  });
 
   return [data, contents];
 };
@@ -42,5 +44,5 @@ export default (link) => axios.get(`https://api.allorigins.win/get?url=${encodeU
     if (data.status.http_code !== 200) {
       throw new Error('network');
     }
-    return parse(data.contents, link);
+    return parse(data.contents);
   });

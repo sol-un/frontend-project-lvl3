@@ -1,5 +1,4 @@
 import onChange from 'on-change';
-import $ from 'jquery';
 import _ from 'lodash';
 import i18next from 'i18next';
 import en from './locales/en.js';
@@ -10,7 +9,7 @@ import render from './renderer.js';
 import validate from './validator.js';
 
 const articlesUpdater = (state) => {
-  if ($(document.body).hasClass('modal-open')) {
+  if (document.body.classList.contains('modal-open')) {
     setTimeout(() => articlesUpdater(state), 5 * 1000);
     return;
   }
@@ -24,7 +23,7 @@ const articlesUpdater = (state) => {
 };
 
 const inputValueHandle = (e, watchedState) => {
-  const link = $(e.target).val();
+  const link = e.target.value;
   const { channels } = watchedState;
   const blacklist = channels.map(({ url }) => url);
   let linkStatus;
@@ -89,7 +88,8 @@ export default () => i18next.init({
 
   setTimeout((prevState = watchedState) => articlesUpdater(prevState), 5 * 1000);
 
-  $('#addChannelForm').on('submit', (e) => {
+  const form = document.querySelector('#addChannelForm');
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
     const link = new FormData(e.target).get('link');
     if (link.length === 0) {
@@ -106,13 +106,12 @@ export default () => i18next.init({
       });
   });
 
-  $('input').on('keyup', (e) => inputValueHandle(e, watchedState));
-  $('input').on('focus', (e) => inputValueHandle(e, watchedState));
+  const input = document.querySelector('input');
+  input.addEventListener('keyup', (e) => inputValueHandle(e, watchedState));
+  input.addEventListener('focus', (e) => inputValueHandle(e, watchedState));
 
-  const links = $('#languageDropdown')
-    .next()
-    .find('a');
-  $(links).each((_i, item) => $(item).on('click', (e) => {
+  const links = [...document.querySelectorAll('.dropdown-menu > a')];
+  links.forEach((link) => link.addEventListener('click', (e) => {
     e.preventDefault();
     const locale = e.target.innerText.toLowerCase();
     _.set(watchedState, 'locale', locale);

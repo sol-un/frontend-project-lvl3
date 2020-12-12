@@ -25,6 +25,7 @@ export default {
     link: 'Fuente',
     errors: {
       network: '¡Error de conexión!',
+      nodata: 'No es un feed RSS!',
       url: '¡El link es erróneo o de formato no soportado!',
       notOneOf: '¡Ya tienes añadida esta fuente!',
     },

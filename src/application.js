@@ -22,34 +22,6 @@ const articlesUpdater = (state) => {
     .then(() => setTimeout(() => articlesUpdater(state), 5 * 1000)));
 };
 
-const inputValueHandle = (e, watchedState) => {
-  const link = e.target.value;
-  const { channels } = watchedState;
-  const blacklist = channels.map(({ url }) => url);
-  let linkStatus;
-  let message;
-
-  const errorMessageDispatcher = {
-    url: 'url',
-    notOneOf: 'notOneOf',
-  };
-
-  validate(link, blacklist)
-    .then(({ type }) => {
-      if (!type) {
-        linkStatus = 'valid';
-        message = null;
-      } else {
-        linkStatus = 'invalid';
-        message = errorMessageDispatcher[type];
-      }
-
-      _.set(watchedState, 'link', link);
-      _.set(watchedState, 'linkStatus', linkStatus);
-      _.set(watchedState, 'error', message);
-    });
-};
-
 const updateState = (data, contents, watchedState) => {
   _.set(watchedState, 'link', '');
   _.set(watchedState, 'linkStatus', 'valid');
@@ -92,17 +64,17 @@ export default () => i18next.init({
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const link = new FormData(e.target).get('link');
-    if (link.length === 0) {
-      return;
-    }
-    _.set(watchedState, 'linkStatus', 'loading');
-    process(link)
+    const blacklist = watchedState.channels.map(({ url }) => url);
+    validate(link, blacklist)
+      .then(() => process(link)
       .then(([data, contents]) => updateState(data, contents, watchedState))
-      .catch(({
-        message,
-      }) => {
-        _.set(watchedState, 'error', message);
-        _.set(watchedState, 'linkStatus', 'valid');
+        .catch((error) => {
+          throw error;
+        }))
+      .catch((error) => {
+        const errorType = error.type || error.message;
+        _.set(watchedState, 'linkStatus', 'invalid');
+        _.set(watchedState, 'error', errorType);
       });
   });
 

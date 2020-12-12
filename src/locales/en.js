@@ -25,6 +25,7 @@ export default {
     link: 'Source',
     errors: {
       network: 'Connection error!',
+      nodata: 'This is not an RSS feed!',
       url: 'The link is wrong or unsupported format!',
       notOneOf: 'You\'ve already added this channel!',
     },

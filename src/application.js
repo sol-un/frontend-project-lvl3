@@ -67,7 +67,7 @@ export default () => i18next.init({
     const blacklist = watchedState.channels.map(({ url }) => url);
     validate(link, blacklist)
       .then(() => process(link)
-      .then(([data, contents]) => updateState(data, contents, watchedState))
+        .then(([data, contents]) => updateState(data, contents, watchedState))
         .catch((error) => {
           throw error;
         }))
@@ -77,10 +77,6 @@ export default () => i18next.init({
         _.set(watchedState, 'error', errorType);
       });
   });
-
-  const input = document.querySelector('input');
-  input.addEventListener('keyup', (e) => inputValueHandle(e, watchedState));
-  input.addEventListener('focus', (e) => inputValueHandle(e, watchedState));
 
   const links = [...document.querySelectorAll('.dropdown-menu > a')];
   links.forEach((link) => link.addEventListener('click', (e) => {

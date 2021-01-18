@@ -165,7 +165,7 @@ const renderTab = (mount, { url, title }, state) => {
   return navItem;
 };
 
-const renderErrorFeedback = (state) => {
+const renderFeedback = (state) => {
   const { error } = state;
   const flashContainer = document.querySelector('.feedback');
   flashContainer.innerHTML = '';
@@ -185,29 +185,6 @@ const renderErrorFeedback = (state) => {
   span.innerHTML = '&times;';
   button.append(span);
   span.addEventListener('click', () => _.set(state, 'error', null));
-
-  $('.feedback')
-    .fadeIn(100);
-};
-
-const renderSuccessFeedback = (state) => {
-  const flashContainer = document.querySelector('.feedback');
-  flashContainer.innerHTML = '';
-
-  const alert = document.createElement('div');
-  alert.classList.add('alert', 'alert-info', 'alert-dismissible', 'fade', 'show');
-  alert.innerText = 'Rss has been loaded';
-  flashContainer.append(alert);
-
-  const button = document.createElement('button');
-  button.classList.add('close');
-  button.setAttribute('type', 'button');
-  button.setAttribute('data-dismiss', 'alert');
-  alert.append(button);
-
-  const span = document.createElement('span');
-  span.innerHTML = '&times;';
-  button.append(span);
 
   $('.feedback')
     .fadeIn(100);
@@ -247,7 +224,6 @@ const renderInput = (linkStatus) => {
     case 'valid':
       input.classList.remove('is-invalid');
       button.removeAttribute('disabled');
-      renderSuccessFeedback();
       break;
     case 'invalid':
       input.classList.add('is-invalid');
@@ -274,7 +250,7 @@ export default (state) => {
   document.querySelector('input').value = link;
 
   if (error) {
-    renderErrorFeedback(state);
+    renderFeedback(state);
   } else {
     $('.feedback')
       .fadeOut(100);

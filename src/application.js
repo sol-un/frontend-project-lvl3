@@ -63,7 +63,7 @@ export default () => i18next.init({
   const form = document.querySelector('#addChannelForm');
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const link = new FormData(e.target).get('url');
+    const link = new FormData(e.target).get('link');
     const blacklist = watchedState.channels.map(({ url }) => url);
     validate(link, blacklist)
       .then(() => process(link)

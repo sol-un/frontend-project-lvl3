@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import en from './locales/en.js';
 import ru from './locales/ru.js';
 import es from './locales/es.js';
-import process from './parser.js';
+import process from './data-hadler.js';
 import render from './renderer.js';
 import validate from './validator.js';
 

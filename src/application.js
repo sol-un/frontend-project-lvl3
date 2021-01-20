@@ -60,8 +60,12 @@ export default () => i18next.init({
 
   setTimeout((prevState = watchedState) => articlesUpdater(prevState), 5 * 1000);
 
-  const form = document.querySelector('#addChannelForm');
-  form.addEventListener('submit', (e) => {
+  const nodeDispatcher = {
+    form: document.querySelector('#addChannelForm'),
+    links: [...document.querySelectorAll('.dropdown-menu > a')],
+  };
+
+  nodeDispatcher.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const link = new FormData(e.target).get('link');
     const blacklist = watchedState.channels.map(({ url }) => url);
@@ -78,8 +82,7 @@ export default () => i18next.init({
       });
   });
 
-  const links = [...document.querySelectorAll('.dropdown-menu > a')];
-  links.forEach((link) => link.addEventListener('click', (e) => {
+  nodeDispatcher.links.forEach((link) => link.addEventListener('click', (e) => {
     e.preventDefault();
     const locale = e.target.innerText.toLowerCase();
     _.set(watchedState, 'locale', locale);

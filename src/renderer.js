@@ -11,17 +11,15 @@ const renderStrings = () => {
   document.querySelector('#collapseLinks > .card').innerHTML = t('suggestedLink');
 };
 
-const renderActiveChannel = (url) => {
-  const navLinks = [...document.querySelectorAll('.nav-link')];
+const renderActiveChannel = ({
+  navLinks, activeLink, navPanes, activePane,
+}) => {
   navLinks.forEach((el) => el.classList.remove('active'));
-  const activeLink = document.querySelector(`a[data-url="${url}"]`);
   if (activeLink) {
     activeLink.classList.add('active');
   }
 
-  const navPanes = [...document.querySelectorAll('.tab-pane')];
   navPanes.forEach((el) => el.classList.remove('active'));
-  const activePane = document.querySelector(`div[data-url="${url}"]`);
   if (activePane) {
     activePane.classList.add('active');
   }
@@ -112,12 +110,12 @@ const renderCard = ({
   return card;
 };
 
-const renderContents = (item, articles, state) => {
+const renderContents = (contentsDiv, item, articles, state) => {
   const filteredArticles = articles.filter(({ url }) => url === item.url);
   const div = document.createElement('div');
   div.setAttribute('data-url', item.url);
   div.classList.add('tab-pane');
-  document.querySelector('.tab-content').append(div);
+  contentsDiv.append(div);
 
   filteredArticles.forEach((article) => {
     const card = renderCard(article, state);
@@ -165,9 +163,9 @@ const renderTab = (mount, { url, title }, state) => {
   return navItem;
 };
 
-const renderFeedback = (state) => {
+const renderFeedback = (nodeDispatcher, state) => {
   const { error } = state;
-  const flashContainer = document.querySelector('.feedback');
+  const { flashContainer } = nodeDispatcher;
   flashContainer.innerHTML = '';
 
   const alert = document.createElement('div');
@@ -190,10 +188,10 @@ const renderFeedback = (state) => {
     .fadeIn(100);
 };
 
-const renderFeeds = (state) => {
+const renderFeeds = (nodeDispatcher, state) => {
   const { channels, articles } = state;
+  const { mount } = nodeDispatcher;
 
-  const mount = document.querySelector('#channelNav');
   mount.innerHTML = '';
 
   if (channels.length === 0) {
@@ -205,27 +203,26 @@ const renderFeeds = (state) => {
   ul.classList.add('nav', 'nav-pills', 'flex-column', 'flex-sm-row');
   mount.append(ul);
 
-  const div = document.createElement('div');
-  div.classList.add('tab-content');
-  mount.append(div);
+  const contentsDiv = document.createElement('div');
+  contentsDiv.classList.add('tab-content');
+  mount.append(contentsDiv);
 
   return channels.forEach((item) => {
     const tab = renderTab(ul, item, state);
-    renderContents(item, articles, state);
+    renderContents(contentsDiv, item, articles, state);
 
     return ul.append(tab);
   });
 };
 
-const renderInput = (linkStatus) => {
-  const input = document.querySelector('input');
-  const button = document.querySelector('button');
-  switch (linkStatus) {
-    case 'valid':
-      input.classList.remove('is-invalid');
-      button.removeAttribute('disabled');
-      break;
-    case 'invalid':
+const renderInput = (nodeDispatcher, status) => {
+  const { input, button } = nodeDispatcher;
+  if (!status) {
+    input.classList.remove('is-invalid');
+    button.removeAttribute('disabled');
+  }
+  switch (status) {
+    case 'error':
       input.classList.add('is-invalid');
       button.setAttribute('disabled', 'disabled');
       break;
@@ -238,8 +235,6 @@ const renderInput = (linkStatus) => {
 };
 
 export default (state) => {
-  renderStrings();
-
   const {
     activeChannelUrl,
     link,
@@ -247,17 +242,40 @@ export default (state) => {
     error,
   } = state;
 
-  document.querySelector('input').value = link;
+  const nodeDispatcher = {
+    input: document.querySelector('input'),
+    button: document.querySelector('button'),
+    mount: document.querySelector('#channelNav'),
+    flashContainer: document.querySelector('.feedback'),
+    i18n: {
+      header: document.querySelector('#header'),
+      pitch: document.querySelector('#pitch'),
+      addButton: document.querySelector('#addButton'),
+      suggestedLink: document.querySelector('#collapseLinks > .card'),
+    },
+  };
+
+  renderStrings(nodeDispatcher.i18n);
+
+  nodeDispatcher.input.value = link;
 
   if (error) {
-    renderFeedback(state);
+    renderFeedback(nodeDispatcher, state);
   } else {
     $('.feedback')
       .fadeOut(100);
   }
 
-  renderInput(linkStatus);
+  renderInput(nodeDispatcher, status);
 
-  renderFeeds(state);
-  return renderActiveChannel(activeChannelUrl);
+  renderFeeds(nodeDispatcher, state);
+
+  const navDispatcher = {
+    activeLink: document.querySelector(`a[data-url="${activeChannelUrl}"]`),
+    navLinks: [...document.querySelectorAll('.nav-link')],
+    activePane: document.querySelector(`div[data-url="${activeChannelUrl}"]`),
+    navPanes: [...document.querySelectorAll('.tab-pane')],
+  };
+
+  renderActiveChannel(navDispatcher);
 };

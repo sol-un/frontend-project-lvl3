@@ -1,4 +1,3 @@
-
 import _ from 'lodash';
 
 const retrieveText = (element) => (tagName) => (element.querySelector(tagName)
@@ -8,6 +7,11 @@ const retrieveText = (element) => (tagName) => (element.querySelector(tagName)
 export default (xml) => {
   const parser = new DOMParser();
   const document = parser.parseFromString(xml, 'application/xml');
+
+  if (document.querySelector('parsererror') !== null) {
+    throw new Error('nodata');
+  }
+
   const channel = document.querySelector('channel');
   const retrieveFromChannel = retrieveText(channel);
   const url = retrieveFromChannel('link');

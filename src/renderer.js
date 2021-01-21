@@ -4,11 +4,66 @@ import i18next from 'i18next';
 
 const t = (key, data) => i18next.t(key, data);
 
-const renderStrings = () => {
-  document.querySelector('#header').innerText = t('header');
-  document.querySelector('#pitch').innerHTML = t('pitch');
-  document.querySelector('#addButton').innerText = t('addButton');
-  document.querySelector('#collapseLinks > .card').innerHTML = t('suggestedLink');
+const renderStrings = (nodes) => {
+  const {
+    header, pitch, addButton, suggestedLink,
+  } = nodes;
+
+  header.innerText = t('header');
+  pitch.innerHTML = t('pitch');
+  addButton.innerText = t('addButton');
+  suggestedLink.innerHTML = t('suggestedLink');
+};
+
+const renderModal = (state) => {
+  const { title, description } = state.modalContents;
+  $('#myModal').modal('dispose');
+  const modal = document.createElement('div');
+  modal.classList.add('modal', 'fade');
+  modal.setAttribute('id', 'myModal');
+  modal.setAttribute('tabindex', '-1');
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('data-backdrop', 'static');
+  modal.setAttribute('aria-labelledby', 'synopsisModal');
+  modal.setAttribute('aria-hidden', 'true');
+
+  const modalDialog = document.createElement('div');
+  modalDialog.classList.add('modal-dialog');
+  modalDialog.setAttribute('role', 'document');
+
+  const modalContent = document.createElement('div');
+  modalContent.classList.add('modal-content');
+
+  const modalHeader = document.createElement('div');
+  modalHeader.classList.add('modal-header');
+
+  const modalTitle = document.createElement('h5');
+  modalTitle.classList.add('modal-title');
+  modalTitle.setAttribute('id', 'synopsisModal');
+  modalTitle.innerText = title;
+  modalHeader.append(modalTitle);
+
+  const modalCloseButton = document.createElement('button');
+  modalCloseButton.classList.add('close');
+  modalCloseButton.setAttribute('type', 'button');
+  modalCloseButton.setAttribute('data-dismiss', 'modal');
+  modalCloseButton.setAttribute('aria-label', 'Close');
+  modalCloseButton.innerHTML = '<span aria-hidden="true">&times;</span>';
+  modalCloseButton.addEventListener('click', () => {
+    $('#myModal').modal('toggle');
+    _.set(state, 'uiState.modalVisibility', 'hide');
+  });
+  modalHeader.append(modalCloseButton);
+
+  const modalBody = document.createElement('div');
+  modalBody.classList.add('modal-body');
+  modalBody.innerHTML = description;
+
+  modalContent.append(modalHeader);
+  modalContent.append(modalBody);
+  modalDialog.append(modalContent);
+  modal.append(modalDialog);
+  document.body.append(modal);
 };
 
 const renderActiveChannel = ({
@@ -26,7 +81,7 @@ const renderActiveChannel = ({
 };
 
 const renderCard = ({
-  id, title, description, link, creator, pubDate,
+  title, description, link, creator, pubDate,
 }, state) => {
   const card = document.createElement('div');
   card.classList.add('card', 'border-primary');
@@ -36,7 +91,7 @@ const renderCard = ({
   card.append(cardBody);
 
   const cardTitle = document.createElement('h4');
-  cardTitle.classList.add('card-title', `font-weight-${state.viewed.includes(link) ? 'normal' : 'bold'}`);
+  cardTitle.classList.add('card-title', `font-weight-${state.uiState.viewedPosts.has(link) ? 'normal' : 'bold'}`);
   cardTitle.innerText = title;
   cardBody.append(cardTitle);
 
@@ -51,36 +106,14 @@ const renderCard = ({
   const previewButton = document.createElement('button');
   previewButton.classList.add('btn', 'btn-primary', 'my-3');
   previewButton.setAttribute('type', 'button');
-  previewButton.setAttribute('data-toggle', 'modal');
-  previewButton.setAttribute('data-target', `#${id}`);
   previewButton.innerText = t('synopsis');
   previewButton.addEventListener('click', () => {
-    state.viewed.push(link);
+    _.set(state, 'modalContents', { title, description });
+    _.set(state, 'uiState.modalVisibility', 'show');
+    state.uiState.viewedPosts.add(link);
+    $('#myModal').modal('toggle');
   });
   cardBody.append(previewButton);
-
-  const modal = document.createElement('div');
-  modal.classList.add('modal', 'fade');
-  modal.setAttribute('id', id);
-  modal.setAttribute('tabindex', '-1');
-  modal.setAttribute('role', 'dialog');
-  modal.setAttribute('aria-labelledby', 'synopsisModal');
-  modal.setAttribute('aria-hidden', 'true');
-  modal.innerHTML = `
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="synopsisModal">${title}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            ${description}
-          </div>
-        </div>
-      </div>`;
-  cardBody.append(modal);
 
   const cardFooter = document.createElement('p');
   cardFooter.classList.add('card-text');
@@ -139,7 +172,7 @@ const renderTab = (mount, { url, title }, state) => {
   a.addEventListener('click', (e) => {
     e.preventDefault();
     const activeChannelUrl = e.target.getAttribute('data-url');
-    _.set(state, 'activeChannelUrl', activeChannelUrl);
+    _.set(state, 'uiState.activeChannelUrl', activeChannelUrl);
   });
   navItem.append(a);
 
@@ -150,21 +183,24 @@ const renderTab = (mount, { url, title }, state) => {
 
   span.addEventListener('click', (e) => {
     e.stopPropagation();
-    const { activeChannelUrl, channels, articles } = state;
+    const {
+      uiState, channels, posts, addedLinks,
+    } = state;
     const urlToDelete = e.target.closest('a').getAttribute('data-url');
 
     _.set(state, 'channels', _.filter(channels, (o) => o.url !== urlToDelete));
-    _.set(state, 'articles', _.filter(articles, (o) => o.url !== urlToDelete));
-    if (urlToDelete === activeChannelUrl) {
-      _.set(state, 'activeChannelUrl', null);
+    _.set(state, 'posts', _.filter(posts, (o) => o.url !== urlToDelete));
+    _.set(state, 'addedLinks', _.filter(addedLinks, (o) => !Object.keys(o).includes(urlToDelete)));
+
+    if (urlToDelete === uiState.activeChannelUrl) {
+      _.set(state, 'uiState.activeChannelUrl', state.channels[0].url);
     }
   });
 
   return navItem;
 };
 
-const renderFeedback = (nodeDispatcher, state) => {
-  const { error } = state;
+const renderFeedback = (nodeDispatcher, error) => {
   const { flashContainer } = nodeDispatcher;
   flashContainer.innerHTML = '';
 
@@ -182,14 +218,13 @@ const renderFeedback = (nodeDispatcher, state) => {
   const span = document.createElement('span');
   span.innerHTML = '&times;';
   button.append(span);
-  span.addEventListener('click', () => _.set(state, 'error', null));
 
-  $('.feedback')
+  $(flashContainer)
     .fadeIn(100);
 };
 
 const renderFeeds = (nodeDispatcher, state) => {
-  const { channels, articles } = state;
+  const { channels, posts } = state;
   const { mount } = nodeDispatcher;
 
   mount.innerHTML = '';
@@ -209,25 +244,25 @@ const renderFeeds = (nodeDispatcher, state) => {
 
   return channels.forEach((item) => {
     const tab = renderTab(ul, item, state);
-    renderContents(contentsDiv, item, articles, state);
+    renderContents(contentsDiv, item, posts, state);
 
     return ul.append(tab);
   });
 };
 
-const renderInput = (nodeDispatcher, status) => {
+const renderInput = (nodeDispatcher, { status, error }) => {
   const { input, button } = nodeDispatcher;
-  if (!status) {
+  if (error) {
+    input.classList.add('is-invalid');
+  } else {
     input.classList.remove('is-invalid');
-    button.removeAttribute('disabled');
   }
   switch (status) {
-    case 'error':
-      input.classList.add('is-invalid');
-      button.setAttribute('disabled', 'disabled');
+    case 'active':
+      button.removeAttribute('disabled');
       break;
-    case 'loading':
-      button.setAttribute('disabled', 'disabled');
+    case 'disabled':
+      button.setAttribute('disabled', '');
       break;
     default:
           // nothing
@@ -236,15 +271,14 @@ const renderInput = (nodeDispatcher, status) => {
 
 export default (state) => {
   const {
-    activeChannelUrl,
-    link,
-    linkStatus,
-    error,
+    form,
+    loadingProcess,
+    uiState,
   } = state;
 
   const nodeDispatcher = {
     input: document.querySelector('input'),
-    button: document.querySelector('button'),
+    button: document.querySelector('#addButton'),
     mount: document.querySelector('#channelNav'),
     flashContainer: document.querySelector('.feedback'),
     i18n: {
@@ -255,25 +289,29 @@ export default (state) => {
     },
   };
 
+  nodeDispatcher.input.value = form.input;
+
   renderStrings(nodeDispatcher.i18n);
 
-  nodeDispatcher.input.value = link;
-
-  if (error) {
-    renderFeedback(nodeDispatcher, state);
-  } else {
-    $('.feedback')
-      .fadeOut(100);
-  }
-
-  renderInput(nodeDispatcher, status);
+  renderInput(nodeDispatcher, form);
 
   renderFeeds(nodeDispatcher, state);
 
+  const prevModal = document.querySelector('#myModal');
+  if (prevModal) prevModal.remove();
+  renderModal(state);
+
+  if (form.error || loadingProcess.error) {
+    renderFeedback(nodeDispatcher, form.error || loadingProcess.error);
+  } else {
+    $(nodeDispatcher.flashContainer)
+      .fadeOut(100);
+  }
+
   const navDispatcher = {
-    activeLink: document.querySelector(`a[data-url="${activeChannelUrl}"]`),
+    activeLink: document.querySelector(`a[data-url="${uiState.activeChannelUrl}"]`),
     navLinks: [...document.querySelectorAll('.nav-link')],
-    activePane: document.querySelector(`div[data-url="${activeChannelUrl}"]`),
+    activePane: document.querySelector(`div[data-url="${uiState.activeChannelUrl}"]`),
     navPanes: [...document.querySelectorAll('.tab-pane')],
   };
 

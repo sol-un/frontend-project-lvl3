@@ -9,7 +9,7 @@ import render from './renderer.js';
 import validate from './validator.js';
 
 const articlesUpdater = (state) => {
-  if (document.body.classList.contains('modal-open')) {
+  if (state.uiState.modalVisibility === 'show' || state.loadingProcess.status === 'fetching') {
     setTimeout(() => articlesUpdater(state), 5 * 1000);
     return;
   }
@@ -17,17 +17,9 @@ const articlesUpdater = (state) => {
   channels.map(({
     url,
   }) => process(url)
-    .then(([, contents]) => _.set(onChange.target(state), 'articles', _.concat(contents, _.filter(onChange.target(state).articles, (o) => o.url !== url))))
-    .catch(() => _.noop())
-    .then(() => setTimeout(() => articlesUpdater(state), 5 * 1000)));
-};
-
-const updateState = (data, contents, watchedState) => {
-  _.set(watchedState, 'link', '');
-  _.set(watchedState, 'linkStatus', 'valid');
-  _.set(watchedState, 'activeChannelUrl', data.url);
-  _.set(watchedState, 'channels', [...watchedState.channels, data]);
-  _.set(watchedState, 'articles', [...watchedState.articles, ...contents]);
+    .then(([, contents]) => _.set(onChange.target(state), 'posts', _.concat(contents, _.filter(onChange.target(state).posts, (o) => o.url !== url))))
+    .catch(() => _.noop()));
+  setTimeout(() => articlesUpdater(state), 5 * 1000);
 };
 
 export default () => i18next.init({
@@ -35,27 +27,32 @@ export default () => i18next.init({
   resources: { en, ru, es },
 }).then(() => {
   const state = {
-    activeChannelUrl: null,
-    link: '',
-    linkStatus: null,
+    form: {
+      input: '',
+      status: 'active',
+      error: null,
+    },
+    loadingProcess: {
+      status: 'idle',
+      error: null,
+    },
+    uiState: {
+      modalVisibility: 'hide',
+      activeChannel: null,
+      viewedPosts: new Set(),
+      locale: null,
+    },
     channels: [],
-    articles: [],
-    viewed: [],
-    error: null,
-    locale: i18next.language,
+    posts: [],
+    addedLinks: [],
+    modalContents: { title: '', description: '' },
   };
 
   const watchedState = onChange(state, (path) => {
-    if (path === 'locale') {
-      i18next.changeLanguage(watchedState.locale);
-      render(watchedState);
+    if (path === 'uiState.locale') {
+      i18next.changeLanguage(watchedState.uiState.locale);
     }
-    if (path !== 'link') {
-      render(watchedState);
-    }
-    if (watchedState.channels.length > 0 && !watchedState.activeChannelUrl) {
-      watchedState.activeChannelUrl = watchedState.channels[0].url;
-    }
+    render(watchedState);
   });
 
   setTimeout((prevState = watchedState) => articlesUpdater(prevState), 5 * 1000);
@@ -68,24 +65,49 @@ export default () => i18next.init({
   nodeDispatcher.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const link = new FormData(e.target).get('link');
-    const blacklist = watchedState.channels.map(({ url }) => url);
+    if (link.length === 0) {
+      return;
+    }
+    const blacklist = watchedState.addedLinks.flatMap((o) => Object.values(o));
     validate(link, blacklist)
-      .then(() => process(link)
-        .then(([data, contents]) => updateState(data, contents, watchedState))
-        .catch((error) => {
-          throw error;
-        }))
+      .then(() => {
+        _.set(watchedState, 'form.status', 'disabled');
+        _.set(watchedState, 'loadingProcess.status', 'fetching');
+        return process(link)
+          .then(([data, contents]) => {
+            _.set(watchedState, 'form.input', '');
+            _.set(watchedState, 'form.status', 'active');
+            _.set(watchedState, 'form.error', null);
+            _.set(watchedState, 'loadingProcess.status', 'success');
+            _.set(watchedState, 'loadingProcess.error', null);
+            _.set(watchedState, 'uiState.activeChannelUrl', data.url);
+            _.set(watchedState, 'channels', [...watchedState.channels, data]);
+            _.set(watchedState, 'posts', [...watchedState.posts, ...contents]);
+            _.set(watchedState, 'addedLinks', [...watchedState.addedLinks, { [data.url]: link }]);
+          })
+          .catch((error) => {
+            throw error;
+          });
+      })
       .catch((error) => {
-        const errorType = error.type || error.message;
-        _.set(watchedState, 'linkStatus', 'invalid');
-        _.set(watchedState, 'error', errorType);
+        _.set(watchedState, 'form.input', link);
+        _.set(watchedState, 'form.status', 'active');
+        if (error.name === 'ValidationError') {
+          _.set(watchedState, 'loadingProcess.error', null);
+          _.set(watchedState, 'form.error', error.type);
+        } else if (error instanceof Error) {
+          _.set(watchedState, 'form.error', null);
+          _.set(watchedState, 'loadingProcess.status', 'error');
+          _.set(watchedState, 'loadingProcess.error', error.message);
+        }
       });
   });
 
   nodeDispatcher.links.forEach((link) => link.addEventListener('click', (e) => {
     e.preventDefault();
     const locale = e.target.innerText.toLowerCase();
-    _.set(watchedState, 'locale', locale);
+    _.set(watchedState, 'uiState.locale', locale);
   }));
-  render(watchedState);
+
+  _.set(watchedState, 'uiState.locale', i18next.language);
 });

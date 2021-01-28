@@ -63,6 +63,7 @@ export default () => i18next.init({
   const nodeDispatcher = {
     form: document.querySelector('#addChannelForm'),
     links: [...document.querySelectorAll('.dropdown-menu > a')],
+    modalCloseButton: document.querySelector('#previewModalCloseButton'),
   };
 
   nodeDispatcher.form.addEventListener('submit', (e) => {
@@ -111,6 +112,10 @@ export default () => i18next.init({
     const locale = e.target.innerText.toLowerCase();
     _.set(watchedState, 'uiState.locale', locale);
   }));
+
+  nodeDispatcher.modalCloseButton.addEventListener('click', () => {
+    _.set(state, 'uiState.modalVisibility', 'hide');
+  });
 
   _.set(watchedState, 'uiState.locale', i18next.language);
 });

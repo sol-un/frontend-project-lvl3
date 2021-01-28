@@ -19,6 +19,14 @@ html
       }
       }
   body
+    #previewModal.modal.fade(tabindex='-1' role='dialog' data-backdrop='static' aria-labelledby='exampleModalLabel' aria-hidden='true')
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header
+            h5#previewModalTitle.modal-title
+            #previewModalCloseButton.button.close(type='button' data-dismiss='modal' aria-label='Close')
+              span(aria-hidden='true') &times;
+          #previewModalBody.modal-body
     nav.navbar.navbar-expand-md.navbar-dark.fixed-top.bg-dark
       .navbar-brand
         .container

@@ -16,55 +16,10 @@ const renderStrings = (nodes) => {
   suggestedLink.innerHTML = t('suggestedLinks', { link1: '$t(link1)', link2: '$t(link2)' });
 };
 
-const renderModal = (state) => {
-  const { title, description } = state.modalContents;
-  $('#myModal').modal('dispose');
-  const modal = document.createElement('div');
-  modal.classList.add('modal', 'fade');
-  modal.setAttribute('id', 'myModal');
-  modal.setAttribute('tabindex', '-1');
-  modal.setAttribute('role', 'dialog');
-  modal.setAttribute('data-backdrop', 'static');
-  modal.setAttribute('aria-labelledby', 'synopsisModal');
-  modal.setAttribute('aria-hidden', 'true');
-
-  const modalDialog = document.createElement('div');
-  modalDialog.classList.add('modal-dialog');
-  modalDialog.setAttribute('role', 'document');
-
-  const modalContent = document.createElement('div');
-  modalContent.classList.add('modal-content');
-
-  const modalHeader = document.createElement('div');
-  modalHeader.classList.add('modal-header');
-
-  const modalTitle = document.createElement('h5');
-  modalTitle.classList.add('modal-title');
-  modalTitle.setAttribute('id', 'synopsisModal');
+const renderModalContents = (modalNodes, { title, description }) => {
+  const { modalTitle, modalBody } = modalNodes;
   modalTitle.innerText = title;
-  modalHeader.append(modalTitle);
-
-  const modalCloseButton = document.createElement('button');
-  modalCloseButton.classList.add('close');
-  modalCloseButton.setAttribute('type', 'button');
-  modalCloseButton.setAttribute('data-dismiss', 'modal');
-  modalCloseButton.setAttribute('aria-label', 'Close');
-  modalCloseButton.innerHTML = '<span aria-hidden="true">&times;</span>';
-  modalCloseButton.addEventListener('click', () => {
-    $('#myModal').modal('toggle');
-    _.set(state, 'uiState.modalVisibility', 'hide');
-  });
-  modalHeader.append(modalCloseButton);
-
-  const modalBody = document.createElement('div');
-  modalBody.classList.add('modal-body');
   modalBody.innerHTML = description;
-
-  modalContent.append(modalHeader);
-  modalContent.append(modalBody);
-  modalDialog.append(modalContent);
-  modal.append(modalDialog);
-  document.body.append(modal);
 };
 
 const renderActiveChannel = ({
@@ -112,7 +67,7 @@ const renderCard = ({
     _.set(state, 'modalContents', { title, description });
     _.set(state, 'uiState.modalVisibility', 'show');
     state.uiState.viewedPosts.add(link);
-    $('#myModal').modal('toggle');
+    $('#previewModal').modal('toggle');
   });
   cardBody.append(previewButton);
 
@@ -266,9 +221,14 @@ export default (state) => {
     form,
     loadingProcess,
     uiState,
+    modalContents,
   } = state;
 
   const nodeDispatcher = {
+    modal: {
+      modalTitle: document.querySelector('#previewModalTitle'),
+      modalBody: document.querySelector('#previewModalBody'),
+    },
     input: document.querySelector('input'),
     button: document.querySelector('#addButton'),
     mount: document.querySelector('#channelNav'),
@@ -289,9 +249,7 @@ export default (state) => {
 
   renderFeeds(nodeDispatcher, state);
 
-  const prevModal = document.querySelector('#myModal');
-  if (prevModal) prevModal.remove();
-  renderModal(state);
+  renderModalContents(nodeDispatcher.modal, modalContents);
 
   if (form.error || loadingProcess.error) {
     renderFeedback(nodeDispatcher, form.error || loadingProcess.error);

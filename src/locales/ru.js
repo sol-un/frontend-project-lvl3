@@ -16,8 +16,10 @@ export default {
   translation: {
     deleteAllButton: 'Сбросить',
     header: 'А вы пользуетесь RSS?',
-    pitch: 'Если еще нет, то попробуйте прямо сейчас! Это бесплатно. Вот как можно оставаться в курсе всех последних новостей, используя RSS: найдите интересующую вас <a data-toggle="collapse" href="#collapseLinks" role="button" aria-expanded="false" aria-controls="collapseExample">RSS-ленту</a>, вставьте ссылку на нее в поле ниже и нажмите кнопку <i>Добавить</i>:',
-    suggestedLink: 'Например: <u class="user-select-all">https://ru.hexlet.io/blog.rss</u><u class="user-select-all">https://www.liga.net/news/sport/rss.xml</u>',
+    pitch: 'Если еще нет, то попробуйте прямо сейчас! Это бесплатно. Вот как можно оставаться в курсе всех последних новостей, используя RSS: найдите интересующую вас {{- linkText, link}}-ленту, вставьте ссылку на нее в поле ниже и нажмите кнопку {{- addButtonText, italic}}:',
+    suggestedLinks: 'Например: {{- link1, pseudolink}}{{- link2, pseudolink}}',
+    link1: 'https://ru.hexlet.io/blog.rss',
+    link2: 'https://www.liga.net/news/sport/rss.xml',
     addButton: 'Добавить',
     creator: 'Автор: ',
     synopsis: 'Предпросмотр',

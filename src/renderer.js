@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import _ from 'lodash';
 import i18next from 'i18next';
+import { formatDate } from './utils.js';
 
 const t = (key, data) => i18next.t(key, data);
 
@@ -10,9 +11,9 @@ const renderStrings = (nodes) => {
   } = nodes;
 
   header.innerText = t('header');
-  pitch.innerHTML = t('pitch');
+  pitch.innerHTML = t('pitch', { linkText: 'RSS', addButtonText: '$t(addButton)' });
   addButton.innerText = t('addButton');
-  suggestedLink.innerHTML = t('suggestedLink');
+  suggestedLink.innerHTML = t('suggestedLinks', { link1: '$t(link1)', link2: '$t(link2)' });
 };
 
 const renderModal = (state) => {
@@ -120,17 +121,8 @@ const renderCard = ({
   cardBody.append(cardFooter);
 
   if (pubDate) {
-    const normalizedDate = new Date(pubDate);
-    const day = normalizedDate.getDate();
-    const month = normalizedDate.getMonth();
-    const year = normalizedDate.getFullYear();
-    const [digit1, digit2] = normalizedDate.getMinutes().toString();
-    const minutes = digit2 ? `${digit1}${digit2}` : `0${digit1}`;
-    const time = `${normalizedDate.getHours()}:${minutes}`;
     const pubDateContainer = document.createElement('div');
-    pubDateContainer.innerHTML = `<i class="card-text">${t('pubDate', {
-      time, day, month, year,
-    })}</i>`;
+    pubDateContainer.innerHTML = `<i class="card-text">${t('pubDate', formatDate(pubDate))}</i>`;
     cardFooter.append(pubDateContainer);
   }
 

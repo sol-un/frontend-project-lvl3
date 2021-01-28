@@ -1,6 +1,8 @@
 import onChange from 'on-change';
 import _ from 'lodash';
 import i18next from 'i18next';
+import { string } from 'yup';
+import { formatText } from './utils.js';
 import en from './locales/en.js';
 import ru from './locales/ru.js';
 import es from './locales/es.js';
@@ -23,6 +25,7 @@ const articlesUpdater = (state) => {
 };
 
 export default () => i18next.init({
+  interpolation: { format: formatText },
   lng: 'en',
   resources: { en, ru, es },
 }).then(() => {

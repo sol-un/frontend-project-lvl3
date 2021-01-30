@@ -4,7 +4,6 @@
   "description": "An RSS reader developed as a pet project under the guidance of Hexlet, a self-education platform.",
   "main": "index.js",
   "scripts": {
-    "test": "jest --colors",
     "build": "webpack",
     "start:dev": "webpack serve"
   },

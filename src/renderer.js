@@ -149,25 +149,12 @@ const renderTab = (mount, { url, title }, state) => {
 
 const renderFeedback = (nodeDispatcher, error) => {
   const { flashContainer } = nodeDispatcher;
-  flashContainer.innerHTML = '';
-
-  const alert = document.createElement('div');
-  alert.classList.add('alert', 'alert-danger', 'alert-dismissible', 'fade', 'show');
-  alert.innerText = t(`errors.${error}`);
-  flashContainer.append(alert);
-
-  const button = document.createElement('button');
-  button.classList.add('close');
-  button.setAttribute('type', 'button');
-  button.setAttribute('data-dismiss', 'alert');
-  alert.append(button);
-
-  const span = document.createElement('span');
-  span.innerHTML = '&times;';
-  button.append(span);
-
-  $(flashContainer)
-    .fadeIn(100);
+  flashContainer.innerHTML = `
+    <div class="alert alert-${error ? 'danger' : 'info'} alert-dismissible fade show">
+      ${error ? t(`errors.${error}`) : 'Rss has been loaded'}
+      <button class="close" type="button" data-dismiss="alert"><span>×</span></button>
+    </div>
+  `;
 };
 
 const renderFeeds = (nodeDispatcher, state) => {
@@ -253,9 +240,10 @@ export default (state) => {
 
   if (form.error || loadingProcess.error) {
     renderFeedback(nodeDispatcher, form.error || loadingProcess.error);
+  } else if (loadingProcess.status === 'success') {
+    renderFeedback(nodeDispatcher);
   } else {
-    $(nodeDispatcher.flashContainer)
-      .fadeOut(100);
+    nodeDispatcher.flashContainer.innerHTML = '';
   }
 
   const navDispatcher = {

@@ -2,26 +2,53 @@ import onChange from 'on-change';
 import _ from 'lodash';
 import i18next from 'i18next';
 import { string } from 'yup';
+import axios from 'axios';
 import { formatText } from './utils.js';
 import en from './locales/en.js';
 import ru from './locales/ru.js';
 import es from './locales/es.js';
-import process from './data-handler.js';
 import render from './renderer.js';
-import validate from './validator.js';
+import parse from './parser.js';
 
-const articlesUpdater = (state) => {
+// const process = (link) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
+const process = (link) => axios.get(`https://cors-anywhere.herokuapp.com/${link}`)
+  .then((response) => {
+    const [channelData, channelContents] = parse(response.data);
+    const id = _.kebabCase(link);
+    const fullChannelData = { ...channelData, id, link };
+    const idedChannelContents = channelContents.map((item) => ({ ...item, id }));
+    return [fullChannelData, idedChannelContents];
+  })
+  .catch((error) => {
+    if (error.response || error.request) {
+      throw new Error('network');
+    } else {
+      throw error;
+    }
+  });
+
+const validate = (link, blacklist) => {
+  const schema = string()
+    .url()
+    .notOneOf(blacklist);
+  return schema.validate(link);
+};
+
+const updatePosts = (state) => {
   if (state.uiState.modalVisibility === 'show' || state.loadingProcess.status === 'fetching') {
-    setTimeout(() => articlesUpdater(state), 5 * 1000);
+    setTimeout(() => updatePosts(state), 5 * 1000);
     return;
   }
-  const { channels } = onChange.target(state);
+  const { channels } = state;
   channels.map(({
-    url,
-  }) => process(url)
-    .then(([, contents]) => _.set(onChange.target(state), 'posts', _.concat(contents, _.filter(onChange.target(state).posts, (o) => o.url !== url))))
-    .catch(() => _.noop()));
-  setTimeout(() => articlesUpdater(state), 5 * 1000);
+    id, link,
+  }) => process(link)
+    .then(([, contents]) => {
+      const filteredPosts = _.filter(state.posts, (o) => o.id !== id);
+      const newPosts = _.concat(contents, filteredPosts);
+      _.set(state, 'posts', newPosts);
+    }));
+  setTimeout(() => updatePosts(state), 5 * 1000);
 };
 
 export default () => i18next.init({
@@ -58,7 +85,7 @@ export default () => i18next.init({
     render(watchedState);
   });
 
-  setTimeout((prevState = watchedState) => articlesUpdater(prevState), 5 * 1000);
+  setTimeout(() => updatePosts(watchedState), 5 * 1000);
 
   const nodeDispatcher = {
     form: document.querySelector('#addChannelForm'),

@@ -4,20 +4,6 @@ html
     meta(charset='utf-8')
     meta(name='author' content='Mark Otto, Jacob Thornton, and Bootstrap contributors')
     title frontend-project-lvl3 &middot; Hexlet
-    style.
-      .bd-placeholder-img {
-      font-size: 1.125rem;
-      text-anchor: middle;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      }
-      @media (min-width: 768px) {
-      .bd-placeholder-img-lg {
-      font-size: 3.5rem;
-      }
-      }
   body
     #previewModal.modal.fade(tabindex='-1' role='dialog' data-backdrop='static' aria-labelledby='exampleModalLabel' aria-hidden='true')
       .modal-dialog(role='document')
@@ -57,11 +43,11 @@ html
             .col.text-center
               .feedback.mt-3.mb-3
               form#addChannelForm
-                input(type="text" name="link").form-control.my-3
+                input(type="text" aria-label="url" name="link").form-control.my-3
                 #collapseLinks.collapse
                   .card.card-body.
                 .button-container
-                  button(type="submit")#addButton.btn.btn-lg.btn-primary.mt-3.mb-3
+                  button(type="submit" aria-label="add")#addButton.btn.btn-lg.btn-primary.mt-3.mb-3
         .container#channelNav
       footer
         #badge

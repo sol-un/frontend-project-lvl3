@@ -1,5 +1,5 @@
 {
-  "name": "frontend-project-lvl3",
+  "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "An RSS reader developed as a pet project under the guidance of Hexlet, a self-education platform.",
   "main": "index.js",

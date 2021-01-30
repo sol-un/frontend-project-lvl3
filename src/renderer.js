@@ -39,8 +39,11 @@ const renderActiveChannel = ({
 const renderCard = ({
   title, description, link, creator, pubDate,
 }, state) => {
+  const cardFragment = new DocumentFragment();
+
   const card = document.createElement('div');
   card.classList.add('card', 'border-primary');
+  cardFragment.append(card);
 
   const cardBody = document.createElement('div');
   cardBody.classList.add('card-body');
@@ -87,25 +90,25 @@ const renderCard = ({
     cardFooter.append(linkContainer);
   }
 
-  return card;
+  return cardFragment;
 };
 
-const renderContents = (contentsDiv, item, articles, state) => {
-  const filteredArticles = articles.filter(({ url }) => url === item.url);
+const renderContents = (contentsDiv, item, posts, state) => {
+  const filteredPosts = posts.filter(({ id }) => id === item.id);
   const div = document.createElement('div');
-  div.setAttribute('data-url', item.url);
+  div.setAttribute('data-id', item.id);
   div.classList.add('tab-pane');
   contentsDiv.append(div);
 
-  filteredArticles.forEach((article) => {
-    const card = renderCard(article, state);
+  filteredPosts.forEach((post) => {
+    const card = renderCard(post, state);
     return div.append(card);
   });
 
   return div;
 };
 
-const renderTab = (mount, { url, title }, state) => {
+const renderTab = (mount, { id, title }, state) => {
   const navItem = document.createElement('li');
   navItem.classList.add('nav-item');
   mount.append(navItem);
@@ -113,13 +116,13 @@ const renderTab = (mount, { url, title }, state) => {
   const a = document.createElement('a');
   a.classList.add('nav-link');
   a.setAttribute('data-toggle', 'tab');
-  a.setAttribute('data-url', url);
+  a.setAttribute('data-id', id);
   a.setAttribute('href', '#');
   a.innerText = title;
   a.addEventListener('click', (e) => {
     e.preventDefault();
-    const activeChannelUrl = e.target.getAttribute('data-url');
-    _.set(state, 'uiState.activeChannelUrl', activeChannelUrl);
+    const activeChannelId = e.target.getAttribute('data-id');
+    _.set(state, 'uiState.activeChannel', activeChannelId);
   });
   navItem.append(a);
 
@@ -133,14 +136,14 @@ const renderTab = (mount, { url, title }, state) => {
     const {
       uiState, channels, posts, addedLinks,
     } = state;
-    const urlToDelete = e.target.closest('a').getAttribute('data-url');
+    const idToDelete = e.target.closest('a').getAttribute('data-id');
 
-    _.set(state, 'channels', _.filter(channels, (o) => o.url !== urlToDelete));
-    _.set(state, 'posts', _.filter(posts, (o) => o.url !== urlToDelete));
-    _.set(state, 'addedLinks', _.filter(addedLinks, (o) => !Object.keys(o).includes(urlToDelete)));
+    _.set(state, 'channels', _.filter(channels, (o) => o.id !== idToDelete));
+    _.set(state, 'posts', _.filter(posts, (o) => o.id !== idToDelete));
+    _.set(state, 'addedLinks', _.filter(addedLinks, (o) => !Object.keys(o).includes(idToDelete)));
 
-    if (urlToDelete === uiState.activeChannelUrl) {
-      _.set(state, 'uiState.activeChannelUrl', state.channels[0].url);
+    if (idToDelete === uiState.activeChannel) {
+      _.set(state, 'uiState.activeChannel', state.channels[0].id);
     }
   });
 
@@ -247,9 +250,9 @@ export default (state) => {
   }
 
   const navDispatcher = {
-    activeLink: document.querySelector(`a[data-url="${uiState.activeChannelUrl}"]`),
+    activeLink: document.querySelector(`a[data-id="${uiState.activeChannel}"]`),
     navLinks: [...document.querySelectorAll('.nav-link')],
-    activePane: document.querySelector(`div[data-url="${uiState.activeChannelUrl}"]`),
+    activePane: document.querySelector(`div[data-id="${uiState.activeChannel}"]`),
     navPanes: [...document.querySelectorAll('.tab-pane')],
   };
 

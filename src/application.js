@@ -10,10 +10,10 @@ import es from './locales/es.js';
 import render from './renderer.js';
 import parse from './parser.js';
 
-// const process = (link) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
-const process = (link) => axios.get(`https://cors-anywhere.herokuapp.com/${link}`)
+const process = (link) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
+// const process = (link) => axios.get(`https://cors-anywhere.herokuapp.com/${link}`)
   .then((response) => {
-    const [channelData, channelContents] = parse(response.data);
+    const [channelData, channelContents] = parse(response.data.contents);
     const id = _.kebabCase(link);
     const fullChannelData = { ...channelData, id, link };
     const idedChannelContents = channelContents.map((item) => ({ ...item, id }));
@@ -111,13 +111,10 @@ export default () => i18next.init({
             _.set(watchedState, 'form.error', null);
             _.set(watchedState, 'loadingProcess.status', 'success');
             _.set(watchedState, 'loadingProcess.error', null);
-            _.set(watchedState, 'uiState.activeChannelUrl', data.url);
+            _.set(watchedState, 'uiState.activeChannel', data.id);
             _.set(watchedState, 'channels', [...watchedState.channels, data]);
             _.set(watchedState, 'posts', [...watchedState.posts, ...contents]);
-            _.set(watchedState, 'addedLinks', [...watchedState.addedLinks, { [data.url]: link }]);
-          })
-          .catch((error) => {
-            throw error;
+            _.set(watchedState, 'addedLinks', [...watchedState.addedLinks, { [data.id]: link }]);
           });
       })
       .catch((error) => {

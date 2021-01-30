@@ -37,7 +37,7 @@ const renderActiveChannel = ({
 };
 
 const renderCard = ({
-  title, description, link, creator, pubDate,
+  id, title, description, link, creator, pubDate,
 }, state) => {
   const cardFragment = new DocumentFragment();
 
@@ -50,7 +50,7 @@ const renderCard = ({
   card.append(cardBody);
 
   const cardTitle = document.createElement('h4');
-  cardTitle.classList.add('card-title', `font-weight-${state.uiState.viewedPosts.has(link) ? 'normal' : 'bold'}`);
+  cardTitle.classList.add('card-title', `font-weight-${state.uiState.viewedPosts.has(id) ? 'normal' : 'bold'}`);
   cardTitle.innerText = title;
   cardBody.append(cardTitle);
 
@@ -69,7 +69,7 @@ const renderCard = ({
   previewButton.addEventListener('click', () => {
     _.set(state, 'modalContents', { title, description });
     _.set(state, 'uiState.modalVisibility', 'show');
-    state.uiState.viewedPosts.add(link);
+    state.uiState.viewedPosts.add(id);
     $('#previewModal').modal('toggle');
   });
   cardBody.append(previewButton);
@@ -94,7 +94,7 @@ const renderCard = ({
 };
 
 const renderContents = (contentsDiv, item, posts, state) => {
-  const filteredPosts = posts.filter(({ id }) => id === item.id);
+  const filteredPosts = posts.filter(({ channelId }) => channelId === item.id);
   const div = document.createElement('div');
   div.setAttribute('data-id', item.id);
   div.classList.add('tab-pane');
@@ -108,7 +108,7 @@ const renderContents = (contentsDiv, item, posts, state) => {
   return div;
 };
 
-const renderTab = (mount, { id, title }, state) => {
+const renderTab = (mount, { id, link, title }, state) => {
   const navItem = document.createElement('li');
   navItem.classList.add('nav-item');
   mount.append(navItem);
@@ -117,6 +117,7 @@ const renderTab = (mount, { id, title }, state) => {
   a.classList.add('nav-link');
   a.setAttribute('data-toggle', 'tab');
   a.setAttribute('data-id', id);
+  a.setAttribute('data-link', link);
   a.setAttribute('href', '#');
   a.innerText = title;
   a.addEventListener('click', (e) => {
@@ -137,10 +138,11 @@ const renderTab = (mount, { id, title }, state) => {
       uiState, channels, posts, addedLinks,
     } = state;
     const idToDelete = e.target.closest('a').getAttribute('data-id');
+    const linkToDelete = e.target.closest('a').getAttribute('data-link');
 
     _.set(state, 'channels', _.filter(channels, (o) => o.id !== idToDelete));
-    _.set(state, 'posts', _.filter(posts, (o) => o.id !== idToDelete));
-    _.set(state, 'addedLinks', _.filter(addedLinks, (o) => !Object.keys(o).includes(idToDelete)));
+    _.set(state, 'posts', _.filter(posts, ({ channelId }) => channelId !== idToDelete));
+    _.set(state, 'addedLinks', _.filter(addedLinks, (item) => item !== linkToDelete));
 
     if (idToDelete === uiState.activeChannel) {
       _.set(state, 'uiState.activeChannel', state.channels[0].id);
@@ -153,9 +155,8 @@ const renderTab = (mount, { id, title }, state) => {
 const renderFeedback = (nodeDispatcher, error) => {
   const { flashContainer } = nodeDispatcher;
   flashContainer.innerHTML = `
-    <div class="alert alert-${error ? 'danger' : 'info'} alert-dismissible fade show">
+    <div class="alert alert-${error ? 'danger' : 'info'} fade show">
       ${error ? t(`errors.${error}`) : 'Rss has been loaded'}
-      <button class="close" type="button" data-dismiss="alert"><span>×</span></button>
     </div>
   `;
 };
@@ -245,10 +246,7 @@ export default (state) => {
     renderFeedback(nodeDispatcher, form.error || loadingProcess.error);
   } else if (loadingProcess.status === 'success') {
     renderFeedback(nodeDispatcher);
-  } else {
-    nodeDispatcher.flashContainer.innerHTML = '';
   }
-
   const navDispatcher = {
     activeLink: document.querySelector(`a[data-id="${uiState.activeChannel}"]`),
     navLinks: [...document.querySelectorAll('.nav-link')],

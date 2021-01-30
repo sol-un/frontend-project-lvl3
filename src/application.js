@@ -1,4 +1,3 @@
-import onChange from 'on-change';
 import _ from 'lodash';
 import i18next from 'i18next';
 import { string } from 'yup';
@@ -7,16 +6,20 @@ import { formatText } from './utils.js';
 import en from './locales/en.js';
 import ru from './locales/ru.js';
 import es from './locales/es.js';
-import render from './renderer.js';
 import parse from './parser.js';
+import watchedState from './watcher.js';
 
-const process = (link) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
-// const process = (link) => axios.get(`https://cors-anywhere.herokuapp.com/${link}`)
+// const process = (link) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
+const process = (link) => axios.get(`https://cors-anywhere.herokuapp.com/${link}`)
   .then((response) => {
-    const [channelData, channelContents] = parse(response.data.contents);
-    const id = _.kebabCase(link);
+    const [channelData, channelContents] = parse(response.data);
+    const id = _.uniqueId();
     const fullChannelData = { ...channelData, id, link };
-    const idedChannelContents = channelContents.map((item) => ({ ...item, id }));
+    const idedChannelContents = channelContents.map((item) => ({
+      ...item,
+      channelId: id,
+      id: _.uniqueId(),
+    }));
     return [fullChannelData, idedChannelContents];
   })
   .catch((error) => {
@@ -42,11 +45,23 @@ const updatePosts = (state) => {
   const { channels } = state;
   channels.map(({
     id, link,
-  }) => process(link)
-    .then(([, contents]) => {
-      const filteredPosts = _.filter(state.posts, (o) => o.id !== id);
-      const newPosts = _.concat(contents, filteredPosts);
-      _.set(state, 'posts', newPosts);
+  }) => axios.get(`https://cors-anywhere.herokuapp.com/${link}`)
+    .then((response) => {
+      const [, newPosts] = parse(response.data);
+      const oldPosts = _.filter(state.posts, ({ channelId }) => channelId === id);
+      const oldLinks = oldPosts.map((item) => item.link);
+      const postsToAdd = newPosts.map((newPost) => {
+        if (oldLinks.includes(newPost.link)) {
+          return oldPosts.find((oldPost) => oldPost.link === newPost.link);
+        }
+        return {
+          ...newPost,
+          channelId: id,
+          id: _.uniqueId(),
+        };
+      });
+      const otherPosts = _.filter(state.posts, ({ channelId }) => channelId !== id);
+      _.set(state, 'posts', [...otherPosts, ...postsToAdd]);
     }));
   setTimeout(() => updatePosts(state), 5 * 1000);
 };
@@ -56,35 +71,6 @@ export default () => i18next.init({
   lng: 'en',
   resources: { en, ru, es },
 }).then(() => {
-  const state = {
-    form: {
-      input: '',
-      status: 'active',
-      error: null,
-    },
-    loadingProcess: {
-      status: 'idle',
-      error: null,
-    },
-    uiState: {
-      modalVisibility: 'hide',
-      activeChannel: null,
-      viewedPosts: new Set(),
-      locale: null,
-    },
-    channels: [],
-    posts: [],
-    addedLinks: [],
-    modalContents: { title: '', description: '' },
-  };
-
-  const watchedState = onChange(state, (path) => {
-    if (path === 'uiState.locale') {
-      i18next.changeLanguage(watchedState.uiState.locale);
-    }
-    render(watchedState);
-  });
-
   setTimeout(() => updatePosts(watchedState), 5 * 1000);
 
   const nodeDispatcher = {
@@ -99,11 +85,10 @@ export default () => i18next.init({
     if (link.length === 0) {
       return;
     }
-    const blacklist = watchedState.addedLinks.flatMap((o) => Object.values(o));
-    validate(link, blacklist)
+    _.set(watchedState, 'loadingProcess.status', 'fetching');
+    validate(link, watchedState.addedLinks)
       .then(() => {
         _.set(watchedState, 'form.status', 'disabled');
-        _.set(watchedState, 'loadingProcess.status', 'fetching');
         return process(link)
           .then(([data, contents]) => {
             _.set(watchedState, 'form.input', '');
@@ -114,7 +99,7 @@ export default () => i18next.init({
             _.set(watchedState, 'uiState.activeChannel', data.id);
             _.set(watchedState, 'channels', [...watchedState.channels, data]);
             _.set(watchedState, 'posts', [...watchedState.posts, ...contents]);
-            _.set(watchedState, 'addedLinks', [...watchedState.addedLinks, { [data.id]: link }]);
+            _.set(watchedState, 'addedLinks', [...watchedState.addedLinks, link]);
           });
       })
       .catch((error) => {
@@ -138,7 +123,7 @@ export default () => i18next.init({
   }));
 
   nodeDispatcher.modalCloseButton.addEventListener('click', () => {
-    _.set(state, 'uiState.modalVisibility', 'hide');
+    _.set(watchedState, 'uiState.modalVisibility', 'hide');
   });
 
   _.set(watchedState, 'uiState.locale', i18next.language);

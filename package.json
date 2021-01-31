@@ -28,6 +28,7 @@
     "lodash": "^4.17.20",
     "on-change": "^2.2.0",
     "popper.js": "^1.16.1",
+    "urijs": "^1.19.5",
     "yup": "^0.29.3"
   },
   "devDependencies": {

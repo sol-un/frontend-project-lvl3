@@ -2,6 +2,7 @@ import _ from 'lodash';
 import i18next from 'i18next';
 import { string } from 'yup';
 import axios from 'axios';
+import URI from 'urijs';
 import { formatText } from './utils.js';
 import en from './locales/en.js';
 import ru from './locales/ru.js';
@@ -85,8 +86,9 @@ export default () => i18next.init({
     if (link.length === 0) {
       return;
     }
+    const noHashLink = new URI(link).fragment('').toString();
     _.set(watchedState, 'loadingProcess.status', 'fetching');
-    validate(link, watchedState.addedLinks)
+    validate(noHashLink, watchedState.addedLinks)
       .then(() => {
         _.set(watchedState, 'form.status', 'disabled');
         return process(link)
@@ -99,7 +101,7 @@ export default () => i18next.init({
             _.set(watchedState, 'uiState.activeChannel', data.id);
             _.set(watchedState, 'channels', [...watchedState.channels, data]);
             _.set(watchedState, 'posts', [...watchedState.posts, ...contents]);
-            _.set(watchedState, 'addedLinks', [...watchedState.addedLinks, link]);
+            _.set(watchedState, 'addedLinks', [...watchedState.addedLinks, noHashLink]);
           });
       })
       .catch((error) => {

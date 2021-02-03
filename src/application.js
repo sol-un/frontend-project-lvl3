@@ -10,10 +10,9 @@ import es from './locales/es.js';
 import parse from './parser.js';
 import watchedState from './watcher.js';
 
-// const process = (link) => axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
-const process = (link) => axios.get(`https://cors-anywhere.herokuapp.com/${link}`)
+const process = (link) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(link)}`)
   .then((response) => {
-    const [channelData, channelContents] = parse(response.data);
+    const [channelData, channelContents] = parse(response.data.contents);
     const id = _.uniqueId();
     const fullChannelData = { ...channelData, id, link };
     const idedChannelContents = channelContents.map((item) => ({
@@ -39,16 +38,12 @@ const validate = (link, blacklist) => {
 };
 
 const updatePosts = (state) => {
-  if (state.uiState.modalVisibility === 'show' || state.loadingProcess.status === 'fetching') {
-    setTimeout(() => updatePosts(state), 5 * 1000);
-    return;
-  }
   const { channels } = state;
   channels.map(({
     id, link,
-  }) => axios.get(`https://cors-anywhere.herokuapp.com/${link}`)
+  }) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(link)}`)
     .then((response) => {
-      const [, newPosts] = parse(response.data);
+      const [, newPosts] = parse(response.data.contents);
       const oldPosts = _.filter(state.posts, ({ channelId }) => channelId === id);
       const oldLinks = oldPosts.map((item) => item.link);
       const postsToAdd = newPosts.map((newPost) => {
@@ -108,6 +103,20 @@ export default () => i18next.init({
         _.set(watchedState, 'form.input', link);
         _.set(watchedState, 'form.status', 'active');
         if (error.name === 'ValidationError') {
+          // Object.assign(
+          //   watchedState,
+          //   {
+          //     loadingProcess: {
+          //       error: null,
+          //       status: watchedState.loadingProcess.status,
+          //     },
+          //     form: {
+          //       input: watchedState.form.input,
+          //       status: watchedState.form.status,
+          //       error: error.type,
+          //     },
+          //   },
+          // );
           _.set(watchedState, 'loadingProcess.error', null);
           _.set(watchedState, 'form.error', error.type);
         } else if (error instanceof Error) {

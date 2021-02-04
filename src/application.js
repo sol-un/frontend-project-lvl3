@@ -122,7 +122,7 @@ export default () => i18next.init({
         } else if (error instanceof Error) {
           _.set(watchedState, 'form.error', null);
           _.set(watchedState, 'loadingProcess.status', 'error');
-          _.set(watchedState, 'loadingProcess.error', error.message);
+          _.set(watchedState, 'loadingProcess.error', JSON.stringify(error));
         }
       });
   });

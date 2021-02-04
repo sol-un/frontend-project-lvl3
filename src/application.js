@@ -41,7 +41,7 @@ const updatePosts = (state) => {
   const { channels } = state;
   channels.map(({
     id, link,
-  }) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(link)}`)
+  }) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(link)}`)
     .then((response) => {
       const [, newPosts] = parse(response.data.contents);
       const oldPosts = _.filter(state.posts, ({ channelId }) => channelId === id);

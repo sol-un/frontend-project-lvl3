@@ -1,9 +1,6 @@
 import $ from 'jquery';
 import _ from 'lodash';
-import i18next from 'i18next';
-import { formatDate } from './utils.js';
-
-const t = (key, data) => i18next.t(key, data);
+import { formatDate, t } from './utils.js';
 
 const renderStrings = (nodes) => {
   const {

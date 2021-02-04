@@ -1,3 +1,5 @@
+import i18next from 'i18next';
+
 const formatText = (value, format) => {
   switch (format) {
     case 'italic':
@@ -25,4 +27,6 @@ const formatDate = (timestamp) => {
   };
 };
 
-export { formatDate, formatText };
+const t = (key, data) => i18next.t(key, data);
+
+export { formatDate, formatText, t };

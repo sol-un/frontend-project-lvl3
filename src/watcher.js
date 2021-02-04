@@ -15,7 +15,7 @@ const state = {
   uiState: {
     modalVisibility: 'hide',
     activeChannel: null,
-    viewedPosts: new Set(),
+    viewedPosts: [],
     locale: null,
   },
   channels: [],

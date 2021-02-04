@@ -47,7 +47,7 @@ const renderCard = ({
   card.append(cardBody);
 
   const cardTitle = document.createElement('h4');
-  cardTitle.classList.add('card-title', `font-weight-${state.uiState.viewedPosts.has(id) ? 'normal' : 'bold'}`);
+  cardTitle.classList.add('card-title', `font-weight-${state.uiState.viewedPosts.includes(id) ? 'normal' : 'bold'}`);
   cardTitle.innerText = title;
   cardBody.append(cardTitle);
 
@@ -66,7 +66,9 @@ const renderCard = ({
   previewButton.addEventListener('click', () => {
     _.set(state, 'modalContents', { title, description });
     _.set(state, 'uiState.modalVisibility', 'show');
-    state.uiState.viewedPosts.add(id);
+    if (!state.uiState.viewedPosts.includes(id)) {
+      state.uiState.viewedPosts.push(id);
+    }
     $('#previewModal').modal('toggle');
   });
   cardBody.append(previewButton);

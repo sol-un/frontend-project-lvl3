@@ -10,7 +10,7 @@ import es from './locales/es.js';
 import parse from './parser.js';
 import watchedState from './watcher.js';
 
-const process = (link) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(link)}`)
+const process = (link) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(link)}`)
   .then((response) => {
     const [channelData, channelContents] = parse(response.data.contents);
     const id = _.uniqueId();

@@ -7,12 +7,6 @@ module.exports = {
   output: {
     path: __dirname,
   },
-  devServer: {
-    port: 3000,
-    watchOptions: {
-      poll: true,
-    },
-  },
   module: {
     rules: [
       {

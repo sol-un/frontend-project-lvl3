@@ -4,7 +4,6 @@ import render from './renderer.js';
 
 const state = {
   form: {
-    input: '',
     status: 'active',
     error: null,
   },
@@ -13,7 +12,6 @@ const state = {
     error: null,
   },
   uiState: {
-    modalVisibility: 'hide',
     activeChannel: null,
     viewedPosts: [],
     locale: null,

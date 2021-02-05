@@ -33,12 +33,16 @@ const process = (link) => axios.get(`https://hexlet-allorigins.herokuapp.com/get
     }
   });
 
-const validate = (link, blacklist) => {
-  const schema = string()
-    .url()
-    .notOneOf(blacklist);
-  return schema.validate(link);
-};
+const getSchema = (blacklist) => string()
+  .url()
+  .notOneOf(blacklist);
+
+// const validate = (link, blacklist) => {
+//   const schema = string()
+//     .url()
+//     .notOneOf(blacklist);
+//   return schema.validate(link);
+// };
 
 const updatePosts = (state) => {
   const { channels } = state;
@@ -108,35 +112,39 @@ export default () => i18next.init({
     const noHashLink = new URI(link).fragment('').toString();
     watchedState.loadingProcess.status = 'fetching';
     watchedState.form.status = 'disabled';
-    validate(noHashLink, watchedState.addedLinks)
-      .then(() => process(link)
-        .then(([data, contents]) => {
-          watchedState.form = {
-            input: '',
-            status: 'active',
-            error: null,
-          };
-          watchedState.loadingProcess = {
-            status: 'success',
-            error: null,
-          };
-          watchedState.uiState.activeChannel = data.id;
-          watchedState.channels = [...watchedState.channels, data];
-          watchedState.posts = [...watchedState.posts, ...contents];
-          watchedState.addedLinks = [...watchedState.addedLinks, noHashLink];
-        }))
+    try {
+      getSchema(watchedState.addedLinks).validateSync(noHashLink);
+    } catch (error) {
+      watchedState.form = { status: 'active', error: error.type };
+      watchedState.loadingProcess = { status: 'idle', error: null };
+      return;
+    }
+    process(link)
+      .then(([data, contents]) => {
+        watchedState.form = {
+          input: '',
+          status: 'active',
+          error: null,
+        };
+        watchedState.loadingProcess = {
+          status: 'success',
+          error: null,
+        };
+        watchedState.uiState.activeChannel = data.id;
+        watchedState.channels = [...watchedState.channels, data];
+        watchedState.posts = [...watchedState.posts, ...contents];
+        watchedState.addedLinks = [...watchedState.addedLinks, noHashLink];
+      })
       .catch((error) => {
-        watchedState.form.status = 'active';
-        if (error.name === 'ValidationError') {
-          watchedState.loadingProcess.error = null;
-          watchedState.form.error = error.type;
-        } else if (error instanceof Error) {
-          watchedState.loadingProcess = {
-            status: error,
-            error: error.message,
-          };
-          watchedState.form.error = null;
-        }
+        // if (error.name === 'ValidationError') {
+
+        // } else if (error instanceof Error) {
+        watchedState.loadingProcess = {
+          status: 'error',
+          error: error.message,
+        };
+        watchedState.form = { status: 'active', error: null };
+        // }
       });
   });
 

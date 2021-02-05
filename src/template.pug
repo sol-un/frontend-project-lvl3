@@ -5,7 +5,7 @@ html
     meta(name='author' content='Mark Otto, Jacob Thornton, and Bootstrap contributors')
     title frontend-project-lvl3 &middot; Hexlet
   body.pt-5
-    #previewModal.modal.fade(tabindex='-1' role='dialog' data-backdrop='static' aria-labelledby='exampleModalLabel' aria-hidden='true')
+    #previewModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true')
       .modal-dialog(role='document')
         .modal-content
           .modal-header
@@ -20,7 +20,7 @@ html
             .col-2.pl-0.pr-2
               img(src="https://cdn2.iconfinder.com/data/icons/social-icon-3/512/social_style_3_rss-512.png" width="32" height="32")
             .col-10.pl-0 The RSS Reader Project
-      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#myRssNavbar' aria-controls='myRssNavbar' aria-expanded='false' aria-label='Toggle navigation')
+      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#myRssNavbar' role='button' aria-controls='myRssNavbar' aria-expanded='false' aria-label='Toggle language menu')
         span.navbar-toggler-icon
       #myRssNavbar.collapse.navbar-collapse
         .mr-auto
@@ -50,5 +50,3 @@ html
                   button(type="submit" aria-label="add")#addButton.btn.btn-lg.btn-primary.mt-3.mb-3
         .container#channelNav
       footer
-        #badge
-          div(data-user="sol-un").github-profile-badge.custom-background

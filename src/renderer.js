@@ -9,15 +9,15 @@ const renderStrings = (nodes) => {
     header, pitch, addButton, suggestedLink,
   } = nodes;
 
-  header.innerText = t('header');
+  header.textContent = t('header');
   pitch.innerHTML = t('pitch', { linkText: 'RSS', addButtonText: '$t(addButton)' });
-  addButton.innerText = t('addButton');
+  addButton.textContent = t('addButton');
   suggestedLink.innerHTML = t('suggestedLinks', { link1: '$t(link1)', link2: '$t(link2)' });
 };
 
 const renderModalContents = (modalNodes, { title, description }) => {
   const { modalTitle, modalBody } = modalNodes;
-  modalTitle.innerText = title;
+  modalTitle.textContent = title;
   modalBody.innerHTML = description;
 };
 
@@ -48,23 +48,27 @@ const renderCard = ({
   cardBody.classList.add('card-body');
   card.append(cardBody);
 
-  const cardTitle = document.createElement('h4');
-  cardTitle.classList.add('card-title', `font-weight-${state.uiState.viewedPosts.includes(id) ? 'normal' : 'bold'}`);
-  cardTitle.innerText = title;
+  const cardTitle = document.createElement('a');
+  cardTitle.classList.add(`font-weight-${state.uiState.viewedPosts.includes(id) ? 'normal' : 'bold'}`);
+  cardTitle.setAttribute('href', link);
+  cardTitle.setAttribute('target', 'blank');
+  cardTitle.innerHTML = `<h4 class='card-title'>${title}</h4>`;
   cardBody.append(cardTitle);
 
   if (creator) {
     const cardSubtitle = document.createElement('h6');
     cardSubtitle.classList.add('card-subtitle');
     cardSubtitle.classList.add('text-muted');
-    cardSubtitle.innerText = `${t('creator')} ${creator}`;
+    cardSubtitle.textContent = `${t('creator')} ${creator}`;
     cardBody.append(cardSubtitle);
   }
 
   const previewButton = document.createElement('button');
   previewButton.classList.add('btn', 'btn-primary', 'my-3');
   previewButton.setAttribute('type', 'button');
-  previewButton.innerText = t('synopsis');
+  previewButton.setAttribute('role', 'button');
+  previewButton.setAttribute('aria-label', 'preview');
+  previewButton.textContent = t('synopsis');
   previewButton.addEventListener('click', () => {
     state.modalContents = { title, description };
     if (!state.uiState.viewedPosts.includes(id)) {
@@ -84,12 +88,6 @@ const renderCard = ({
     cardFooter.append(pubDateContainer);
   }
 
-  if (link) {
-    const linkContainer = document.createElement('div');
-    linkContainer.innerHTML = `<b class="card-text">${t('link')}</b>: <a class="card-link" href="${link}" target="_blank">${link}</a>`;
-    cardFooter.append(linkContainer);
-  }
-
   return cardFragment;
 };
 
@@ -98,6 +96,7 @@ const renderContents = (contentsDiv, item, posts, state) => {
   const div = document.createElement('div');
   div.setAttribute('data-id', item.id);
   div.classList.add('tab-pane');
+  div.innerHTML = `<div class="card"><div class="card-body"><i>${item.description}</i></div></div>`;
   contentsDiv.append(div);
 
   filteredPosts.forEach((post) => {
@@ -119,7 +118,7 @@ const renderTab = (mount, { id, link, title }, state) => {
   a.setAttribute('data-id', id);
   a.setAttribute('data-link', link);
   a.setAttribute('href', '#');
-  a.innerText = title;
+  a.textContent = title;
   a.addEventListener('click', (e) => {
     e.preventDefault();
     const activeChannelId = e.target.getAttribute('data-id');
@@ -198,9 +197,11 @@ const renderInput = (nodeDispatcher, { status, error }) => {
   switch (status) {
     case 'active':
       button.removeAttribute('disabled');
+      button.removeAttribute('readonly');
       break;
     case 'disabled':
       button.setAttribute('disabled', '');
+      button.setAttribute('readonly', 'readonly');
       break;
     default:
           // nothing
@@ -232,7 +233,7 @@ export default (state) => {
     },
   };
 
-  nodeDispatcher.input.value = form.input;
+  // nodeDispatcher.input.value = form.input;
 
   renderStrings(nodeDispatcher.i18n);
 
@@ -245,6 +246,7 @@ export default (state) => {
   if (form.error || loadingProcess.error) {
     renderFeedback(nodeDispatcher, form.error || loadingProcess.error);
   } else if (loadingProcess.status === 'success') {
+    nodeDispatcher.input.value = '';
     renderFeedback(nodeDispatcher);
   }
   const navDispatcher = {

@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+
 import _ from 'lodash';
 import i18next from 'i18next';
 import { string } from 'yup';
@@ -57,7 +59,7 @@ const updatePosts = (state) => {
         };
       });
       const otherPosts = _.filter(state.posts, ({ channelId }) => channelId !== id);
-      _.set(state, 'posts', [...otherPosts, ...postsToAdd]);
+      state.posts = [...otherPosts, ...postsToAdd];
     }));
   setTimeout(() => updatePosts(state), 5 * 1000);
 };
@@ -82,47 +84,38 @@ export default () => i18next.init({
       return;
     }
     const noHashLink = new URI(link).fragment('').toString();
-    _.set(watchedState, 'loadingProcess.status', 'fetching');
+    watchedState.loadingProcess.status = 'fetching';
     validate(noHashLink, watchedState.addedLinks)
       .then(() => {
-        _.set(watchedState, 'form.status', 'disabled');
+        watchedState.form.status = 'disabled';
         return process(link)
           .then(([data, contents]) => {
-            _.set(watchedState, 'form.input', '');
-            _.set(watchedState, 'form.status', 'active');
-            _.set(watchedState, 'form.error', null);
-            _.set(watchedState, 'loadingProcess.status', 'success');
-            _.set(watchedState, 'loadingProcess.error', null);
-            _.set(watchedState, 'uiState.activeChannel', data.id);
-            _.set(watchedState, 'channels', [...watchedState.channels, data]);
-            _.set(watchedState, 'posts', [...watchedState.posts, ...contents]);
-            _.set(watchedState, 'addedLinks', [...watchedState.addedLinks, noHashLink]);
+            watchedState.form = {
+              input: '',
+              status: 'active',
+              error: null,
+            };
+            watchedState.loadingProcess = {
+              status: 'success',
+              error: null,
+            };
+            watchedState.uiState.activeChannel = data.id;
+            watchedState.channels = [...watchedState.channels, data];
+            watchedState.posts = [...watchedState.posts, ...contents];
+            watchedState.addedLinks = [...watchedState.addedLinks, noHashLink];
           });
       })
       .catch((error) => {
-        _.set(watchedState, 'form.input', link);
-        _.set(watchedState, 'form.status', 'active');
+        watchedState.form.status = 'active';
         if (error.name === 'ValidationError') {
-          // Object.assign(
-          //   watchedState,
-          //   {
-          //     loadingProcess: {
-          //       error: null,
-          //       status: watchedState.loadingProcess.status,
-          //     },
-          //     form: {
-          //       input: watchedState.form.input,
-          //       status: watchedState.form.status,
-          //       error: error.type,
-          //     },
-          //   },
-          // );
-          _.set(watchedState, 'loadingProcess.error', null);
-          _.set(watchedState, 'form.error', error.type);
+          watchedState.loadingProcess.error = null;
+          watchedState.form.error = error.type;
         } else if (error instanceof Error) {
-          _.set(watchedState, 'form.error', null);
-          _.set(watchedState, 'loadingProcess.status', 'error');
-          _.set(watchedState, 'loadingProcess.error', error.message);
+          watchedState.loadingProcess = {
+            status: error,
+            error: error.message,
+          };
+          watchedState.form.error = null;
         }
       });
   });
@@ -130,12 +123,8 @@ export default () => i18next.init({
   nodeDispatcher.links.forEach((link) => link.addEventListener('click', (e) => {
     e.preventDefault();
     const locale = e.target.innerText.toLowerCase();
-    _.set(watchedState, 'uiState.locale', locale);
+    watchedState.uiState.locale = locale;
   }));
 
-  nodeDispatcher.modalCloseButton.addEventListener('click', () => {
-    _.set(watchedState, 'uiState.modalVisibility', 'hide');
-  });
-
-  _.set(watchedState, 'uiState.locale', i18next.language);
+  watchedState.uiState.locale = i18next.language;
 });

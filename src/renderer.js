@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+
 import $ from 'jquery';
 import _ from 'lodash';
 import { formatDate, t } from './utils.js';
@@ -64,8 +66,7 @@ const renderCard = ({
   previewButton.setAttribute('type', 'button');
   previewButton.innerText = t('synopsis');
   previewButton.addEventListener('click', () => {
-    _.set(state, 'modalContents', { title, description });
-    _.set(state, 'uiState.modalVisibility', 'show');
+    state.modalContents = { title, description };
     if (!state.uiState.viewedPosts.includes(id)) {
       state.uiState.viewedPosts.push(id);
     }
@@ -122,7 +123,7 @@ const renderTab = (mount, { id, link, title }, state) => {
   a.addEventListener('click', (e) => {
     e.preventDefault();
     const activeChannelId = e.target.getAttribute('data-id');
-    _.set(state, 'uiState.activeChannel', activeChannelId);
+    state.uiState.activeChannel = activeChannelId;
   });
   navItem.append(a);
 
@@ -139,12 +140,12 @@ const renderTab = (mount, { id, link, title }, state) => {
     const idToDelete = e.target.closest('a').getAttribute('data-id');
     const linkToDelete = e.target.closest('a').getAttribute('data-link');
 
-    _.set(state, 'channels', _.filter(channels, (o) => o.id !== idToDelete));
-    _.set(state, 'posts', _.filter(posts, ({ channelId }) => channelId !== idToDelete));
-    _.set(state, 'addedLinks', _.filter(addedLinks, (item) => item !== linkToDelete));
+    state.channels = _.filter(channels, (o) => o.id !== idToDelete);
+    state.posts = _.filter(posts, ({ channelId }) => channelId !== idToDelete);
+    state.addedLinks = _.filter(addedLinks, (item) => item !== linkToDelete);
 
     if (idToDelete === uiState.activeChannel) {
-      _.set(state, 'uiState.activeChannel', state.channels[0].id);
+      state.uiState.activeChannel = state.channels[0].id;
     }
   });
 

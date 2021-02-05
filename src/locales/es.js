@@ -14,7 +14,6 @@ export default {
     11: 'diciembre',
   },
   translation: {
-    deleteAllButton: 'Anular todo',
     header: '¿Ya has probado RSS?',
     pitch: 'Y si no, ¿porqué no probarlo ahora mismo? ¡Es gratis! Para enterarte sobre las novedades más recientes y destacadas en la web, búsca un feed {{- linkText, link}} que te interese, pega el link abajo y oprime {{- addButtonText, italic}}:',
     addButton: 'Añadir fuente',
@@ -24,7 +23,6 @@ export default {
     creator: 'por',
     synopsis: 'Vista previa',
     pubDate: 'Publicado a las {{time}} el {{day}} de $t(months:{{month}}) de {{year}}.',
-    link: 'Fuente',
     errors: {
       network: '¡Error de conexión!',
       nodata: 'No es un feed RSS!',

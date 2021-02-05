@@ -14,7 +14,6 @@ export default {
     11: 'декабря',
   },
   translation: {
-    deleteAllButton: 'Сбросить',
     header: 'А вы пользуетесь RSS?',
     pitch: 'Если еще нет, то попробуйте прямо сейчас! Это бесплатно. Вот как можно оставаться в курсе всех последних новостей, используя RSS: найдите интересующую вас {{- linkText, link}}-ленту, вставьте ссылку на нее в поле ниже и нажмите кнопку {{- addButtonText, italic}}:',
     suggestedLinks: 'Например: {{- link1, pseudolink}}{{- link2, pseudolink}}',
@@ -24,7 +23,6 @@ export default {
     creator: 'Автор: ',
     synopsis: 'Предпросмотр',
     pubDate: 'Опубликовано в {{time}}, {{day}} $t(months:{{month}}) {{year}} г.',
-    link: 'Источник',
     errors: {
       network: 'Ошибка соединения!',
       nodata: 'Это не RSS-канал!',

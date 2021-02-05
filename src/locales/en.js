@@ -23,6 +23,7 @@ export default {
     creator: 'by',
     synopsis: 'Preview',
     pubDate: 'Published at {{time}} on $t(months:{{month}}) {{day}}, {{year}}.',
+    loadingSuccess: 'Rss has been loaded',
     errors: {
       network: 'Network error',
       nodata: 'This source doesn\'t contain valid rss',

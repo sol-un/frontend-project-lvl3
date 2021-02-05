@@ -10,7 +10,8 @@ import en from './locales/en.js';
 import ru from './locales/ru.js';
 import es from './locales/es.js';
 import parse from './parser.js';
-import watchedState from './watcher.js';
+import getWatchedState from './renderer.js';
+import 'bootstrap/dist/js/bootstrap.min.js';
 
 const process = (link) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(link)}`)
   .then((response) => {
@@ -69,6 +70,27 @@ export default () => i18next.init({
   lng: 'en',
   resources: { en, ru, es },
 }).then(() => {
+  const state = {
+    form: {
+      status: 'active',
+      error: null,
+    },
+    loadingProcess: {
+      status: 'idle',
+      error: null,
+    },
+    uiState: {
+      activeChannel: null,
+      viewedPosts: [],
+      locale: null,
+    },
+    channels: [],
+    posts: [],
+    addedLinks: [],
+    modalContents: { title: '', description: '' },
+  };
+
+  const watchedState = getWatchedState(state);
   setTimeout(() => updatePosts(watchedState), 5 * 1000);
 
   const nodeDispatcher = {
@@ -85,26 +107,24 @@ export default () => i18next.init({
     }
     const noHashLink = new URI(link).fragment('').toString();
     watchedState.loadingProcess.status = 'fetching';
+    watchedState.form.status = 'disabled';
     validate(noHashLink, watchedState.addedLinks)
-      .then(() => {
-        watchedState.form.status = 'disabled';
-        return process(link)
-          .then(([data, contents]) => {
-            watchedState.form = {
-              input: '',
-              status: 'active',
-              error: null,
-            };
-            watchedState.loadingProcess = {
-              status: 'success',
-              error: null,
-            };
-            watchedState.uiState.activeChannel = data.id;
-            watchedState.channels = [...watchedState.channels, data];
-            watchedState.posts = [...watchedState.posts, ...contents];
-            watchedState.addedLinks = [...watchedState.addedLinks, noHashLink];
-          });
-      })
+      .then(() => process(link)
+        .then(([data, contents]) => {
+          watchedState.form = {
+            input: '',
+            status: 'active',
+            error: null,
+          };
+          watchedState.loadingProcess = {
+            status: 'success',
+            error: null,
+          };
+          watchedState.uiState.activeChannel = data.id;
+          watchedState.channels = [...watchedState.channels, data];
+          watchedState.posts = [...watchedState.posts, ...contents];
+          watchedState.addedLinks = [...watchedState.addedLinks, noHashLink];
+        }))
       .catch((error) => {
         watchedState.form.status = 'active';
         if (error.name === 'ValidationError') {

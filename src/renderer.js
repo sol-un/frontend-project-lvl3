@@ -2,6 +2,9 @@
 
 import $ from 'jquery';
 import _ from 'lodash';
+
+import onChange from 'on-change';
+import i18next from 'i18next';
 import { formatDate, t } from './utils.js';
 
 const renderStrings = (nodes) => {
@@ -49,10 +52,11 @@ const renderCard = ({
   card.append(cardBody);
 
   const cardTitle = document.createElement('a');
-  cardTitle.classList.add(`font-weight-${state.uiState.viewedPosts.includes(id) ? 'normal' : 'bold'}`);
+  const fontWeight = `font-weight-${state.uiState.viewedPosts.includes(id) ? 'normal' : 'bold'}`;
+  cardTitle.classList.add(fontWeight);
   cardTitle.setAttribute('href', link);
   cardTitle.setAttribute('target', 'blank');
-  cardTitle.innerHTML = `<h4 class='card-title'>${title}</h4>`;
+  cardTitle.innerHTML = `<h4 class='card-title ${fontWeight}'>${title}</h4>`;
   cardBody.append(cardTitle);
 
   if (creator) {
@@ -154,9 +158,9 @@ const renderTab = (mount, { id, link, title }, state) => {
 const renderFeedback = (nodeDispatcher, error) => {
   const { flashContainer } = nodeDispatcher;
   flashContainer.innerHTML = `
-    <div class="alert alert-${error ? 'danger' : 'info'} fade show">
-      ${error ? t(`errors.${error}`) : 'Rss has been loaded'}
-    </div>
+  <div class="alert alert-${error ? 'danger' : 'info'} fade show">
+  ${error ? t(`errors.${error}`) : t('loadingSuccess')}
+  </div>
   `;
 };
 
@@ -187,28 +191,46 @@ const renderFeeds = (nodeDispatcher, state) => {
   });
 };
 
-const renderInput = (nodeDispatcher, { status, error }) => {
+const renderInput = (
+  nodeDispatcher,
+  {
+    form: {
+      status: formStatus,
+      error: formError,
+    },
+    loadingProcess: {
+      status: loadingProcessStatus,
+    },
+  },
+) => {
   const { input, button } = nodeDispatcher;
-  if (error) {
+
+  if (loadingProcessStatus === 'fetching') {
+    input.setAttribute('readonly', 'readonly');
+    button.removeAttribute('disabled');
+  } else {
+    input.removeAttribute('readonly');
+    button.setAttribute('disabled', '');
+  }
+
+  if (formError) {
     input.classList.add('is-invalid');
   } else {
     input.classList.remove('is-invalid');
   }
-  switch (status) {
+  switch (formStatus) {
     case 'active':
       button.removeAttribute('disabled');
-      button.removeAttribute('readonly');
       break;
     case 'disabled':
       button.setAttribute('disabled', '');
-      button.setAttribute('readonly', 'readonly');
       break;
     default:
           // nothing
   }
 };
 
-export default (state) => {
+const render = (state) => {
   const {
     form,
     loadingProcess,
@@ -237,7 +259,7 @@ export default (state) => {
 
   renderStrings(nodeDispatcher.i18n);
 
-  renderInput(nodeDispatcher, form);
+  renderInput(nodeDispatcher, state);
 
   renderFeeds(nodeDispatcher, state);
 
@@ -257,4 +279,14 @@ export default (state) => {
   };
 
   renderActiveChannel(navDispatcher);
+};
+
+export default (state) => {
+  const watchedState = onChange(state, (path) => {
+    if (path === 'uiState.locale') {
+      i18next.changeLanguage(watchedState.uiState.locale);
+    }
+    render(watchedState);
+  });
+  return watchedState;
 };

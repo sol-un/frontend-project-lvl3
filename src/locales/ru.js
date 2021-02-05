@@ -23,6 +23,7 @@ export default {
     creator: 'Автор: ',
     synopsis: 'Предпросмотр',
     pubDate: 'Опубликовано в {{time}}, {{day}} $t(months:{{month}}) {{year}} г.',
+    loadingSuccess: 'Лента загружена!',
     errors: {
       network: 'Ошибка соединения!',
       nodata: 'Это не RSS-канал!',

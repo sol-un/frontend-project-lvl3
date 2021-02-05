@@ -23,6 +23,7 @@ export default {
     creator: 'por',
     synopsis: 'Vista previa',
     pubDate: 'Publicado a las {{time}} el {{day}} de $t(months:{{month}}) de {{year}}.',
+    loadingSuccess: '¡Feed cargado!',
     errors: {
       network: '¡Error de conexión!',
       nodata: 'No es un feed RSS!',

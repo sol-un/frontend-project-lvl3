@@ -255,8 +255,6 @@ const render = (state) => {
     },
   };
 
-  // nodeDispatcher.input.value = form.input;
-
   renderStrings(nodeDispatcher.i18n);
 
   renderInput(nodeDispatcher, state);

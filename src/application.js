@@ -10,56 +10,87 @@ import en from './locales/en.js';
 import ru from './locales/ru.js';
 import es from './locales/es.js';
 import parse from './parser.js';
-import getWatchedState from './renderer.js';
+import watchState from './renderer.js';
 import 'bootstrap/dist/js/bootstrap.min.js';
 
-const process = (link) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(link)}`)
-  .then((response) => {
-    const [channelData, channelContents] = parse(response.data.contents);
-    const id = _.uniqueId();
-    const fullChannelData = { ...channelData, id, link };
-    const idedChannelContents = channelContents.map((item) => ({
-      ...item,
-      channelId: id,
-      id: _.uniqueId(),
-    }));
-    return [fullChannelData, idedChannelContents];
+const proxy = 'https://hexlet-allorigins.herokuapp.com/get';
+
+const idPosts = (channelId, posts) => posts.map((post) => ({
+  ...post,
+  channelId,
+  id: _.uniqueId(),
+}));
+
+const downloadChannel = (link, watchedState) => {
+  watchedState.loadingProcess.status = 'fetching';
+  return axios(proxy, {
+    params: {
+      disableCache: true,
+      url: link,
+    },
   })
-  .catch((error) => {
-    if (error.response || error.request) {
-      throw new Error('network');
-    } else {
-      throw error;
-    }
-  });
+    .then((response) => {
+      const [channelData, channelContents] = parse(response.data.contents);
+      const id = _.uniqueId();
+      const fullChannelData = { ...channelData, id, link };
+      const idedChannelContents = idPosts(id, channelContents);
+      return [fullChannelData, idedChannelContents];
+    })
+    .then(([data, contents]) => {
+      watchedState.form = {
+        input: '',
+        status: 'active',
+        error: null,
+      };
+      watchedState.loadingProcess = {
+        status: 'success',
+        error: null,
+      };
+      watchedState.uiState.activeChannel = data.id;
+      watchedState.channels = [...watchedState.channels, data];
+      watchedState.posts = [...watchedState.posts, ...contents];
+      watchedState.addedLinks = [...watchedState.addedLinks, link];
+    })
+    .catch((error) => {
+      watchedState.loadingProcess = {
+        status: 'error',
+        error: error.response || error.request ? 'network' : error.message,
+      };
+      watchedState.form = { status: 'active', error: null };
+    });
+};
 
 const getSchema = (blacklist) => string()
   .url()
   .notOneOf(blacklist);
 
-const updatePosts = (state) => {
+const updatePosts = (state, updateInterval) => {
   const { channels } = state;
   channels.map(({
     id, link,
-  }) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(link)}`)
+  }) => axios(proxy, {
+    params: {
+      disableCache: true,
+      url: link,
+    },
+  })
     .then((response) => {
-      const [, newPosts] = parse(response.data.contents);
-      const oldPosts = _.filter(state.posts, ({ channelId }) => channelId === id);
-      const oldLinks = oldPosts.map((item) => item.link);
-      const postsToAdd = newPosts.map((newPost) => {
-        if (oldLinks.includes(newPost.link)) {
-          return oldPosts.find((oldPost) => oldPost.link === newPost.link);
-        }
-        return {
-          ...newPost,
-          channelId: id,
-          id: _.uniqueId(),
-        };
-      });
-      const otherPosts = _.filter(state.posts, ({ channelId }) => channelId !== id);
+      const [, fetchedPosts] = parse(response.data.contents);
+      const prevPosts = state.posts.filter(({ channelId }) => channelId === id);
+
+      const newPosts = _.differenceBy(fetchedPosts, prevPosts, 'link');
+      const idedNewPosts = idPosts(id, newPosts);
+
+      const prevPostsToAdd = _.intersectionBy(prevPosts, fetchedPosts, 'link');
+
+      const postsToAdd = [...idedNewPosts, ...prevPostsToAdd];
+      const otherPosts = state.posts.filter(({ channelId }) => channelId !== id);
       state.posts = [...otherPosts, ...postsToAdd];
+    })
+    .finally(() => {
+      state.loadingProcess = { status: 'idle', error: null };
+      setTimeout(() => updatePosts(state), updateInterval);
     }));
-  setTimeout(() => updatePosts(state), 5 * 1000);
 };
 
 export default () => i18next.init({
@@ -87,8 +118,10 @@ export default () => i18next.init({
     modalContents: { title: '', description: '' },
   };
 
-  const watchedState = getWatchedState(state);
-  setTimeout(() => updatePosts(watchedState), 5 * 1000);
+  const watchedState = watchState(state);
+
+  const updateInterval = 5000;
+  setTimeout(() => updatePosts(watchedState, updateInterval), updateInterval);
 
   const nodeDispatcher = {
     form: document.querySelector('#addChannelForm'),
@@ -99,42 +132,17 @@ export default () => i18next.init({
   nodeDispatcher.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const link = new FormData(e.target).get('link');
-    if (link.length === 0) {
+    if (_.isEmpty(link)) {
       return;
     }
     const noHashLink = new URI(link).fragment('').toString();
-    watchedState.loadingProcess.status = 'fetching';
     watchedState.form.status = 'disabled';
     try {
       getSchema(watchedState.addedLinks).validateSync(noHashLink);
+      downloadChannel(noHashLink, watchedState);
     } catch (error) {
       watchedState.form = { status: 'active', error: error.type };
-      watchedState.loadingProcess = { status: 'idle', error: null };
-      return;
     }
-    process(link)
-      .then(([data, contents]) => {
-        watchedState.form = {
-          input: '',
-          status: 'active',
-          error: null,
-        };
-        watchedState.loadingProcess = {
-          status: 'success',
-          error: null,
-        };
-        watchedState.uiState.activeChannel = data.id;
-        watchedState.channels = [...watchedState.channels, data];
-        watchedState.posts = [...watchedState.posts, ...contents];
-        watchedState.addedLinks = [...watchedState.addedLinks, noHashLink];
-      })
-      .catch((error) => {
-        watchedState.loadingProcess = {
-          status: 'error',
-          error: error.message,
-        };
-        watchedState.form = { status: 'active', error: null };
-      });
   });
 
   nodeDispatcher.links.forEach((link) => link.addEventListener('click', (e) => {

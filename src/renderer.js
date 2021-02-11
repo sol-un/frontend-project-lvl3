@@ -230,30 +230,13 @@ const renderInput = (
   }
 };
 
-const render = (state) => {
+const render = (state, nodeDispatcher) => {
   const {
     form,
     loadingProcess,
     uiState,
     modalContents,
   } = state;
-
-  const nodeDispatcher = {
-    modal: {
-      modalTitle: document.querySelector('#previewModalTitle'),
-      modalBody: document.querySelector('#previewModalBody'),
-    },
-    input: document.querySelector('input'),
-    button: document.querySelector('#addButton'),
-    mount: document.querySelector('#channelNav'),
-    flashContainer: document.querySelector('.feedback'),
-    i18n: {
-      header: document.querySelector('#header'),
-      pitch: document.querySelector('#pitch'),
-      addButton: document.querySelector('#addButton'),
-      suggestedLink: document.querySelector('#collapseLinks > .card'),
-    },
-  };
 
   renderStrings(nodeDispatcher.i18n);
 
@@ -280,11 +263,28 @@ const render = (state) => {
 };
 
 export default (state) => {
+  const nodeDispatcher = {
+    modal: {
+      modalTitle: document.querySelector('#previewModalTitle'),
+      modalBody: document.querySelector('#previewModalBody'),
+    },
+    input: document.querySelector('input'),
+    button: document.querySelector('#addButton'),
+    mount: document.querySelector('#channelNav'),
+    flashContainer: document.querySelector('.feedback'),
+    i18n: {
+      header: document.querySelector('#header'),
+      pitch: document.querySelector('#pitch'),
+      addButton: document.querySelector('#addButton'),
+      suggestedLink: document.querySelector('#collapseLinks > .card'),
+    },
+  };
+
   const watchedState = onChange(state, (path) => {
     if (path === 'uiState.locale') {
       i18next.changeLanguage(watchedState.uiState.locale);
     }
-    render(watchedState);
+    render(watchedState, nodeDispatcher);
   });
   return watchedState;
 };

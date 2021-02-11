@@ -10,24 +10,24 @@ export default (xml) => {
     throw new Error('nodata');
   }
 
-  const channel = document.querySelector('channel');
-  const extractFromChannel = extractText(channel);
-  const channelData = {
+  const channelData = document.querySelector('channel');
+  const extractFromChannel = extractText(channelData);
+  const channel = {
     title: extractFromChannel('title'),
     description: extractFromChannel('description'),
   };
 
-  const items = [...channel.querySelectorAll('item')];
-  const channelContents = items.map((item) => {
-    const extractFromItem = extractText(item);
-    return {
-      title: extractFromItem('title'),
-      description: extractFromItem('description'),
-      link: extractFromItem('link'),
-      creator: extractFromItem('creator'),
-      pubDate: extractFromItem('pubDate'),
-    };
-  });
+  const items = [...channelData.querySelectorAll('item')]
+    .map((item) => {
+      const extractFromItem = extractText(item);
+      return {
+        title: extractFromItem('title'),
+        description: extractFromItem('description'),
+        link: extractFromItem('link'),
+        creator: extractFromItem('creator'),
+        pubDate: extractFromItem('pubDate'),
+      };
+    });
 
-  return [channelData, channelContents];
+  return [channel, items];
 };

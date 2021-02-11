@@ -23,7 +23,7 @@ const idPosts = (channelId, posts) => posts.map((post) => ({
 
 const downloadChannel = (link, watchedState) => {
   watchedState.loadingProcess.status = 'fetching';
-  return axios(proxy, {
+  axios.get(proxy, {
     params: {
       disableCache: true,
       url: link,
@@ -135,7 +135,7 @@ export default () => i18next.init({
     if (_.isEmpty(link)) {
       return;
     }
-    const noHashLink = new URI(link).fragment('').toString();
+    const noHashLink = new URI(link).hash('').toString().replace(/\/$/, '');
     watchedState.form.status = 'disabled';
     try {
       getSchema(watchedState.addedLinks).validateSync(noHashLink);

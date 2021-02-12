@@ -2,10 +2,9 @@
 
 import _ from 'lodash';
 import i18next from 'i18next';
-import { string } from 'yup';
 import axios from 'axios';
 import URI from 'urijs';
-import { formatText } from './utils.js';
+import { formatText, validate } from './utils.js';
 import en from './locales/en.js';
 import ru from './locales/ru.js';
 import es from './locales/es.js';
@@ -59,10 +58,6 @@ const downloadChannel = (link, watchedState) => {
       watchedState.form = { status: 'active', error: null };
     });
 };
-
-const getSchema = (blacklist) => string()
-  .url()
-  .notOneOf(blacklist);
 
 const updatePosts = (state, updateInterval) => {
   const { channels } = state;
@@ -137,11 +132,12 @@ export default () => i18next.init({
     }
     const noHashLink = new URI(link).hash('').toString().replace(/\/$/, '');
     watchedState.form.status = 'disabled';
-    try {
-      getSchema(watchedState.addedLinks).validateSync(noHashLink);
+
+    const validationResult = validate(noHashLink, watchedState.addedLinks);
+    if (validationResult.name === 'ValidationError') {
+      watchedState.form = { status: 'active', error: validationResult.type };
+    } else {
       downloadChannel(noHashLink, watchedState);
-    } catch (error) {
-      watchedState.form = { status: 'active', error: error.type };
     }
   });
 

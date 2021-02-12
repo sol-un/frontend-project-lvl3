@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import { string } from 'yup';
 
 const formatText = (value, format) => {
   switch (format) {
@@ -29,4 +30,17 @@ const formatDate = (timestamp) => {
 
 const t = (key, data) => i18next.t(key, data);
 
-export { formatDate, formatText, t };
+const validate = (link, blacklist) => {
+  const schema = string()
+    .url()
+    .notOneOf(blacklist);
+  try {
+    return schema.validateSync(link);
+  } catch (error) {
+    return error;
+  }
+};
+
+export {
+  formatDate, formatText, t, validate,
+};

@@ -52,11 +52,13 @@ const renderCard = ({
   card.append(cardBody);
 
   const cardTitle = document.createElement('a');
-  const fontWeight = `font-weight-${state.uiState.viewedPosts.includes(id) ? 'normal' : 'bold'}`;
-  cardTitle.classList.add(fontWeight);
+  const fontWeightValue = state.uiState.viewedPosts.includes(id)
+    ? 'normal'
+    : 'bold';
+  cardTitle.classList.add(`font-weight-${fontWeightValue}`);
   cardTitle.setAttribute('href', link);
   cardTitle.setAttribute('target', 'blank');
-  cardTitle.innerHTML = `<h4 class='card-title ${fontWeight}'>${title}</h4>`;
+  cardTitle.innerHTML = `<h4 class='card-title font-weight-${fontWeightValue}'>${title}</h4>`;
   cardBody.append(cardTitle);
 
   if (creator) {
@@ -111,10 +113,10 @@ const renderContents = (contentsDiv, item, posts, state) => {
   return div;
 };
 
-const renderTab = (mount, { id, link, title }, state) => {
+const renderTab = (container, { id, link, title }, state) => {
   const navItem = document.createElement('li');
   navItem.classList.add('nav-item');
-  mount.append(navItem);
+  container.append(navItem);
 
   const a = document.createElement('a');
   a.classList.add('nav-link');
@@ -166,22 +168,22 @@ const renderFeedback = (nodeDispatcher, error) => {
 
 const renderFeeds = (nodeDispatcher, state) => {
   const { channels, posts } = state;
-  const { mount } = nodeDispatcher;
+  const { container } = nodeDispatcher;
 
-  mount.innerHTML = '';
+  container.innerHTML = '';
 
   if (channels.length === 0) {
-    mount.innerHTML = `<div class="mt-4 text-center"><i>${t('noChannels')}</i></div>`;
+    container.innerHTML = `<div class="mt-4 text-center"><i>${t('noChannels')}</i></div>`;
   }
 
   const ul = document.createElement('ul');
   ul.setAttribute('id', 'myTab');
   ul.classList.add('nav', 'nav-pills', 'flex-column', 'flex-sm-row');
-  mount.append(ul);
+  container.append(ul);
 
   const contentsDiv = document.createElement('div');
   contentsDiv.classList.add('tab-content');
-  mount.append(contentsDiv);
+  container.append(contentsDiv);
 
   return channels.forEach((item) => {
     const tab = renderTab(ul, item, state);
@@ -191,7 +193,7 @@ const renderFeeds = (nodeDispatcher, state) => {
   });
 };
 
-const renderInput = (
+const renderForm = (
   nodeDispatcher,
   {
     form: {
@@ -207,10 +209,10 @@ const renderInput = (
 
   if (loadingProcessStatus === 'fetching') {
     input.setAttribute('readonly', 'readonly');
-    button.removeAttribute('disabled');
+    button.setAttribute('disabled', '');
   } else {
     input.removeAttribute('readonly');
-    button.setAttribute('disabled', '');
+    button.removeAttribute('disabled');
   }
 
   if (formError) {
@@ -218,15 +220,18 @@ const renderInput = (
   } else {
     input.classList.remove('is-invalid');
   }
+
   switch (formStatus) {
     case 'active':
+      input.removeAttribute('readonly');
       button.removeAttribute('disabled');
       break;
     case 'disabled':
+      input.setAttribute('readonly', 'readonly');
       button.setAttribute('disabled', '');
       break;
     default:
-          // nothing
+      throw new Error(`Unknown state property: form status '${formStatus}'`);
   }
 };
 
@@ -240,7 +245,7 @@ const render = (state, nodeDispatcher) => {
 
   renderStrings(nodeDispatcher.i18n);
 
-  renderInput(nodeDispatcher, state);
+  renderForm(nodeDispatcher, state);
 
   renderFeeds(nodeDispatcher, state);
 
@@ -262,24 +267,7 @@ const render = (state, nodeDispatcher) => {
   renderActiveChannel(navDispatcher);
 };
 
-export default (state) => {
-  const nodeDispatcher = {
-    modal: {
-      modalTitle: document.querySelector('#previewModalTitle'),
-      modalBody: document.querySelector('#previewModalBody'),
-    },
-    input: document.querySelector('input'),
-    button: document.querySelector('#addButton'),
-    mount: document.querySelector('#channelNav'),
-    flashContainer: document.querySelector('.feedback'),
-    i18n: {
-      header: document.querySelector('#header'),
-      pitch: document.querySelector('#pitch'),
-      addButton: document.querySelector('#addButton'),
-      suggestedLink: document.querySelector('#collapseLinks > .card'),
-    },
-  };
-
+export default (state, nodeDispatcher) => {
   const watchedState = onChange(state, (path) => {
     if (path === 'uiState.locale') {
       i18next.changeLanguage(watchedState.uiState.locale);

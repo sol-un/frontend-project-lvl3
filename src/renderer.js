@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import onChange from 'on-change';
-import { formatDate, t } from './utils.js';
+import { t } from './utils.js';
 
 const renderModalContents = (modalNodes, { title, description }) => {
   const { modalTitle, modalBody } = modalNodes;
@@ -30,11 +30,6 @@ const renderFeeds = (container, state) => {
 
   container.innerHTML = '';
 
-  if (channels.length === 0) {
-    container.innerHTML = `<div class="mt-4 text-center"><i>${t('noChannels')}</i></div>`;
-    return;
-  }
-
   const channelsContainer = document.createElement('div');
   const channelCards = channels.map(({ title, description }) => `
     <div class="card">
@@ -44,21 +39,18 @@ const renderFeeds = (container, state) => {
       </div>
     </div>
   `);
-  channelsContainer.innerHTML = `<h2 class="mt-4">Channels</h2>${channelCards.join('')}`;
+  channelsContainer.innerHTML = `<h2 class="mt-4">${t('channels')}</h2>${channelCards.join('')}`;
   container.append(channelsContainer);
 
   const postsContainer = document.createElement('div');
   const postCards = posts.map(({
-    id, title, link, creator, pubDate,
+    id, title, link, creator,
   }) => {
     const fontWeightValue = state.uiState.viewedPosts.includes(id)
       ? 'normal'
       : 'bold';
     const creatorSubtitle = creator
       ? `<h6 class="card-subtitle text-muted">${t('creator')} ${creator}</h6>`
-      : null;
-    const dateInfo = pubDate
-      ? `<p class="card-text"><i class="card-text">${t('pubDate', formatDate(pubDate))}</i></p>`
       : null;
     return `
       <div class="card">
@@ -83,12 +75,11 @@ const renderFeeds = (container, state) => {
           >
             ${t('synopsis')}
           </button>
-          ${dateInfo || null}
         </div>
       </div>
     `;
   });
-  postsContainer.innerHTML = `<h2 class="mt-5">Posts</h2>${postCards.join('')}`;
+  postsContainer.innerHTML = `<h2 class="mt-5">${t('posts')}</h2>${postCards.join('')}`;
   container.append(postsContainer);
 };
 

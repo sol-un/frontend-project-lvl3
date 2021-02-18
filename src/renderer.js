@@ -90,7 +90,7 @@ const renderFeeds = (container, state) => {
             class="btn btn-primary my-3"
             type="button"
             role="button"
-            aria-label="preview"
+            aria-label="просмотр"
             data-id="${id}"
           >
             ${t('synopsis')}

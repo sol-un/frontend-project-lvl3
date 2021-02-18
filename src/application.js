@@ -64,16 +64,11 @@ const updatePosts = (state) => {
   })
     .then((response) => {
       const [, fetchedPosts] = parse(response.data.contents);
-      const prevPosts = state.posts.filter(({ channelId }) => channelId === id);
+      const normalizedFetchedPosts = normalizePosts(id, fetchedPosts);
 
-      const newPosts = _.differenceBy(fetchedPosts, prevPosts, 'link');
-      const normalizedNewPosts = normalizePosts(id, newPosts);
-
-      const prevPostsToAdd = _.intersectionBy(prevPosts, fetchedPosts, 'link');
-
-      const postsToAdd = [...normalizedNewPosts, ...prevPostsToAdd];
-      const otherPosts = state.posts.filter(({ channelId }) => channelId !== id);
-      state.posts = [...otherPosts, ...postsToAdd];
+      const prevPosts = state.posts;
+      const newPosts = _.differenceBy(normalizedFetchedPosts, prevPosts, 'link');
+      state.posts = [...newPosts, ...prevPosts];
     })
     .finally(() => {
       state.loadingProcess.status = 'idle';

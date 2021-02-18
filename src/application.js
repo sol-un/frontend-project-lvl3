@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 
-import _ from 'lodash';
+import { uniqueId, differenceBy, isEmpty } from 'lodash';
 import i18next from 'i18next';
 import axios from 'axios';
 import $ from 'jquery';
@@ -12,26 +12,26 @@ import parse from './parser.js';
 import watchState from './renderer.js';
 import 'bootstrap/dist/js/bootstrap.min.js';
 
-const proxy = 'https://hexlet-allorigins.herokuapp.com/get';
+const addProxy = (link) => {
+  const proxyUrl = new URL('https://hexlet-allorigins.herokuapp.com/get');
+  proxyUrl.search = `?disableCache=true&url=${link}`;
+  return proxyUrl.toString();
+};
+
 const timeoutInterval = 5000;
 
 const normalizePosts = (channelId, posts) => posts.map((post) => ({
   ...post,
   channelId,
-  id: _.uniqueId(),
+  id: uniqueId(),
 }));
 
 const downloadChannel = (link, watchedState) => {
   watchedState.loadingProcess.status = 'fetching';
-  axios.get(proxy, {
-    params: {
-      disableCache: true,
-      url: link,
-    },
-  })
+  axios(addProxy(link))
     .then((response) => {
       const [channelData, channelContents] = parse(response.data.contents);
-      const id = _.uniqueId();
+      const id = uniqueId();
       const fullChannelData = { ...channelData, id, link };
       const normalizedChannelContents = normalizePosts(id, channelContents);
       return [fullChannelData, normalizedChannelContents];
@@ -56,18 +56,13 @@ const updatePosts = (state) => {
   const { channels } = state;
   channels.map(({
     id, link,
-  }) => axios(proxy, {
-    params: {
-      disableCache: true,
-      url: link,
-    },
-  })
+  }) => axios(addProxy(link))
     .then((response) => {
       const [, fetchedPosts] = parse(response.data.contents);
       const normalizedFetchedPosts = normalizePosts(id, fetchedPosts);
 
       const prevPosts = state.posts;
-      const newPosts = _.differenceBy(normalizedFetchedPosts, prevPosts, 'link');
+      const newPosts = differenceBy(normalizedFetchedPosts, prevPosts, 'link');
       state.posts = [...newPosts, ...prevPosts];
     })
     .finally(() => {
@@ -79,7 +74,7 @@ const updatePosts = (state) => {
 
 export default () => i18next.init({
   interpolation: { format: formatText },
-  lng: 'en',
+  lng: 'ru',
   resources: { en, ru, es },
 }).then(() => {
   const state = {
@@ -129,7 +124,7 @@ export default () => i18next.init({
   nodeDispatcher.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const link = new FormData(e.target).get('link');
-    if (_.isEmpty(link)) {
+    if (isEmpty(link)) {
       return;
     }
     watchedState.form.status = 'disabled';

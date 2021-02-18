@@ -138,7 +138,7 @@ export default (state, nodeDispatcher) => {
             disableForm(nodeDispatcher);
             break;
           default:
-            throw new Error(`Unknown property for state: 'form.status' equals '${value}'`);
+            throw new Error(`Unknown property for state.form.status: '${value}'`);
         }
         break;
       case 'form.error':
@@ -176,7 +176,7 @@ export default (state, nodeDispatcher) => {
             enableForm(nodeDispatcher);
             break;
           default:
-            throw new Error(`Unknown property for state: 'loadingProcess.status' equals '${value}'`);
+            throw new Error(`Unknown property for state.loadingProcess.status: '${value}'`);
         }
         break;
       case 'modalContents':

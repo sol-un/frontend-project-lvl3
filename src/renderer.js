@@ -37,9 +37,8 @@ const renderErrorMessage = (container, error) => {
   `;
 };
 
-const renderFeeds = (nodeDispatcher, state) => {
+const renderFeeds = (container, state) => {
   const { channels, posts } = state;
-  const { container } = nodeDispatcher;
 
   container.innerHTML = '';
 
@@ -116,11 +115,19 @@ const enableForm = ({ input, button }) => {
 
 export default (state, nodeDispatcher) => {
   const {
-    form,
-    loadingProcess,
-  } = state;
-
+    flashContainer,
+    i18n,
+    modal,
+    input,
+    container,
+  } = nodeDispatcher;
   const watchedState = onChange(state, (path, value) => {
+    const {
+      form,
+      loadingProcess,
+      uiState,
+      modalContents,
+    } = state;
     switch (path) {
       case 'form.status':
         switch (value) {
@@ -135,37 +142,37 @@ export default (state, nodeDispatcher) => {
         }
         break;
       case 'form.error':
-        renderErrorMessage(nodeDispatcher.flashContainer, form.error);
+        renderErrorMessage(flashContainer, form.error);
         break;
       case 'loadingProcess.error':
-        renderErrorMessage(nodeDispatcher.flashContainer, loadingProcess.error);
+        renderErrorMessage(flashContainer, loadingProcess.error);
         break;
       case 'uiState.locale':
-        i18next.changeLanguage(state.uiState.locale);
-        renderStrings(nodeDispatcher.i18n);
+        i18next.changeLanguage(uiState.locale);
+        renderStrings(i18n);
         break;
       case 'channels':
       case 'addedLinks':
       case 'posts':
       case 'uiState.viewedPosts':
-        renderFeeds(nodeDispatcher, state);
+        renderFeeds(container, state);
         break;
       case 'loadingProcess.status':
         switch (value) {
           case 'success':
-            nodeDispatcher.input.value = '';
-            renderSuccessMessage(nodeDispatcher.flashContainer);
+            input.value = '';
+            renderSuccessMessage(flashContainer);
             enableForm(nodeDispatcher);
             break;
           case 'error':
-            renderErrorMessage(nodeDispatcher.flashContainer, state.loadingProcess.error);
+            renderErrorMessage(flashContainer, loadingProcess.error);
             enableForm(nodeDispatcher);
             break;
           case 'fetching':
             disableForm(nodeDispatcher);
             break;
           case 'idle':
-            nodeDispatcher.flashContainer.innerHTML = '';
+            flashContainer.innerHTML = '';
             enableForm(nodeDispatcher);
             break;
           default:
@@ -173,7 +180,7 @@ export default (state, nodeDispatcher) => {
         }
         break;
       case 'modalContents':
-        renderModalContents(nodeDispatcher.modal, state.modalContents);
+        renderModalContents(modal, modalContents);
         break;
       default:
         throw new Error(`Unknown state path: ${path}`);

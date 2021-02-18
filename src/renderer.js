@@ -1,8 +1,5 @@
 /* eslint-disable no-param-reassign */
 
-import $ from 'jquery';
-import _ from 'lodash';
-
 import onChange from 'on-change';
 import i18next from 'i18next';
 import { formatDate, t } from './utils.js';
@@ -24,144 +21,18 @@ const renderModalContents = (modalNodes, { title, description }) => {
   modalBody.innerHTML = description;
 };
 
-const renderActiveChannel = ({
-  navLinks, activeLink, navPanes, activePane,
-}) => {
-  navLinks.forEach((el) => el.classList.remove('active'));
-  if (activeLink) {
-    activeLink.classList.add('active');
-  }
-
-  navPanes.forEach((el) => el.classList.remove('active'));
-  if (activePane) {
-    activePane.classList.add('active');
-  }
+const renderSuccessMessage = (container) => {
+  container.innerHTML = `
+  <div class="alert alert-info fade show">
+  ${t('loadingSuccess')}
+  </div>
+  `;
 };
 
-const renderCard = ({
-  id, title, description, link, creator, pubDate,
-}, state) => {
-  const cardFragment = new DocumentFragment();
-
-  const card = document.createElement('div');
-  card.classList.add('card', 'border-primary');
-  cardFragment.append(card);
-
-  const cardBody = document.createElement('div');
-  cardBody.classList.add('card-body');
-  card.append(cardBody);
-
-  const cardTitle = document.createElement('a');
-  const fontWeightValue = state.uiState.viewedPosts.includes(id)
-    ? 'normal'
-    : 'bold';
-  cardTitle.classList.add(`font-weight-${fontWeightValue}`);
-  cardTitle.setAttribute('href', link);
-  cardTitle.setAttribute('target', 'blank');
-  cardTitle.innerHTML = `<h4 class='card-title font-weight-${fontWeightValue}'>${title}</h4>`;
-  cardBody.append(cardTitle);
-
-  if (creator) {
-    const cardSubtitle = document.createElement('h6');
-    cardSubtitle.classList.add('card-subtitle');
-    cardSubtitle.classList.add('text-muted');
-    cardSubtitle.textContent = `${t('creator')} ${creator}`;
-    cardBody.append(cardSubtitle);
-  }
-
-  const previewButton = document.createElement('button');
-  previewButton.classList.add('btn', 'btn-primary', 'my-3');
-  previewButton.setAttribute('type', 'button');
-  previewButton.setAttribute('role', 'button');
-  previewButton.setAttribute('aria-label', 'preview');
-  previewButton.textContent = t('synopsis');
-  previewButton.addEventListener('click', () => {
-    state.modalContents = { title, description };
-    if (!state.uiState.viewedPosts.includes(id)) {
-      state.uiState.viewedPosts.push(id);
-    }
-    $('#previewModal').modal('toggle');
-  });
-  cardBody.append(previewButton);
-
-  const cardFooter = document.createElement('p');
-  cardFooter.classList.add('card-text');
-  cardBody.append(cardFooter);
-
-  if (pubDate) {
-    const pubDateContainer = document.createElement('div');
-    pubDateContainer.innerHTML = `<i class="card-text">${t('pubDate', formatDate(pubDate))}</i>`;
-    cardFooter.append(pubDateContainer);
-  }
-
-  return cardFragment;
-};
-
-const renderContents = (contentsDiv, item, posts, state) => {
-  const filteredPosts = posts.filter(({ channelId }) => channelId === item.id);
-  const div = document.createElement('div');
-  div.setAttribute('data-id', item.id);
-  div.classList.add('tab-pane');
-  div.innerHTML = `<div class="card"><div class="card-body"><i>${item.description}</i></div></div>`;
-  contentsDiv.append(div);
-
-  filteredPosts.forEach((post) => {
-    const card = renderCard(post, state);
-    return div.append(card);
-  });
-
-  return div;
-};
-
-const renderTab = (container, { id, link, title }, state) => {
-  const navItem = document.createElement('li');
-  navItem.classList.add('nav-item');
-  container.append(navItem);
-
-  const a = document.createElement('a');
-  a.classList.add('nav-link');
-  a.setAttribute('data-toggle', 'tab');
-  a.setAttribute('data-id', id);
-  a.setAttribute('data-link', link);
-  a.setAttribute('href', '#');
-  a.textContent = title;
-  a.addEventListener('click', (e) => {
-    e.preventDefault();
-    const activeChannelId = e.target.getAttribute('data-id');
-    state.uiState.activeChannel = activeChannelId;
-  });
-  navItem.append(a);
-
-  const span = document.createElement('span');
-  span.classList.add('nav-delete');
-  span.innerHTML = '<b>&emsp;&times;</b>';
-  a.append(span);
-
-  span.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const {
-      uiState, channels, posts, addedLinks,
-    } = state;
-    const idToDelete = e.target.closest('a').getAttribute('data-id');
-    const linkToDelete = e.target.closest('a').getAttribute('data-link');
-
-    state.channels = _.filter(channels, (o) => o.id !== idToDelete);
-    state.posts = _.filter(posts, ({ channelId }) => channelId !== idToDelete);
-    state.addedLinks = _.filter(addedLinks, (item) => item !== linkToDelete);
-
-    if (idToDelete === uiState.activeChannel) {
-      state.uiState.activeChannel = state.channels[0].id;
-    }
-  });
-
-  return navItem;
-};
-
-const renderFeedback = (nodeDispatcher, error) => {
-  const { flashContainer } = nodeDispatcher;
-  flashContainer.innerHTML = `
-  <div class="alert alert-${error ? 'danger' : 'info'} fade show">
-  ${error ? t(`errors.${error}`) : t('loadingSuccess')}
+const renderErrorMessage = (container, error) => {
+  container.innerHTML = `
+  <div class="alert alert-danger fade show">
+  ${t(`errors.${error}`)}
   </div>
   `;
 };
@@ -174,105 +45,139 @@ const renderFeeds = (nodeDispatcher, state) => {
 
   if (channels.length === 0) {
     container.innerHTML = `<div class="mt-4 text-center"><i>${t('noChannels')}</i></div>`;
+    return;
   }
 
-  const ul = document.createElement('ul');
-  ul.setAttribute('id', 'myTab');
-  ul.classList.add('nav', 'nav-pills', 'flex-column', 'flex-sm-row');
-  container.append(ul);
+  const channelsContainer = document.createElement('div');
+  const channelCards = channels.map(({ title, description }) => `
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">${title}</h3>
+        <p class="card-text">${description}</p>
+      </div>
+    </div>
+  `);
+  channelsContainer.innerHTML = `<h2 class="mt-4">Channels</h2>${channelCards.join('')}`;
+  container.append(channelsContainer);
 
-  const contentsDiv = document.createElement('div');
-  contentsDiv.classList.add('tab-content');
-  container.append(contentsDiv);
-
-  return channels.forEach((item) => {
-    const tab = renderTab(ul, item, state);
-    renderContents(contentsDiv, item, posts, state);
-
-    return ul.append(tab);
+  const postsContainer = document.createElement('div');
+  const postCards = posts.map(({
+    id, title, link, creator, pubDate,
+  }) => {
+    const fontWeightValue = state.uiState.viewedPosts.includes(id)
+      ? 'normal'
+      : 'bold';
+    const creatorSubtitle = creator
+      ? `<h6 class="card-subtitle text-muted">${t('creator')} ${creator}</h6>`
+      : null;
+    const dateInfo = pubDate
+      ? `<p class="card-text"><i class="card-text">${t('pubDate', formatDate(pubDate))}</i></p>`
+      : null;
+    return `
+      <div class="card">
+        <div class="card-body">
+          <a
+            class="font-weight-${fontWeightValue}"
+            href="${link}"
+            target="blank"
+          >
+            <h5
+              class="card-title
+              font-weight-${fontWeightValue}">${title}
+            </h5>
+          </a>
+          ${creatorSubtitle || null}
+          <button
+            class="btn btn-primary my-3"
+            type="button"
+            role="button"
+            aria-label="preview"
+            data-id="${id}"
+          >
+            ${t('synopsis')}
+          </button>
+          ${dateInfo || null}
+        </div>
+      </div>
+    `;
   });
+  postsContainer.innerHTML = `<h2 class="mt-5">Posts</h2>${postCards.join('')}`;
+  container.append(postsContainer);
 };
 
-const renderForm = (
-  nodeDispatcher,
-  {
-    form: {
-      status: formStatus,
-      error: formError,
-    },
-    loadingProcess: {
-      status: loadingProcessStatus,
-    },
-  },
-) => {
-  const { input, button } = nodeDispatcher;
-
-  if (loadingProcessStatus === 'fetching') {
-    input.setAttribute('readonly', 'readonly');
-    button.setAttribute('disabled', '');
-  } else {
-    input.removeAttribute('readonly');
-    button.removeAttribute('disabled');
-  }
-
-  if (formError) {
-    input.classList.add('is-invalid');
-  } else {
-    input.classList.remove('is-invalid');
-  }
-
-  switch (formStatus) {
-    case 'active':
-      input.removeAttribute('readonly');
-      button.removeAttribute('disabled');
-      break;
-    case 'disabled':
-      input.setAttribute('readonly', 'readonly');
-      button.setAttribute('disabled', '');
-      break;
-    default:
-      throw new Error(`Unknown state property: form status '${formStatus}'`);
-  }
+const disableForm = ({ input, button }) => {
+  input.setAttribute('readonly', 'readonly');
+  button.setAttribute('disabled', '');
 };
-
-const render = (state, nodeDispatcher) => {
-  const {
-    form,
-    loadingProcess,
-    uiState,
-    modalContents,
-  } = state;
-
-  renderStrings(nodeDispatcher.i18n);
-
-  renderForm(nodeDispatcher, state);
-
-  renderFeeds(nodeDispatcher, state);
-
-  renderModalContents(nodeDispatcher.modal, modalContents);
-
-  if (form.error || loadingProcess.error) {
-    renderFeedback(nodeDispatcher, form.error || loadingProcess.error);
-  } else if (loadingProcess.status === 'success') {
-    nodeDispatcher.input.value = '';
-    renderFeedback(nodeDispatcher);
-  }
-  const navDispatcher = {
-    activeLink: document.querySelector(`a[data-id="${uiState.activeChannel}"]`),
-    navLinks: [...document.querySelectorAll('.nav-link')],
-    activePane: document.querySelector(`div[data-id="${uiState.activeChannel}"]`),
-    navPanes: [...document.querySelectorAll('.tab-pane')],
-  };
-
-  renderActiveChannel(navDispatcher);
+const enableForm = ({ input, button }) => {
+  input.removeAttribute('readonly');
+  button.removeAttribute('disabled');
 };
 
 export default (state, nodeDispatcher) => {
-  const watchedState = onChange(state, (path) => {
-    if (path === 'uiState.locale') {
-      i18next.changeLanguage(watchedState.uiState.locale);
+  const {
+    form,
+    loadingProcess,
+  } = state;
+
+  const watchedState = onChange(state, (path, value) => {
+    switch (path) {
+      case 'form.status':
+        switch (value) {
+          case 'active':
+            enableForm(nodeDispatcher);
+            break;
+          case 'disabled':
+            disableForm(nodeDispatcher);
+            break;
+          default:
+            throw new Error(`Unknown property for state: 'form.status' equals '${value}'`);
+        }
+        break;
+      case 'form.error':
+        renderErrorMessage(nodeDispatcher.flashContainer, form.error);
+        break;
+      case 'loadingProcess.error':
+        renderErrorMessage(nodeDispatcher.flashContainer, loadingProcess.error);
+        break;
+      case 'uiState.locale':
+        i18next.changeLanguage(state.uiState.locale);
+        renderStrings(nodeDispatcher.i18n);
+        break;
+      case 'channels':
+      case 'addedLinks':
+      case 'posts':
+      case 'uiState.viewedPosts':
+        renderFeeds(nodeDispatcher, state);
+        break;
+      case 'loadingProcess.status':
+        switch (value) {
+          case 'success':
+            nodeDispatcher.input.value = '';
+            renderSuccessMessage(nodeDispatcher.flashContainer);
+            enableForm(nodeDispatcher);
+            break;
+          case 'error':
+            renderErrorMessage(nodeDispatcher.flashContainer, state.loadingProcess.error);
+            enableForm(nodeDispatcher);
+            break;
+          case 'fetching':
+            disableForm(nodeDispatcher);
+            break;
+          case 'idle':
+            nodeDispatcher.flashContainer.innerHTML = '';
+            enableForm(nodeDispatcher);
+            break;
+          default:
+            throw new Error(`Unknown property for state: 'loadingProcess.status' equals '${value}'`);
+        }
+        break;
+      case 'modalContents':
+        renderModalContents(nodeDispatcher.modal, state.modalContents);
+        break;
+      default:
+        throw new Error(`Unknown state path: ${path}`);
     }
-    render(watchedState, nodeDispatcher);
   });
   return watchedState;
 };

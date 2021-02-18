@@ -1,19 +1,6 @@
 import i18next from 'i18next';
 import { string } from 'yup';
 
-const formatText = (value, format) => {
-  switch (format) {
-    case 'italic':
-      return `<i>${value}</i>`;
-    case 'link':
-      return `<a data-toggle="collapse" href="#collapseLinks" role="button" aria-expanded="false" aria-controls="collapseExample">${value}</a>`;
-    case 'pseudolink':
-      return `<u class="user-select-all">${value}</u>`;
-    default:
-      return value;
-  }
-};
-
 const formatDate = (timestamp) => {
   const normalizedDate = new Date(timestamp);
   const day = normalizedDate.getDate();
@@ -42,5 +29,5 @@ const validate = (link, blacklist) => {
 };
 
 export {
-  formatDate, formatText, t, validate,
+  formatDate, t, validate,
 };

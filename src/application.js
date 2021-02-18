@@ -4,10 +4,8 @@ import { uniqueId, differenceBy, isEmpty } from 'lodash';
 import i18next from 'i18next';
 import axios from 'axios';
 import $ from 'jquery';
-import { formatText, validate } from './utils.js';
-import en from './locales/en.js';
+import { validate } from './utils.js';
 import ru from './locales/ru.js';
-import es from './locales/es.js';
 import parse from './parser.js';
 import watchState from './renderer.js';
 import 'bootstrap/dist/js/bootstrap.min.js';
@@ -73,9 +71,8 @@ const updatePosts = (state) => {
 };
 
 export default () => i18next.init({
-  interpolation: { format: formatText },
   lng: 'ru',
-  resources: { en, ru, es },
+  resources: { ru },
 }).then(() => {
   const state = {
     form: {
@@ -156,6 +153,4 @@ export default () => i18next.init({
     const locale = e.target.innerText.toLowerCase();
     watchedState.uiState.locale = locale;
   }));
-
-  watchedState.uiState.locale = i18next.language;
 });

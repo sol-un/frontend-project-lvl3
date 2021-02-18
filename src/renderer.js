@@ -1,19 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import onChange from 'on-change';
-import i18next from 'i18next';
 import { formatDate, t } from './utils.js';
-
-const renderStrings = (nodes) => {
-  const {
-    header, pitch, addButton, suggestedLink,
-  } = nodes;
-
-  header.textContent = t('header');
-  pitch.innerHTML = t('pitch', { linkText: 'RSS', addButtonText: '$t(addButton)' });
-  addButton.textContent = t('addButton');
-  suggestedLink.innerHTML = t('suggestedLinks', { link1: '$t(link1)', link2: '$t(link2)' });
-};
 
 const renderModalContents = (modalNodes, { title, description }) => {
   const { modalTitle, modalBody } = modalNodes;
@@ -116,7 +104,6 @@ const enableForm = ({ input, button }) => {
 export default (state, nodeDispatcher) => {
   const {
     flashContainer,
-    i18n,
     modal,
     input,
     container,
@@ -125,7 +112,6 @@ export default (state, nodeDispatcher) => {
     const {
       form,
       loadingProcess,
-      uiState,
       modalContents,
     } = state;
     switch (path) {
@@ -146,10 +132,6 @@ export default (state, nodeDispatcher) => {
         break;
       case 'loadingProcess.error':
         renderErrorMessage(flashContainer, loadingProcess.error);
-        break;
-      case 'uiState.locale':
-        i18next.changeLanguage(uiState.locale);
-        renderStrings(i18n);
         break;
       case 'channels':
       case 'addedLinks':

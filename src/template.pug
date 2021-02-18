@@ -20,24 +20,13 @@ html
             .col-2.pl-0.pr-2
               img(src="https://cdn2.iconfinder.com/data/icons/social-icon-3/512/social_style_3_rss-512.png" width="32" height="32")
             .col-10.pl-0 The RSS Reader Project
-      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#myRssNavbar' role='button' aria-controls='myRssNavbar' aria-expanded='false' aria-label='Toggle language menu')
-        span.navbar-toggler-icon
-      #myRssNavbar.collapse.navbar-collapse
-        .mr-auto
-        ul.navbar-nav
-            li.nav-item.dropdown
-              a(href="#" id="languageDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false").nav-link.dropdown-toggle &#127758;
-              div(aria-labelledby="languageDropdown").dropdown-menu
-                a(href='#').dropdown-item EN
-                a(href='#').dropdown-item RU
-                a(href='#').dropdown-item ES
     main(role='main')
       .jumbotron
         .container
           .row
             .col.text-center
-                h1#header.lead.display-4
-                #pitch.lead
+                h1#header.lead.display-4 А вы пользуетесь RSS?
+                #pitch.lead Если еще нет, то попробуйте прямо сейчас! Это бесплатно. Вот как можно оставаться в курсе всех последних новостей, используя RSS: найдите интересующую вас #[a(data-toggle="collapse" href="#collapseLinks" role="button" aria-expanded="false" aria-controls="collapseExample") RSS-ленту], вставьте ссылку на нее в поле ниже и нажмите кнопку #[i Добавить]:
         .container
           .row
             .col.text-center
@@ -46,7 +35,8 @@ html
                 input(type="text" aria-label="url" name="link").form-control.my-3
                 #collapseLinks.collapse
                   .card.card-body.
+                    Например: #[u(class="user-select-all") https://ru.hexlet.io/blog.rss] #[u(class="user-select-all") https://www.liga.net/news/sport/rss.xml]
                 .button-container
-                  button(type="submit" aria-label="add")#addButton.btn.btn-lg.btn-primary.mt-3.mb-3
+                  button(type="submit" aria-label="add")#addButton.btn.btn-lg.btn-primary.mt-3.mb-3 Добавить
         .container#channelNav
       footer

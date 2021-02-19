@@ -72,29 +72,30 @@ const updatePosts = (state) => {
     }));
 };
 
+const initState = () => ({
+  form: {
+    status: 'active',
+    error: null,
+  },
+  loadingProcess: {
+    status: 'idle',
+    error: null,
+  },
+  uiState: {
+    viewedPosts: [],
+    locale: null,
+  },
+  channels: [],
+  posts: [],
+  addedLinks: [],
+  modalContents: { title: '', description: '' },
+});
+
 export default () => i18next.init({
   lng: 'ru',
   resources: { ru },
 }).then(() => {
-  const state = {
-    form: {
-      status: 'active',
-      error: null,
-    },
-    loadingProcess: {
-      status: 'idle',
-      error: null,
-    },
-    uiState: {
-      viewedPosts: [],
-      locale: null,
-    },
-    channels: [],
-    posts: [],
-    addedLinks: [],
-    modalContents: { title: '', description: '' },
-  };
-
+  const state = initState();
   const nodeDispatcher = {
     modal: {
       modalWindow: $('#previewModal'),

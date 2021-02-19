@@ -72,88 +72,88 @@ const updatePosts = (state) => {
     }));
 };
 
-const initState = () => ({
-  form: {
-    status: 'active',
-    error: null,
-  },
-  loadingProcess: {
-    status: 'idle',
-    error: null,
-  },
-  uiState: {
-    viewedPosts: [],
-    locale: null,
-  },
-  channels: [],
-  posts: [],
-  addedLinks: [],
-  modalContents: { title: '', description: '' },
-});
-
-export default () => i18next.init({
-  lng: 'ru',
-  resources: { ru },
-}).then(() => {
-  const state = initState();
-  const nodeDispatcher = {
-    modal: {
-      modalWindow: $('#previewModal'),
-      modalTitle: document.querySelector('#previewModalTitle'),
-      modalBody: document.querySelector('#previewModalBody'),
+export default () => {
+  const state = {
+    form: {
+      status: 'active',
+      error: null,
     },
-    input: document.querySelector('input'),
-    button: document.querySelector('#addButton'),
-    container: document.querySelector('#channelNav'),
-    flashContainer: document.querySelector('.feedback'),
-    i18n: {
-      header: document.querySelector('#header'),
-      pitch: document.querySelector('#pitch'),
-      addButton: document.querySelector('#addButton'),
-      suggestedLink: document.querySelector('#collapseLinks > .card'),
+    loadingProcess: {
+      status: 'idle',
+      error: null,
     },
-    form: document.querySelector('#addChannelForm'),
-    links: [...document.querySelectorAll('.dropdown-menu > a')],
-    modalCloseButton: document.querySelector('#previewModalCloseButton'),
+    uiState: {
+      viewedPosts: [],
+      locale: null,
+    },
+    channels: [],
+    posts: [],
+    addedLinks: [],
+    modalContents: { title: '', description: '' },
   };
+  return i18next.init({
+    lng: 'ru',
+    resources: { ru },
+  }).then(() => {
+    const nodeDispatcher = {
+      modal: {
+        modalWindow: $('#previewModal'),
+        modalTitle: document.querySelector('#previewModalTitle'),
+        modalBody: document.querySelector('#previewModalBody'),
+      },
+      input: document.querySelector('input'),
+      button: document.querySelector('#addButton'),
+      container: document.querySelector('#channelNav'),
+      flashContainer: document.querySelector('.feedback'),
+      i18n: {
+        header: document.querySelector('#header'),
+        pitch: document.querySelector('#pitch'),
+        addButton: document.querySelector('#addButton'),
+        suggestedLink: document.querySelector('#collapseLinks > .card'),
+      },
+      form: document.querySelector('#addChannelForm'),
+      links: [...document.querySelectorAll('.dropdown-menu > a')],
+      modalCloseButton: document.querySelector('#previewModalCloseButton'),
+    };
 
-  const watchedState = watchState(state, nodeDispatcher);
+    const watchedState = watchState(state, nodeDispatcher);
 
-  setTimeout(() => updatePosts(watchedState), timeoutInterval);
+    setTimeout(() => updatePosts(watchedState), timeoutInterval);
 
-  nodeDispatcher.form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const link = new FormData(e.target).get('link');
-    if (isEmpty(link)) {
-      return;
-    }
-    watchedState.form.status = 'disabled';
+    nodeDispatcher.form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const link = new FormData(e.target).get('link');
+      if (isEmpty(link)) {
+        return;
+      }
+      watchedState.form.status = 'disabled';
 
-    const error = validate(link, watchedState.addedLinks);
-    if (error) {
-      watchedState.form.status = 'active';
-      watchedState.form.error = error.type;
-    } else {
-      downloadChannel(link, watchedState);
-    }
+      const error = validate(link, watchedState.addedLinks);
+      if (error) {
+        watchedState.form.status = 'active';
+        watchedState.form.error = error.type;
+      } else {
+        downloadChannel(link, watchedState);
+      }
+    });
+
+    nodeDispatcher.container.addEventListener('click', ({ target }) => {
+      const postId = target.getAttribute('data-id');
+      if (!postId) {
+        return;
+      }
+      const { title, description } = watchedState.posts.find(({ id }) => id === postId);
+      watchedState.modalContents = { title, description };
+      if (!watchedState.uiState.viewedPosts.includes(postId)) {
+        watchedState.uiState.viewedPosts.push(postId);
+      }
+      nodeDispatcher.modal.modalWindow.modal('toggle');
+    });
+
+    nodeDispatcher.links.forEach((link) => link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const locale = e.target.innerText.toLowerCase();
+      watchedState.uiState.locale = locale;
+    }));
   });
-
-  nodeDispatcher.container.addEventListener('click', ({ target }) => {
-    const postId = target.getAttribute('data-id');
-    if (!postId) {
-      return;
-    }
-    const { title, description } = watchedState.posts.find(({ id }) => id === postId);
-    watchedState.modalContents = { title, description };
-    if (!watchedState.uiState.viewedPosts.includes(postId)) {
-      watchedState.uiState.viewedPosts.push(postId);
-    }
-    nodeDispatcher.modal.modalWindow.modal('toggle');
-  });
-
-  nodeDispatcher.links.forEach((link) => link.addEventListener('click', (e) => {
-    e.preventDefault();
-    const locale = e.target.innerText.toLowerCase();
-    watchedState.uiState.locale = locale;
-  }));
-});
+};

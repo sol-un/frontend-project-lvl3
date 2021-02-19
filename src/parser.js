@@ -9,25 +9,25 @@ export default (xml) => {
   if (document.querySelector('parsererror')) {
     throw new Error('nodata');
   }
-
+  const result = { items: [] };
   const channelData = document.querySelector('channel');
   const extractFromChannel = extractText(channelData);
-  const channel = {
-    title: extractFromChannel('title'),
-    description: extractFromChannel('description'),
-  };
+  result.title = extractFromChannel('title');
+  result.description = extractFromChannel('description');
 
-  const items = [...channelData.querySelectorAll('item')]
-    .map((item) => {
+  [...channelData.querySelectorAll('item')]
+    .reduce((acc, item) => {
       const extractFromItem = extractText(item);
-      return {
+      const data = {
         title: extractFromItem('title'),
         description: extractFromItem('description'),
         link: extractFromItem('link'),
         creator: extractFromItem('creator'),
         pubDate: extractFromItem('pubDate'),
       };
-    });
+      acc.items.push(data);
+      return acc;
+    }, result);
 
-  return [channel, items];
+  return result;
 };

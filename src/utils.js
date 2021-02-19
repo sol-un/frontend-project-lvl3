@@ -8,7 +8,8 @@ const validate = (link, blacklist) => {
     .url()
     .notOneOf(blacklist);
   try {
-    return schema.validateSync(link);
+    schema.validateSync(link);
+    return null;
   } catch (error) {
     return error;
   }

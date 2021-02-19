@@ -28,10 +28,12 @@ const downloadChannel = (link, watchedState) => {
   watchedState.loadingProcess.status = 'fetching';
   axios(addProxy(link))
     .then((response) => {
-      const [channelData, channelContents] = parse(response.data.contents);
+      const { title, description, items } = parse(response.data.contents);
       const id = uniqueId();
-      const fullChannelData = { ...channelData, id, link };
-      const normalizedChannelContents = normalizePosts(id, channelContents);
+      const fullChannelData = {
+        title, description, id, link,
+      };
+      const normalizedChannelContents = normalizePosts(id, items);
       return [fullChannelData, normalizedChannelContents];
     })
     .then(([fullChannelData, normalizedChannelContents]) => {
@@ -56,8 +58,8 @@ const updatePosts = (state) => {
     id, link,
   }) => axios(addProxy(link))
     .then((response) => {
-      const [, fetchedPosts] = parse(response.data.contents);
-      const normalizedFetchedPosts = normalizePosts(id, fetchedPosts);
+      const { items } = parse(response.data.contents);
+      const normalizedFetchedPosts = normalizePosts(id, items);
 
       const prevPosts = state.posts;
       const newPosts = differenceBy(normalizedFetchedPosts, prevPosts, 'link');
@@ -126,10 +128,10 @@ export default () => i18next.init({
     }
     watchedState.form.status = 'disabled';
 
-    const validationResult = validate(link, watchedState.addedLinks);
-    if (validationResult.name === 'ValidationError') {
+    const error = validate(link, watchedState.addedLinks);
+    if (error) {
       watchedState.form.status = 'active';
-      watchedState.form.error = validationResult.type;
+      watchedState.form.error = error.type;
     } else {
       downloadChannel(link, watchedState);
     }

@@ -70,6 +70,8 @@ const renderPosts = (container, { posts, uiState }) => {
             role="button"
             aria-label="просмотр"
             data-id="${id}"
+            data-toggle="modal"
+            data-target="#previewModal"
           >
             ${t('synopsis')}
           </button>

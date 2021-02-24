@@ -3,7 +3,6 @@
 import { uniqueId, differenceBy, isEmpty } from 'lodash';
 import i18next from 'i18next';
 import axios from 'axios';
-import $ from 'jquery';
 import { validate } from './utils.js';
 import ru from './locales/ru.js';
 import parse from './parser.js';
@@ -98,7 +97,6 @@ export default () => {
   }).then(() => {
     const nodeDispatcher = {
       modal: {
-        modalWindow: $('#previewModal'),
         modalTitle: document.querySelector('#previewModalTitle'),
         modalBody: document.querySelector('#previewModalBody'),
       },
@@ -143,7 +141,6 @@ export default () => {
       if (!watchedState.uiState.viewedPosts.includes(postId)) {
         watchedState.uiState.viewedPosts.push(postId);
       }
-      nodeDispatcher.modal.modalWindow.modal('toggle');
     });
 
     nodeDispatcher.links.forEach((link) => link.addEventListener('click', (e) => {

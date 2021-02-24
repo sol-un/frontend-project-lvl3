@@ -124,8 +124,6 @@ export default () => {
       postsContainer: document.querySelector('#posts'),
       flashContainer: document.querySelector('.feedback'),
       form: document.querySelector('#addChannelForm'),
-      links: [...document.querySelectorAll('.dropdown-menu > a')],
-      modalCloseButton: document.querySelector('#previewModalCloseButton'),
     };
 
     const watchedState = watchState(state, nodeDispatcher);

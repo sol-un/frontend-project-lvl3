@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 
-import { divide } from 'lodash';
 import onChange from 'on-change';
 import { t } from './utils.js';
 

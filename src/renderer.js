@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 
+import { divide } from 'lodash';
 import onChange from 'on-change';
 import { t } from './utils.js';
 
@@ -39,6 +40,10 @@ const renderChannels = (container, channels) => {
   container.innerHTML = `<h2 class="mt-4">${t('channels')}</h2>${channelCards.join('')}`;
 };
 const renderPosts = (container, { posts, uiState }) => {
+  if (posts.length === 0) {
+    return;
+  }
+
   container.innerHTML = '';
 
   const postCards = posts.map(({

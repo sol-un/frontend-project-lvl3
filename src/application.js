@@ -107,12 +107,6 @@ export default () => {
       channelsContainer: document.querySelector('#channels'),
       postsContainer: document.querySelector('#posts'),
       flashContainer: document.querySelector('.feedback'),
-      i18n: {
-        header: document.querySelector('#header'),
-        pitch: document.querySelector('#pitch'),
-        addButton: document.querySelector('#addButton'),
-        suggestedLink: document.querySelector('#collapseLinks > .card'),
-      },
       form: document.querySelector('#addChannelForm'),
       links: [...document.querySelectorAll('.dropdown-menu > a')],
       modalCloseButton: document.querySelector('#previewModalCloseButton'),

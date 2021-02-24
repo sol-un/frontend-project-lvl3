@@ -31,7 +31,10 @@ const normalizePosts = (channelId, posts) => posts.map((post) => ({
 }));
 
 const downloadChannel = (link, watchedState) => {
-  watchedState.loadingProcess.status = 'fetching';
+  watchedState.loadingProcess = {
+    ...watchedState.loadingProcess,
+    status: 'fetching',
+  };
   axios(addProxy(link))
     .then((response) => {
       const { title, description, items } = parse(response.data.contents);
@@ -41,18 +44,24 @@ const downloadChannel = (link, watchedState) => {
       };
       const normalizedChannelContents = normalizePosts(id, items);
 
-      watchedState.form.status = 'active';
-      watchedState.form.error = null;
-      watchedState.loadingProcess.status = 'success';
-      watchedState.loadingProcess.error = null;
+      watchedState.form = {
+        status: 'active',
+        error: null,
+      };
+      watchedState.loadingProcess = {
+        status: 'success',
+        error: null,
+      };
       watchedState.channels = [...watchedState.channels, fullChannelData];
       watchedState.posts = [...watchedState.posts, ...normalizedChannelContents];
       watchedState.addedLinks = [...watchedState.addedLinks, link];
     })
     .catch((error) => {
-      watchedState.loadingProcess.status = 'error';
-      watchedState.loadingProcess.error = error.response || error.request ? 'network' : error.message;
-      watchedState.form.status = 'active';
+      watchedState.loadingProcess = {
+        status: 'error',
+        error: error.response || error.request ? 'network' : error.message,
+      };
+      watchedState.form = { ...watchedState.form, status: 'active' };
     });
 };
 
@@ -70,10 +79,12 @@ const updatePosts = (state) => {
       return newPosts;
     }));
   Promise.all(channelUpdatePromises)
-    .then((results) => {
-      state.posts = flatten([...results, ...state.posts]);
-      state.loadingProcess.status = 'idle';
-      state.loadingProcess.error = null;
+    .then((fetchedPosts) => {
+      state.posts = flatten([...fetchedPosts, ...state.posts]);
+      state.loadingProcess = {
+        status: 'idle',
+        error: null,
+      };
       setTimeout(() => updatePosts(state), timeoutInterval);
     });
 };
@@ -127,14 +138,16 @@ export default () => {
       if (isEmpty(link)) {
         return;
       }
-      watchedState.form.status = 'disabled';
+      watchedState.form = { ...watchedState.form, status: 'disabled' };
 
       const error = validate(link, watchedState.addedLinks);
       if (error) {
-        watchedState.form.status = 'active';
-        watchedState.form.error = error.type;
+        watchedState.form = {
+          status: 'active',
+          error: error.type,
+        };
       } else {
-        watchedState.form.error = null;
+        watchedState.form = { ...watchedState.form, error: null };
         downloadChannel(link, watchedState);
       }
     });

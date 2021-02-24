@@ -107,8 +107,13 @@ export default (state, nodeDispatcher) => {
       channels,
     } = state;
     switch (path) {
-      case 'form.status':
-        switch (value) {
+      case 'form': {
+        const { status, error } = value;
+        if (error) {
+          renderErrorMessage(flashContainer, form.error);
+          return;
+        }
+        switch (status) {
           case 'active':
             enableForm(nodeDispatcher);
             break;
@@ -119,12 +124,7 @@ export default (state, nodeDispatcher) => {
             throw new Error(`Unknown property for state.form.status: '${value}'`);
         }
         break;
-      case 'form.error':
-        renderErrorMessage(flashContainer, form.error);
-        break;
-      case 'loadingProcess.error':
-        renderErrorMessage(flashContainer, loadingProcess.error);
-        break;
+      }
       case 'channels':
       case 'addedLinks':
         renderChannels(channelsContainer, channels);
@@ -133,15 +133,17 @@ export default (state, nodeDispatcher) => {
       case 'uiState.viewedPosts':
         renderPosts(postsContainer, state);
         break;
-      case 'loadingProcess.status':
-        switch (value) {
+      case 'loadingProcess': {
+        const { status, error } = value;
+        if (error) {
+          renderErrorMessage(flashContainer, loadingProcess.error);
+          enableForm(nodeDispatcher);
+          return;
+        }
+        switch (status) {
           case 'success':
             input.value = '';
             renderSuccessMessage(flashContainer);
-            enableForm(nodeDispatcher);
-            break;
-          case 'error':
-            renderErrorMessage(flashContainer, loadingProcess.error);
             enableForm(nodeDispatcher);
             break;
           case 'fetching':
@@ -155,6 +157,7 @@ export default (state, nodeDispatcher) => {
             throw new Error(`Unknown property for state.loadingProcess.status: '${value}'`);
         }
         break;
+      }
       case 'modalContents':
         renderModalContents(modal, modalContents);
         break;

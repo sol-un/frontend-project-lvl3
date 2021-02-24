@@ -161,11 +161,5 @@ export default () => {
       watchedState.modalContents = { title, description };
       watchedState.uiState.viewedPosts.add(postId);
     });
-
-    nodeDispatcher.links.forEach((link) => link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const locale = e.target.innerText.toLowerCase();
-      watchedState.uiState.locale = locale;
-    }));
   });
 };

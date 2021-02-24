@@ -82,7 +82,7 @@ export default () => {
       error: null,
     },
     uiState: {
-      viewedPosts: [],
+      viewedPosts: new Set(),
       locale: null,
     },
     channels: [],
@@ -138,9 +138,7 @@ export default () => {
       }
       const { title, description } = watchedState.posts.find(({ id }) => id === postId);
       watchedState.modalContents = { title, description };
-      if (!watchedState.uiState.viewedPosts.includes(postId)) {
-        watchedState.uiState.viewedPosts.push(postId);
-      }
+      watchedState.uiState.viewedPosts.add(postId);
     });
 
     nodeDispatcher.links.forEach((link) => link.addEventListener('click', (e) => {

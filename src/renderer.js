@@ -44,7 +44,7 @@ const renderPosts = (container, { posts, uiState }) => {
   const postCards = posts.map(({
     id, title, link, creator,
   }) => {
-    const fontWeightValue = uiState.viewedPosts.includes(id)
+    const fontWeightValue = uiState.viewedPosts.has(id)
       ? 'normal'
       : 'bold';
     const creatorSubtitle = creator

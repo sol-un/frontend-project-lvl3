@@ -104,7 +104,8 @@ export default () => {
       },
       input: document.querySelector('input'),
       button: document.querySelector('#addButton'),
-      container: document.querySelector('#channelNav'),
+      channelsContainer: document.querySelector('#channels'),
+      postsContainer: document.querySelector('#posts'),
       flashContainer: document.querySelector('.feedback'),
       i18n: {
         header: document.querySelector('#header'),
@@ -138,7 +139,7 @@ export default () => {
       }
     });
 
-    nodeDispatcher.container.addEventListener('click', ({ target }) => {
+    nodeDispatcher.postsContainer.addEventListener('click', ({ target }) => {
       const postId = target.getAttribute('data-id');
       if (!postId) {
         return;

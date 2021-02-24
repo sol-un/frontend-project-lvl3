@@ -25,33 +25,31 @@ const renderErrorMessage = (container, error) => {
   `;
 };
 
-const renderFeeds = (container, state) => {
-  const { channels, posts } = state;
-
+const renderChannels = (container, channels) => {
   container.innerHTML = '';
 
-  const channelsContainer = document.createElement('div');
   const channelCards = channels.map(({ title, description }) => `
-    <div class="card">
-      <div class="card-body">
-        <h3 class="card-title">${title}</h3>
-        <p class="card-text">${description}</p>
-      </div>
-    </div>
+  <div class="card">
+  <div class="card-body">
+  <h3 class="card-title">${title}</h3>
+  <p class="card-text">${description}</p>
+  </div>
+  </div>
   `);
-  channelsContainer.innerHTML = `<h2 class="mt-4">${t('channels')}</h2>${channelCards.join('')}`;
-  container.append(channelsContainer);
+  container.innerHTML = `<h2 class="mt-4">${t('channels')}</h2>${channelCards.join('')}`;
+};
+const renderPosts = (container, { posts, uiState }) => {
+  container.innerHTML = '';
 
-  const postsContainer = document.createElement('div');
   const postCards = posts.map(({
     id, title, link, creator,
   }) => {
-    const fontWeightValue = state.uiState.viewedPosts.includes(id)
+    const fontWeightValue = uiState.viewedPosts.includes(id)
       ? 'normal'
       : 'bold';
     const creatorSubtitle = creator
       ? `<h6 class="card-subtitle text-muted">${t('creator')} ${creator}</h6>`
-      : null;
+      : '';
     return `
       <div class="card">
         <div class="card-body">
@@ -65,7 +63,7 @@ const renderFeeds = (container, state) => {
               font-weight-${fontWeightValue}">${title}
             </h5>
           </a>
-          ${creatorSubtitle || null}
+          ${creatorSubtitle}
           <button
             class="btn btn-primary my-3"
             type="button"
@@ -79,8 +77,7 @@ const renderFeeds = (container, state) => {
       </div>
     `;
   });
-  postsContainer.innerHTML = `<h2 class="mt-5">${t('posts')}</h2>${postCards.join('')}`;
-  container.append(postsContainer);
+  container.innerHTML = `<h2 class="mt-5">${t('posts')}</h2>${postCards.join('')}`;
 };
 
 const disableForm = ({ input, button }) => {
@@ -97,13 +94,15 @@ export default (state, nodeDispatcher) => {
     flashContainer,
     modal,
     input,
-    container,
+    channelsContainer,
+    postsContainer,
   } = nodeDispatcher;
   const watchedState = onChange(state, (path, value) => {
     const {
       form,
       loadingProcess,
       modalContents,
+      channels,
     } = state;
     switch (path) {
       case 'form.status':
@@ -126,9 +125,11 @@ export default (state, nodeDispatcher) => {
         break;
       case 'channels':
       case 'addedLinks':
+        renderChannels(channelsContainer, channels);
+        break;
       case 'posts':
       case 'uiState.viewedPosts':
-        renderFeeds(container, state);
+        renderPosts(postsContainer, state);
         break;
       case 'loadingProcess.status':
         switch (value) {

@@ -11,7 +11,12 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 
 const addProxy = (link) => {
   const proxyUrl = new URL('https://hexlet-allorigins.herokuapp.com/get');
-  proxyUrl.search = `?disableCache=true&url=${link}`;
+
+  const searchParams = new URLSearchParams();
+  searchParams.set('disableCache', true);
+  searchParams.set('url', link);
+  proxyUrl.search = searchParams;
+
   return proxyUrl.toString();
 };
 

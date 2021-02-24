@@ -12,7 +12,7 @@ const renderModalContents = (modalNodes, { title, description }) => {
 const renderSuccessMessage = (container) => {
   container.innerHTML = `
   <div class="alert alert-info fade show">
-  ${t('loadingSuccess')}
+    ${t('loadingSuccess')}
   </div>
   `;
 };
@@ -20,7 +20,7 @@ const renderSuccessMessage = (container) => {
 const renderErrorMessage = (container, error) => {
   container.innerHTML = `
   <div class="alert alert-danger fade show">
-  ${t(`errors.${error}`)}
+    ${t(`errors.${error}`)}
   </div>
   `;
 };
@@ -29,13 +29,13 @@ const renderChannels = (container, channels) => {
   container.innerHTML = '';
 
   const channelCards = channels.map(({ title, description }) => `
-  <div class="card">
-  <div class="card-body">
-  <h3 class="card-title">${title}</h3>
-  <p class="card-text">${description}</p>
-  </div>
-  </div>
-  `);
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">${title}</h3>
+        <p class="card-text">${description}</p>
+      </div>
+    </div>`);
+
   container.innerHTML = `<h2 class="mt-4">${t('channels')}</h2>${channelCards.join('')}`;
 };
 const renderPosts = (container, { posts, uiState }) => {

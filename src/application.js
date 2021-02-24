@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 
-import { uniqueId, differenceBy, isEmpty } from 'lodash';
+import {
+  uniqueId, differenceBy, isEmpty, flatten,
+} from 'lodash';
 import i18next from 'i18next';
 import axios from 'axios';
 import { validate } from './utils.js';
@@ -38,9 +40,7 @@ const downloadChannel = (link, watchedState) => {
         title, description, id, link,
       };
       const normalizedChannelContents = normalizePosts(id, items);
-      return [fullChannelData, normalizedChannelContents];
-    })
-    .then(([fullChannelData, normalizedChannelContents]) => {
+
       watchedState.form.status = 'active';
       watchedState.form.error = null;
       watchedState.loadingProcess.status = 'success';
@@ -58,7 +58,7 @@ const downloadChannel = (link, watchedState) => {
 
 const updatePosts = (state) => {
   const { channels } = state;
-  channels.map(({
+  const channelUpdatePromises = channels.map(({
     id, link,
   }) => axios(addProxy(link))
     .then((response) => {
@@ -67,13 +67,15 @@ const updatePosts = (state) => {
 
       const prevPosts = state.posts;
       const newPosts = differenceBy(normalizedFetchedPosts, prevPosts, 'link');
-      state.posts = [...newPosts, ...prevPosts];
-    })
-    .finally(() => {
+      return newPosts;
+    }));
+  Promise.all(channelUpdatePromises)
+    .then((results) => {
+      state.posts = flatten([...results, ...state.posts]);
       state.loadingProcess.status = 'idle';
       state.loadingProcess.error = null;
       setTimeout(() => updatePosts(state), timeoutInterval);
-    }));
+    });
 };
 
 export default () => {
@@ -132,6 +134,7 @@ export default () => {
         watchedState.form.status = 'active';
         watchedState.form.error = error.type;
       } else {
+        watchedState.form.error = null;
         downloadChannel(link, watchedState);
       }
     });

@@ -5,6 +5,7 @@ const t = (key, data) => i18next.t(key, data);
 
 const validate = (link, blacklist) => {
   const schema = string()
+    .required()
     .url()
     .notOneOf(blacklist);
   try {

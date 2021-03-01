@@ -23,7 +23,6 @@ export default (xml) => {
         description: extractFromItem('description'),
         link: extractFromItem('link'),
         creator: extractFromItem('creator'),
-        pubDate: extractFromItem('pubDate'),
       };
     });
 

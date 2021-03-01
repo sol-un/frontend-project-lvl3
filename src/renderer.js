@@ -6,7 +6,7 @@ import { t } from './utils.js';
 const renderModalContents = (modalNodes, { title, description }) => {
   const { modalTitle, modalBody } = modalNodes;
   modalTitle.textContent = title;
-  modalBody.innerHTML = description;
+  modalBody.textContent = description;
 };
 
 const renderSuccessMessage = (container) => {
@@ -38,6 +38,7 @@ const renderChannels = (container, channels) => {
 
   container.innerHTML = `<h2 class="mt-4">${t('channels')}</h2>${channelCards.join('')}`;
 };
+
 const renderPosts = (container, { posts, uiState }) => {
   if (posts.length === 0) {
     return;
@@ -90,6 +91,7 @@ const disableForm = ({ input, button }) => {
   input.setAttribute('readonly', 'readonly');
   button.setAttribute('disabled', '');
 };
+
 const enableForm = ({ input, button }) => {
   input.removeAttribute('readonly');
   button.removeAttribute('disabled');
@@ -103,6 +105,7 @@ export default (state, nodeDispatcher) => {
     channelsContainer,
     postsContainer,
   } = nodeDispatcher;
+
   const watchedState = onChange(state, (path, value) => {
     const {
       form,
@@ -110,13 +113,16 @@ export default (state, nodeDispatcher) => {
       modalContents,
       channels,
     } = state;
+
     switch (path) {
       case 'form': {
         const { status, error } = value;
+
         if (error) {
           renderErrorMessage(flashContainer, form.error);
           return;
         }
+
         switch (status) {
           case 'active':
             enableForm(nodeDispatcher);
@@ -130,7 +136,6 @@ export default (state, nodeDispatcher) => {
         break;
       }
       case 'channels':
-      case 'addedLinks':
         renderChannels(channelsContainer, channels);
         break;
       case 'posts':
@@ -139,11 +144,13 @@ export default (state, nodeDispatcher) => {
         break;
       case 'loadingProcess': {
         const { status, error } = value;
+
         if (error) {
           renderErrorMessage(flashContainer, loadingProcess.error);
           enableForm(nodeDispatcher);
           return;
         }
+
         switch (status) {
           case 'success':
             input.value = '';

@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import {
-  uniqueId, differenceBy, isEmpty, flatten,
+  uniqueId, differenceBy, flatten,
 } from 'lodash';
 import i18next from 'i18next';
 import axios from 'axios';
@@ -13,11 +13,8 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 
 const addProxy = (link) => {
   const proxyUrl = new URL('https://hexlet-allorigins.herokuapp.com/get');
-
-  const searchParams = new URLSearchParams();
-  searchParams.set('disableCache', true);
-  searchParams.set('url', link);
-  proxyUrl.search = searchParams;
+  proxyUrl.searchParams.set('disableCache', true);
+  proxyUrl.searchParams.set('url', link);
 
   return proxyUrl.toString();
 };
@@ -54,7 +51,6 @@ const downloadChannel = (link, watchedState) => {
       };
       watchedState.channels = [...watchedState.channels, fullChannelData];
       watchedState.posts = [...watchedState.posts, ...normalizedChannelContents];
-      watchedState.addedLinks = [...watchedState.addedLinks, link];
     })
     .catch((error) => {
       watchedState.loadingProcess = {
@@ -85,8 +81,8 @@ const updatePosts = (state) => {
         status: 'idle',
         error: null,
       };
-      setTimeout(() => updatePosts(state), timeoutInterval);
     });
+  setTimeout(() => updatePosts(state), timeoutInterval);
 };
 
 export default () => {
@@ -105,7 +101,6 @@ export default () => {
     },
     channels: [],
     posts: [],
-    addedLinks: [],
     modalContents: { title: '', description: '' },
   };
   return i18next.init({
@@ -133,12 +128,11 @@ export default () => {
     nodeDispatcher.form.addEventListener('submit', (e) => {
       e.preventDefault();
       const link = new FormData(e.target).get('link');
-      if (isEmpty(link)) {
-        return;
-      }
+
       watchedState.form = { ...watchedState.form, status: 'disabled' };
 
-      const error = validate(link, watchedState.addedLinks);
+      const addedLinks = watchedState.channels.map(({ link: channelLink }) => channelLink);
+      const error = validate(link, addedLinks);
       if (error) {
         watchedState.form = {
           status: 'active',
@@ -151,7 +145,7 @@ export default () => {
     });
 
     nodeDispatcher.postsContainer.addEventListener('click', ({ target }) => {
-      const postId = target.getAttribute('data-id');
+      const postId = target.dataset.id;
       if (!postId) {
         return;
       }

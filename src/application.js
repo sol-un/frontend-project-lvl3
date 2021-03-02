@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import {
-  uniqueId, differenceBy, flatten,
+  uniqueId, differenceBy,
 } from 'lodash';
 import i18next from 'i18next';
 import axios from 'axios';
@@ -41,10 +41,6 @@ const downloadChannel = (link, watchedState) => {
       };
       const normalizedChannelContents = normalizePosts(id, items);
 
-      watchedState.form = {
-        status: 'active',
-        error: null,
-      };
       watchedState.loadingProcess = {
         status: 'success',
         error: null,
@@ -57,7 +53,6 @@ const downloadChannel = (link, watchedState) => {
         status: 'error',
         error: error.response || error.request ? 'network' : error.message,
       };
-      watchedState.form = { ...watchedState.form, status: 'active' };
     });
 };
 
@@ -72,17 +67,11 @@ const updatePosts = (state) => {
 
       const prevPosts = state.posts;
       const newPosts = differenceBy(normalizedFetchedPosts, prevPosts, 'link');
-      return newPosts;
-    }));
+      state.posts = [...newPosts, ...state.posts];
+    })
+    .catch((error) => console.log(error)));
   Promise.all(channelUpdatePromises)
-    .then((fetchedPosts) => {
-      state.posts = flatten([...fetchedPosts, ...state.posts]);
-      state.loadingProcess = {
-        status: 'idle',
-        error: null,
-      };
-    });
-  setTimeout(() => updatePosts(state), timeoutInterval);
+    .finally(() => setTimeout(() => updatePosts(state), timeoutInterval));
 };
 
 export default () => {
@@ -128,17 +117,15 @@ export default () => {
       e.preventDefault();
       const link = new FormData(e.target).get('link');
 
-      watchedState.form = { ...watchedState.form, status: 'disabled' };
-
       const addedLinks = watchedState.channels.map(({ link: channelLink }) => channelLink);
       const error = validate(link, addedLinks);
       if (error) {
         watchedState.form = {
-          status: 'active',
+          valid: false,
           error: error.type,
         };
       } else {
-        watchedState.form = { ...watchedState.form, error: null };
+        watchedState.form = { valid: true, error: null };
         downloadChannel(link, watchedState);
       }
     });

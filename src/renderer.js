@@ -96,7 +96,27 @@ const enableForm = ({ input, button }) => {
   button.removeAttribute('disabled');
 };
 
-export default (state, nodeDispatcher) => {
+const dispatchNextState = (status, value, nodeDispatcher, t) => {
+  const { input, flashContainer } = nodeDispatcher;
+  switch (status) {
+    case 'success':
+      input.value = '';
+      renderSuccessMessage(flashContainer, t);
+      enableForm(nodeDispatcher);
+      break;
+    case 'fetching':
+      disableForm(nodeDispatcher);
+      break;
+    case 'idle':
+      flashContainer.innerHTML = '';
+      enableForm(nodeDispatcher);
+      break;
+    default:
+      throw new Error(`Unknown property for state.loadingProcess.status: '${value}'`);
+  }
+};
+
+export default (state, nodeDispatcher, t) => {
   const {
     flashContainer,
     modal,
@@ -115,57 +135,37 @@ export default (state, nodeDispatcher) => {
 
     switch (path) {
       case 'form': {
-        const { status, error } = value;
+        const { valid, error } = value;
 
         if (error) {
-          renderErrorMessage(flashContainer, form.error);
-          return;
+          renderErrorMessage(flashContainer, form.error, t);
         }
 
-        switch (status) {
-          case 'active':
-            enableForm(nodeDispatcher);
-            break;
-          case 'disabled':
-            disableForm(nodeDispatcher);
-            break;
-          default:
-            throw new Error(`Unknown property for state.form.status: '${value}'`);
+        if (!valid) {
+          input.classList.add('is-invalid');
+        } else {
+          input.classList.remove('is-invalid');
         }
+
         break;
       }
       case 'channels':
-        renderChannels(channelsContainer, channels);
+        renderChannels(channelsContainer, channels, t);
         break;
       case 'posts':
       case 'uiState.viewedPosts':
-        renderPosts(postsContainer, state);
+        renderPosts(postsContainer, state, t);
         break;
       case 'loadingProcess': {
         const { status, error } = value;
 
         if (error) {
-          renderErrorMessage(flashContainer, loadingProcess.error);
+          renderErrorMessage(flashContainer, loadingProcess.error, t);
           enableForm(nodeDispatcher);
           return;
         }
 
-        switch (status) {
-          case 'success':
-            input.value = '';
-            renderSuccessMessage(flashContainer);
-            enableForm(nodeDispatcher);
-            break;
-          case 'fetching':
-            disableForm(nodeDispatcher);
-            break;
-          case 'idle':
-            flashContainer.innerHTML = '';
-            enableForm(nodeDispatcher);
-            break;
-          default:
-            throw new Error(`Unknown property for state.loadingProcess.status: '${value}'`);
-        }
+        dispatchNextState(status, value, nodeDispatcher, t);
         break;
       }
       case 'modalContents':

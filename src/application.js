@@ -5,7 +5,7 @@ import {
 } from 'lodash';
 import i18next from 'i18next';
 import axios from 'axios';
-import { validate } from './utils.js';
+import validate from './utils.js';
 import ru from './locales/ru.js';
 import parse from './parser.js';
 import watchState from './renderer.js';
@@ -105,9 +105,8 @@ export default () => {
   };
   return i18next.init({
     lng: 'ru',
-    fallbackLng: 'ru',
     resources: { ru },
-  }).then(() => {
+  }).then((t) => {
     const nodeDispatcher = {
       modal: {
         modalTitle: document.querySelector('#previewModalTitle'),
@@ -121,7 +120,7 @@ export default () => {
       form: document.querySelector('#addChannelForm'),
     };
 
-    const watchedState = watchState(state, nodeDispatcher);
+    const watchedState = watchState(state, nodeDispatcher, t);
 
     setTimeout(() => updatePosts(watchedState), timeoutInterval);
 

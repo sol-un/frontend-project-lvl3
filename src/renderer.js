@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 
 import onChange from 'on-change';
-import { t } from './utils.js';
 
 const renderModalContents = (modalNodes, { title, description }) => {
   const { modalTitle, modalBody } = modalNodes;
@@ -9,7 +8,7 @@ const renderModalContents = (modalNodes, { title, description }) => {
   modalBody.textContent = description;
 };
 
-const renderSuccessMessage = (container) => {
+const renderSuccessMessage = (container, t) => {
   container.innerHTML = `
   <div class="alert alert-info fade show">
     ${t('loadingSuccess')}
@@ -17,7 +16,7 @@ const renderSuccessMessage = (container) => {
   `;
 };
 
-const renderErrorMessage = (container, error) => {
+const renderErrorMessage = (container, error, t) => {
   container.innerHTML = `
   <div class="alert alert-danger fade show">
     ${t(`errors.${error}`)}
@@ -25,7 +24,7 @@ const renderErrorMessage = (container, error) => {
   `;
 };
 
-const renderChannels = (container, channels) => {
+const renderChannels = (container, channels, t) => {
   container.innerHTML = '';
 
   const channelCards = channels.map(({ title, description }) => `
@@ -39,7 +38,7 @@ const renderChannels = (container, channels) => {
   container.innerHTML = `<h2 class="mt-4">${t('channels')}</h2>${channelCards.join('')}`;
 };
 
-const renderPosts = (container, { posts, uiState }) => {
+const renderPosts = (container, { posts, uiState }, t) => {
   if (posts.length === 0) {
     return;
   }

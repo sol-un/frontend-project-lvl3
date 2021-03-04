@@ -93,6 +93,7 @@ export default () => {
   };
   return i18next.init({
     lng: 'ru',
+    fallbackLng: 'ru',
     resources: { ru },
   }).then((t) => {
     const nodeDispatcher = {

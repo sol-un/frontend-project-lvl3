@@ -2,7 +2,8 @@
 
 import onChange from 'on-change';
 
-const renderModalContents = (modalNodes, { title, description }) => {
+const renderModalContents = (modalNodes, { posts, modalContentsId }) => {
+  const { title, description } = posts.find(({ id }) => id === modalContentsId);
   const { modalTitle, modalBody } = modalNodes;
   modalTitle.textContent = title;
   modalBody.textContent = description;
@@ -24,7 +25,7 @@ const renderErrorMessage = (container, error, t) => {
   `;
 };
 
-const renderChannels = (container, channels, t) => {
+const renderChannels = (container, { channels }, t) => {
   container.innerHTML = '';
 
   const channelCards = channels.map(({ title, description }) => `
@@ -96,8 +97,31 @@ const enableForm = ({ input, button }) => {
   button.removeAttribute('disabled');
 };
 
-const dispatchNextState = (status, value, nodeDispatcher, t) => {
-  const { input, flashContainer } = nodeDispatcher;
+const handleForm = (value, nodeDispatcher, t) => {
+  const { valid, error } = value;
+  const { flashContainer, input } = nodeDispatcher;
+
+  if (error) {
+    renderErrorMessage(flashContainer, error, t);
+  }
+
+  if (!valid) {
+    input.classList.add('is-invalid');
+  } else {
+    input.classList.remove('is-invalid');
+  }
+};
+
+const handleLoadingProcess = (value, nodeDispatcher, t) => {
+  const { status, error } = value;
+  const { flashContainer, input } = nodeDispatcher;
+
+  if (error) {
+    renderErrorMessage(flashContainer, error, t);
+    enableForm(nodeDispatcher);
+    return;
+  }
+
   switch (status) {
     case 'success':
       input.value = '';
@@ -107,10 +131,6 @@ const dispatchNextState = (status, value, nodeDispatcher, t) => {
     case 'fetching':
       disableForm(nodeDispatcher);
       break;
-    case 'idle':
-      flashContainer.innerHTML = '';
-      enableForm(nodeDispatcher);
-      break;
     default:
       throw new Error(`Unknown property for state.loadingProcess.status: '${value}'`);
   }
@@ -118,58 +138,29 @@ const dispatchNextState = (status, value, nodeDispatcher, t) => {
 
 export default (state, nodeDispatcher, t) => {
   const {
-    flashContainer,
     modal,
-    input,
     channelsContainer,
     postsContainer,
   } = nodeDispatcher;
 
   const watchedState = onChange(state, (path, value) => {
-    const {
-      form,
-      loadingProcess,
-      modalContents,
-      channels,
-    } = state;
-
     switch (path) {
-      case 'form': {
-        const { valid, error } = value;
-
-        if (error) {
-          renderErrorMessage(flashContainer, form.error, t);
-        }
-
-        if (!valid) {
-          input.classList.add('is-invalid');
-        } else {
-          input.classList.remove('is-invalid');
-        }
-
+      case 'form':
+        handleForm(value, nodeDispatcher, t);
         break;
-      }
       case 'channels':
-        renderChannels(channelsContainer, channels, t);
+        renderChannels(channelsContainer, state, t);
         break;
       case 'posts':
       case 'uiState.viewedPosts':
         renderPosts(postsContainer, state, t);
         break;
       case 'loadingProcess': {
-        const { status, error } = value;
-
-        if (error) {
-          renderErrorMessage(flashContainer, loadingProcess.error, t);
-          enableForm(nodeDispatcher);
-          return;
-        }
-
-        dispatchNextState(status, value, nodeDispatcher, t);
+        handleLoadingProcess(value, nodeDispatcher, t);
         break;
       }
-      case 'modalContents':
-        renderModalContents(modal, modalContents);
+      case 'modalContentsId':
+        renderModalContents(modal, state);
         break;
       default:
         throw new Error(`Unknown state path: ${path}`);

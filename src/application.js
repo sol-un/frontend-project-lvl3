@@ -9,10 +9,10 @@ import validate from './utils.js';
 import ru from './locales/ru.js';
 import parse from './parser.js';
 import watchState from './renderer.js';
-import 'bootstrap/dist/js/bootstrap.min.js';
+import 'bootstrap';
 
 const addProxy = (link) => {
-  const proxyUrl = new URL('https://hexlet-allorigins.herokuapp.com/get');
+  const proxyUrl = new URL('get', 'https://hexlet-allorigins.herokuapp.com');
   proxyUrl.searchParams.set('disableCache', true);
   proxyUrl.searchParams.set('url', link);
 
@@ -77,7 +77,7 @@ const updatePosts = (state) => {
 export default () => {
   const state = {
     form: {
-      status: 'active',
+      status: 'valid',
       error: null,
     },
     loadingProcess: {
@@ -86,15 +86,13 @@ export default () => {
     },
     uiState: {
       viewedPosts: new Set(),
-      locale: null,
     },
     channels: [],
     posts: [],
-    modalContents: { title: '', description: '' },
+    modalContentsId: null,
   };
   return i18next.init({
     lng: 'ru',
-    fallbackLng: 'ru',
     resources: { ru },
   }).then((t) => {
     const nodeDispatcher = {
@@ -136,8 +134,7 @@ export default () => {
       if (!postId) {
         return;
       }
-      const { title, description } = watchedState.posts.find(({ id }) => id === postId);
-      watchedState.modalContents = { title, description };
+      watchedState.modalContentsId = postId;
       watchedState.uiState.viewedPosts.add(postId);
     });
   });

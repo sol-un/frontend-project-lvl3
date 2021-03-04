@@ -91,9 +91,9 @@ export default () => {
     posts: [],
     modalContentsId: null,
   };
-  return i18next.init({
+  const i18nextInstance = i18next.createInstance();
+  return i18nextInstance.init({
     lng: 'ru',
-    fallbackLng: 'ru',
     resources: { ru },
   }).then((t) => {
     const nodeDispatcher = {

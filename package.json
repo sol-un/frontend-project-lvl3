@@ -2,6 +2,7 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "An RSS reader developed as a pet project under the guidance of Hexlet, a self-education platform.",
+  "main": "src/index.js",
   "scripts": {
     "build": "webpack",
     "start:dev": "webpack serve"

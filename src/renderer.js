@@ -1,17 +1,16 @@
 /* eslint-disable no-param-reassign */
 
 import onChange from 'on-change';
-import escapeHtml from 'escape-html';
 
 const renderModalContents = (modalNodes, { posts, modalContentsId }) => {
   const { title, description } = posts.find(({ id }) => id === modalContentsId);
   const { modalTitle, modalBody } = modalNodes;
-  modalTitle.textContent = escapeHtml(title);
-  modalBody.textContent = escapeHtml(description);
+  modalTitle.textContent = title;
+  modalBody.textContent = description;
 };
 
 const renderSuccessMessage = (container, t) => {
-  container.innerHTML = `
+  container.textContent = `
   <div class="alert alert-info fade show">
     ${t('loadingSuccess')}
   </div>
@@ -19,7 +18,7 @@ const renderSuccessMessage = (container, t) => {
 };
 
 const renderErrorMessage = (container, error, t) => {
-  container.innerHTML = `
+  container.textContent = `
   <div class="alert alert-danger fade show">
     ${t(`errors.${error}`)}
   </div>
@@ -27,17 +26,17 @@ const renderErrorMessage = (container, error, t) => {
 };
 
 const renderChannels = (container, { channels }, t) => {
-  container.innerHTML = '';
+  container.textContent = '';
 
   const channelCards = channels.map(({ title, description }) => `
     <div class="card">
       <div class="card-body">
-        <h3 class="card-title">${escapeHtml(title)}</h3>
-        <p class="card-text">${escapeHtml(description)}</p>
+        <h3 class="card-title">${title}</h3>
+        <p class="card-text">${description}</p>
       </div>
     </div>`);
 
-  container.innerHTML = `<h2 class="mt-4">${t('channels')}</h2>${channelCards.join('')}`;
+  container.textContent = `<h2 class="mt-4">${t('channels')}</h2>${channelCards.join('')}`;
 };
 
 const renderPosts = (container, { posts, uiState }, t) => {
@@ -45,7 +44,7 @@ const renderPosts = (container, { posts, uiState }, t) => {
     return;
   }
 
-  container.innerHTML = '';
+  container.textContent = '';
 
   const postCards = posts.map(({
     id, title, link, creator,
@@ -54,7 +53,7 @@ const renderPosts = (container, { posts, uiState }, t) => {
       ? 'normal'
       : 'bold';
     const creatorSubtitle = creator
-      ? `<h6 class="card-subtitle text-muted">${t('creator')} ${escapeHtml(creator)}</h6>`
+      ? `<h6 class="card-subtitle text-muted">${t('creator')} ${creator}</h6>`
       : '';
     return `
       <div class="card">
@@ -66,7 +65,7 @@ const renderPosts = (container, { posts, uiState }, t) => {
           >
             <h5
               class="card-title
-              font-weight-${fontWeightValue}">${escapeHtml(title)}
+              font-weight-${fontWeightValue}">${title}
             </h5>
           </a>
           ${creatorSubtitle}
@@ -85,7 +84,7 @@ const renderPosts = (container, { posts, uiState }, t) => {
       </div>
     `;
   });
-  container.innerHTML = `<h2 class="mt-5">${t('posts')}</h2>${postCards.join('')}`;
+  container.textContent = `<h2 class="mt-5">${t('posts')}</h2>${postCards.join('')}`;
 };
 
 const disableForm = ({ input, button }) => {

@@ -23,6 +23,7 @@
   "dependencies": {
     "axios": "^0.21.0",
     "bootstrap": "^4.5.3",
+    "escape-html": "^1.0.3",
     "i18next": "^19.8.3",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",

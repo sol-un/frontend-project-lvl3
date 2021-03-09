@@ -1,12 +1,13 @@
 /* eslint-disable no-param-reassign */
 
 import onChange from 'on-change';
+import escapeHtml from 'escape-html';
 
 const renderModalContents = (modalNodes, { posts, modalContentsId }) => {
   const { title, description } = posts.find(({ id }) => id === modalContentsId);
   const { modalTitle, modalBody } = modalNodes;
-  modalTitle.textContent = title;
-  modalBody.textContent = description;
+  modalTitle.textContent = escapeHtml(title);
+  modalBody.textContent = escapeHtml(description);
 };
 
 const renderSuccessMessage = (container, t) => {
@@ -31,8 +32,8 @@ const renderChannels = (container, { channels }, t) => {
   const channelCards = channels.map(({ title, description }) => `
     <div class="card">
       <div class="card-body">
-        <h3 class="card-title">${title}</h3>
-        <p class="card-text">${description}</p>
+        <h3 class="card-title">${escapeHtml(title)}</h3>
+        <p class="card-text">${escapeHtml(description)}</p>
       </div>
     </div>`);
 
@@ -53,7 +54,7 @@ const renderPosts = (container, { posts, uiState }, t) => {
       ? 'normal'
       : 'bold';
     const creatorSubtitle = creator
-      ? `<h6 class="card-subtitle text-muted">${t('creator')} ${creator}</h6>`
+      ? `<h6 class="card-subtitle text-muted">${t('creator')} ${escapeHtml(creator)}</h6>`
       : '';
     return `
       <div class="card">
@@ -65,7 +66,7 @@ const renderPosts = (container, { posts, uiState }, t) => {
           >
             <h5
               class="card-title
-              font-weight-${fontWeightValue}">${title}
+              font-weight-${fontWeightValue}">${escapeHtml(title)}
             </h5>
           </a>
           ${creatorSubtitle}

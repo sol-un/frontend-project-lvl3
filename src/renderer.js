@@ -10,7 +10,7 @@ const renderModalContents = (modalNodes, { posts, modalContentsId }) => {
 };
 
 const renderSuccessMessage = (container, t) => {
-  container.textContent = `
+  container.innerHTML = `
   <div class="alert alert-info fade show">
     ${t('loadingSuccess')}
   </div>
@@ -18,7 +18,7 @@ const renderSuccessMessage = (container, t) => {
 };
 
 const renderErrorMessage = (container, error, t) => {
-  container.textContent = `
+  container.innerHTML = `
   <div class="alert alert-danger fade show">
     ${t(`errors.${error}`)}
   </div>
@@ -26,7 +26,7 @@ const renderErrorMessage = (container, error, t) => {
 };
 
 const renderChannels = (container, { channels }, t) => {
-  container.textContent = '';
+  container.innerHTML = '';
 
   const channelCards = channels.map(({ title, description }) => `
     <div class="card">
@@ -36,7 +36,7 @@ const renderChannels = (container, { channels }, t) => {
       </div>
     </div>`);
 
-  container.textContent = `<h2 class="mt-4">${t('channels')}</h2>${channelCards.join('')}`;
+  container.innerHTML = `<h2 class="mt-4">${t('channels')}</h2>${channelCards.join('')}`;
 };
 
 const renderPosts = (container, { posts, uiState }, t) => {
@@ -44,7 +44,7 @@ const renderPosts = (container, { posts, uiState }, t) => {
     return;
   }
 
-  container.textContent = '';
+  container.innerHTML = '';
 
   const postCards = posts.map(({
     id, title, link, creator,
@@ -84,7 +84,7 @@ const renderPosts = (container, { posts, uiState }, t) => {
       </div>
     `;
   });
-  container.textContent = `<h2 class="mt-5">${t('posts')}</h2>${postCards.join('')}`;
+  container.innerHTML = `<h2 class="mt-5">${t('posts')}</h2>${postCards.join('')}`;
 };
 
 const disableForm = ({ input, button }) => {
